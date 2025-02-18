@@ -69,3 +69,4 @@
 172.19.0.1 - - [18/Feb/2025:01:07:22 +0000] "GET /api/v1/invoices?paid[eq]=1&type[in]=[b,c] HTTP/1.1" 200 1122596 "-" "PostmanRuntime/7.41.2"
 172.19.0.1 - - [18/Feb/2025:01:07:33 +0000] "GET /api/v1/invoices?paid[eq]=1&type[in]=[b,c] HTTP/1.1" 500 1122217 "-" "PostmanRuntime/7.41.2"
 172.19.0.1 - - [18/Feb/2025:01:08:04 +0000] "GET /api/v1/invoices?paid[eq]=1&type[in]=[b,c] HTTP/1.1" 200 6226 "-" "PostmanRuntime/7.41.2"
+172.19.0.1 - - [18/Feb/2025:01:30:59 +0000] "GET /api/v1/invoices?paid[eq] HTTP/1.1" 500 1098969 "http://localhost:8080/api/v1/invoices?paid[eq]" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
