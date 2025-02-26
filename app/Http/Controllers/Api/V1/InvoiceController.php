@@ -16,7 +16,7 @@ class InvoiceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
 //        return InvoiceResource::collection(Invoice::with('user')->get());
         $teste = new Invoice();
@@ -26,7 +26,7 @@ class InvoiceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'user_id'      => 'required|exists:users,id',
@@ -52,7 +52,7 @@ class InvoiceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Invoice $invoice)
+    public function show(Invoice $invoice): InvoiceResource
     {
         return new InvoiceResource($invoice);
     }
@@ -60,8 +60,13 @@ class InvoiceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Invoice $invoice)
+    public function update(Request $request, Invoice $invoice): \Illuminate\Http\JsonResponse
     {
+        if(!auth()->user()->tokenCan('invoice-store')) {
+            return $this->response('Unauthorized', 403);
+        }
+
+
         $validator = Validator::make($request->all(), [
             'user_id'      => 'required|exists:users,id',
             'type'         => 'required|in:C,P,B|max:1',
@@ -95,7 +100,7 @@ class InvoiceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Invoice $invoice)
+    public function destroy(Invoice $invoice): \Illuminate\Http\JsonResponse
     {
         $deleted = $invoice->delete();
 
@@ -105,4 +110,5 @@ class InvoiceController extends Controller
 
         return $this->response('Invoice not Deleted', 400);
     }
+
 }

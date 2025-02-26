@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TesteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -35,5 +37,9 @@ Route::prefix('v1')->group(function () {
         Route::delete('/invoices/{invoice}', [InvoiceController::class, 'destroy']);
     */
 
-    Route::apiResource('invoices', InvoiceController::class);
+    Route::post('login', [AuthController::class, 'login']);
+    Route::get('teste', [TesteController::class, 'index'])->middleware('auth:sanctum');
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::apiResource('invoices', InvoiceController::class);
+    });
 });
