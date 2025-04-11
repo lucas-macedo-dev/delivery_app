@@ -20,8 +20,7 @@ class InvoiceResource extends JsonResource
         $paid = $this->paid;
         return [
             'user'         => [
-                'firstName' => $this->user->firstName,
-                'lastName'  => $this->user->lastName
+                'name' => $this->user->name,
             ],
             'type'         => $this->types[$this->type],
             'paid'         => $paid ? 'Pago' : 'Não Pago',

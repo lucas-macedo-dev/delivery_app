@@ -207,3 +207,212 @@
 2025/02/26 00:20:16 [notice] 1#1: start worker process 35
 2025/02/26 00:20:16 [notice] 1#1: start worker process 36
 2025/02/26 00:20:16 [notice] 1#1: start worker process 37
+2025/02/27 02:20:26 [notice] 1#1: using the "epoll" event method
+2025/02/27 02:20:26 [notice] 1#1: nginx/1.27.4
+2025/02/27 02:20:26 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+2025/02/27 02:20:26 [notice] 1#1: OS: Linux 5.15.167.4-microsoft-standard-WSL2
+2025/02/27 02:20:26 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/02/27 02:20:26 [notice] 1#1: start worker processes
+2025/02/27 02:20:26 [notice] 1#1: start worker process 35
+2025/02/27 02:20:26 [notice] 1#1: start worker process 36
+2025/02/27 02:20:26 [notice] 1#1: start worker process 37
+2025/02/27 02:20:26 [notice] 1#1: start worker process 38
+2025/02/27 22:34:34 [notice] 1#1: using the "epoll" event method
+2025/02/27 22:34:34 [notice] 1#1: nginx/1.27.4
+2025/02/27 22:34:34 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+2025/02/27 22:34:34 [notice] 1#1: OS: Linux 5.15.167.4-microsoft-standard-WSL2
+2025/02/27 22:34:34 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/02/27 22:34:34 [notice] 1#1: start worker processes
+2025/02/27 22:34:34 [notice] 1#1: start worker process 35
+2025/02/27 22:34:34 [notice] 1#1: start worker process 36
+2025/02/27 22:34:34 [notice] 1#1: start worker process 37
+2025/02/27 22:34:34 [notice] 1#1: start worker process 38
+2025/02/27 23:11:30 [notice] 1#1: signal 3 (SIGQUIT) received, shutting down
+2025/02/27 23:11:30 [notice] 35#35: gracefully shutting down
+2025/02/27 23:11:30 [notice] 36#36: gracefully shutting down
+2025/02/27 23:11:30 [notice] 36#36: exiting
+2025/02/27 23:11:30 [notice] 35#35: exiting
+2025/02/27 23:11:30 [notice] 37#37: gracefully shutting down
+2025/02/27 23:11:30 [notice] 36#36: exit
+2025/02/27 23:11:30 [notice] 37#37: exiting
+2025/02/27 23:11:30 [notice] 38#38: gracefully shutting down
+2025/02/27 23:11:30 [notice] 37#37: exit
+2025/02/27 23:11:30 [notice] 38#38: exiting
+2025/02/27 23:11:30 [notice] 38#38: exit
+2025/02/27 23:11:30 [notice] 35#35: exit
+2025/02/27 23:11:30 [notice] 1#1: signal 17 (SIGCHLD) received from 37
+2025/02/27 23:11:30 [notice] 1#1: worker process 37 exited with code 0
+2025/02/27 23:11:30 [notice] 1#1: worker process 36 exited with code 0
+2025/02/27 23:11:30 [notice] 1#1: worker process 38 exited with code 0
+2025/02/27 23:11:30 [notice] 1#1: signal 17 (SIGCHLD) received from 38
+2025/02/27 23:11:30 [notice] 1#1: signal 17 (SIGCHLD) received from 35
+2025/02/27 23:11:30 [notice] 1#1: worker process 35 exited with code 0
+2025/02/27 23:11:30 [notice] 1#1: exit
+2025/04/01 00:13:43 [notice] 1#1: using the "epoll" event method
+2025/04/01 00:13:43 [notice] 1#1: nginx/1.27.4
+2025/04/01 00:13:43 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+2025/04/01 00:13:43 [notice] 1#1: OS: Linux 5.15.167.4-microsoft-standard-WSL2
+2025/04/01 00:13:43 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/04/01 00:13:43 [notice] 1#1: start worker processes
+2025/04/01 00:13:43 [notice] 1#1: start worker process 35
+2025/04/01 00:13:43 [notice] 1#1: start worker process 36
+2025/04/01 00:13:43 [notice] 1#1: start worker process 37
+2025/04/01 00:13:43 [notice] 1#1: start worker process 38
+2025/04/01 23:32:41 [notice] 1#1: using the "epoll" event method
+2025/04/01 23:32:41 [notice] 1#1: nginx/1.27.4
+2025/04/01 23:32:41 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+2025/04/01 23:32:41 [notice] 1#1: OS: Linux 5.15.167.4-microsoft-standard-WSL2
+2025/04/01 23:32:41 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/04/01 23:32:41 [notice] 1#1: start worker processes
+2025/04/01 23:32:41 [notice] 1#1: start worker process 35
+2025/04/01 23:32:41 [notice] 1#1: start worker process 36
+2025/04/01 23:32:41 [notice] 1#1: start worker process 37
+2025/04/01 23:32:41 [notice] 1#1: start worker process 38
+2025/04/03 00:42:59 [notice] 1#1: using the "epoll" event method
+2025/04/03 00:42:59 [notice] 1#1: nginx/1.27.4
+2025/04/03 00:42:59 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+2025/04/03 00:42:59 [notice] 1#1: OS: Linux 5.15.167.4-microsoft-standard-WSL2
+2025/04/03 00:42:59 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/04/03 00:42:59 [notice] 1#1: start worker processes
+2025/04/03 00:42:59 [notice] 1#1: start worker process 34
+2025/04/03 00:42:59 [notice] 1#1: start worker process 35
+2025/04/03 00:42:59 [notice] 1#1: start worker process 36
+2025/04/03 00:42:59 [notice] 1#1: start worker process 37
+2025/04/05 01:45:11 [notice] 1#1: using the "epoll" event method
+2025/04/05 01:45:11 [notice] 1#1: nginx/1.27.4
+2025/04/05 01:45:11 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+2025/04/05 01:45:11 [notice] 1#1: OS: Linux 5.15.167.4-microsoft-standard-WSL2
+2025/04/05 01:45:11 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/04/05 01:45:11 [notice] 1#1: start worker processes
+2025/04/05 01:45:11 [notice] 1#1: start worker process 35
+2025/04/05 01:45:11 [notice] 1#1: start worker process 36
+2025/04/05 01:45:11 [notice] 1#1: start worker process 37
+2025/04/05 01:45:11 [notice] 1#1: start worker process 38
+2025/04/05 03:32:22 [warn] 37#37: *159 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000001, client: 172.19.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/05 03:35:35 [warn] 37#37: *170 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000002, client: 172.19.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/05 03:41:41 [warn] 36#36: *177 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000003, client: 172.19.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/05 03:41:54 [warn] 36#36: *177 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000004, client: 172.19.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/05 03:44:31 [warn] 36#36: *192 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000005, client: 172.19.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/05 03:47:01 [warn] 36#36: *194 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000006, client: 172.19.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/05 03:47:31 [warn] 36#36: *194 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000007, client: 172.19.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/05 03:49:12 [warn] 36#36: *197 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000008, client: 172.19.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/05 03:49:40 [warn] 36#36: *197 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000009, client: 172.19.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/05 03:50:07 [warn] 36#36: *197 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000010, client: 172.19.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/05 03:50:29 [warn] 36#36: *197 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000011, client: 172.19.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/05 03:50:50 [warn] 36#36: *197 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000012, client: 172.19.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/05 03:51:41 [warn] 36#36: *197 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000013, client: 172.19.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/05 03:52:59 [warn] 36#36: *204 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000014, client: 172.19.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/05 03:56:19 [warn] 36#36: *212 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000015, client: 172.19.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/05 04:16:42 [notice] 1#1: signal 3 (SIGQUIT) received, shutting down
+2025/04/05 04:16:42 [notice] 36#36: gracefully shutting down
+2025/04/05 04:16:42 [notice] 35#35: gracefully shutting down
+2025/04/05 04:16:42 [notice] 36#36: exiting
+2025/04/05 04:16:42 [notice] 37#37: gracefully shutting down
+2025/04/05 04:16:42 [notice] 36#36: exit
+2025/04/05 04:16:42 [notice] 37#37: exiting
+2025/04/05 04:16:42 [notice] 38#38: gracefully shutting down
+2025/04/05 04:16:42 [notice] 37#37: exit
+2025/04/05 04:16:42 [notice] 38#38: exiting
+2025/04/05 04:16:42 [notice] 38#38: exit
+2025/04/05 04:16:42 [notice] 1#1: signal 17 (SIGCHLD) received from 37
+2025/04/05 04:16:42 [notice] 1#1: worker process 37 exited with code 0
+2025/04/05 04:16:42 [notice] 1#1: signal 29 (SIGIO) received
+2025/04/05 04:16:42 [notice] 1#1: signal 17 (SIGCHLD) received from 36
+2025/04/05 04:16:42 [notice] 1#1: worker process 36 exited with code 0
+2025/04/05 04:16:42 [notice] 1#1: signal 29 (SIGIO) received
+2025/04/05 04:16:42 [notice] 1#1: signal 17 (SIGCHLD) received from 38
+2025/04/05 04:16:42 [notice] 1#1: worker process 38 exited with code 0
+2025/04/05 04:16:42 [notice] 1#1: signal 29 (SIGIO) received
+2025/04/05 04:16:46 [notice] 35#35: exiting
+2025/04/05 04:16:46 [notice] 35#35: exit
+2025/04/05 04:16:46 [notice] 1#1: signal 17 (SIGCHLD) received from 35
+2025/04/05 04:16:46 [notice] 1#1: worker process 35 exited with code 0
+2025/04/05 04:16:46 [notice] 1#1: exit
+2025/04/05 04:16:47 [notice] 1#1: using the "epoll" event method
+2025/04/05 04:16:47 [notice] 1#1: nginx/1.27.4
+2025/04/05 04:16:47 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+2025/04/05 04:16:47 [notice] 1#1: OS: Linux 5.15.167.4-microsoft-standard-WSL2
+2025/04/05 04:16:47 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/04/05 04:16:47 [notice] 1#1: start worker processes
+2025/04/05 04:16:47 [notice] 1#1: start worker process 35
+2025/04/05 04:16:47 [notice] 1#1: start worker process 36
+2025/04/05 04:16:47 [notice] 1#1: start worker process 37
+2025/04/05 04:16:47 [notice] 1#1: start worker process 38
+2025/04/05 14:21:39 [notice] 1#1: using the "epoll" event method
+2025/04/05 14:21:39 [notice] 1#1: nginx/1.27.4
+2025/04/05 14:21:39 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+2025/04/05 14:21:39 [notice] 1#1: OS: Linux 5.15.167.4-microsoft-standard-WSL2
+2025/04/05 14:21:39 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/04/05 14:21:39 [notice] 1#1: start worker processes
+2025/04/05 14:21:39 [notice] 1#1: start worker process 35
+2025/04/05 14:21:39 [notice] 1#1: start worker process 36
+2025/04/05 14:21:39 [notice] 1#1: start worker process 37
+2025/04/05 14:21:39 [notice] 1#1: start worker process 38
+2025/04/05 14:24:51 [notice] 1#1: signal 3 (SIGQUIT) received, shutting down
+2025/04/05 14:24:51 [notice] 36#36: gracefully shutting down
+2025/04/05 14:24:51 [notice] 36#36: exiting
+2025/04/05 14:24:51 [notice] 36#36: exit
+2025/04/05 14:24:51 [notice] 38#38: gracefully shutting down
+2025/04/05 14:24:51 [notice] 35#35: gracefully shutting down
+2025/04/05 14:24:51 [notice] 38#38: exiting
+2025/04/05 14:24:51 [notice] 35#35: exiting
+2025/04/05 14:24:51 [notice] 38#38: exit
+2025/04/05 14:24:51 [notice] 35#35: exit
+2025/04/05 14:24:51 [notice] 37#37: gracefully shutting down
+2025/04/05 14:24:51 [notice] 37#37: exiting
+2025/04/05 14:24:51 [notice] 37#37: exit
+2025/04/05 14:24:51 [notice] 1#1: signal 17 (SIGCHLD) received from 36
+2025/04/05 14:24:51 [notice] 1#1: worker process 36 exited with code 0
+2025/04/05 14:24:51 [notice] 1#1: worker process 37 exited with code 0
+2025/04/05 14:24:51 [notice] 1#1: signal 29 (SIGIO) received
+2025/04/05 14:24:51 [notice] 1#1: signal 17 (SIGCHLD) received from 37
+2025/04/05 14:24:51 [notice] 1#1: signal 17 (SIGCHLD) received from 38
+2025/04/05 14:24:51 [notice] 1#1: worker process 38 exited with code 0
+2025/04/05 14:24:51 [notice] 1#1: signal 29 (SIGIO) received
+2025/04/05 14:24:51 [notice] 1#1: signal 17 (SIGCHLD) received from 35
+2025/04/05 14:24:51 [notice] 1#1: worker process 35 exited with code 0
+2025/04/05 14:24:51 [notice] 1#1: exit
+2025/04/05 14:57:51 [notice] 1#1: using the "epoll" event method
+2025/04/05 14:57:51 [notice] 1#1: nginx/1.27.4
+2025/04/05 14:57:51 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+2025/04/05 14:57:51 [notice] 1#1: OS: Linux 5.15.167.4-microsoft-standard-WSL2
+2025/04/05 14:57:51 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/04/05 14:57:51 [notice] 1#1: start worker processes
+2025/04/05 14:57:51 [notice] 1#1: start worker process 36
+2025/04/05 14:57:51 [notice] 1#1: start worker process 37
+2025/04/05 14:57:51 [notice] 1#1: start worker process 38
+2025/04/05 14:57:51 [notice] 1#1: start worker process 39
+2025/04/05 15:32:02 [warn] 36#36: *46 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000001, client: 172.18.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/05 15:32:15 [warn] 36#36: *46 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000002, client: 172.18.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/10 00:25:41 [notice] 1#1: using the "epoll" event method
+2025/04/10 00:25:41 [notice] 1#1: nginx/1.27.4
+2025/04/10 00:25:41 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+2025/04/10 00:25:41 [notice] 1#1: OS: Linux 5.15.167.4-microsoft-standard-WSL2
+2025/04/10 00:25:41 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/04/10 00:25:41 [notice] 1#1: start worker processes
+2025/04/10 00:25:41 [notice] 1#1: start worker process 35
+2025/04/10 00:25:41 [notice] 1#1: start worker process 36
+2025/04/10 00:25:41 [notice] 1#1: start worker process 37
+2025/04/10 00:25:41 [notice] 1#1: start worker process 38
+2025/04/10 01:11:58 [warn] 38#38: *194 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000001, client: 172.18.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/10 01:14:00 [warn] 38#38: *208 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000002, client: 172.18.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/10 01:15:05 [warn] 38#38: *208 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000003, client: 172.18.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/10 01:15:41 [warn] 38#38: *208 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000004, client: 172.18.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/10 01:17:28 [warn] 38#38: *212 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000005, client: 172.18.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/10 01:17:48 [warn] 38#38: *212 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000006, client: 172.18.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/10 01:18:11 [warn] 38#38: *212 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000007, client: 172.18.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/10 01:18:20 [warn] 38#38: *212 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000008, client: 172.18.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/10 01:18:41 [warn] 38#38: *212 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000009, client: 172.18.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/10 01:36:48 [warn] 37#37: *280 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000010, client: 172.18.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/10 01:37:37 [warn] 35#35: *277 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000011, client: 172.18.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/10 01:40:33 [warn] 37#37: *293 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000012, client: 172.18.0.1, server: , request: "POST /delivery/new_product HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/delivery/products"
+2025/04/11 00:35:21 [notice] 1#1: using the "epoll" event method
+2025/04/11 00:35:21 [notice] 1#1: nginx/1.27.4
+2025/04/11 00:35:21 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+2025/04/11 00:35:21 [notice] 1#1: OS: Linux 5.15.167.4-microsoft-standard-WSL2
+2025/04/11 00:35:21 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/04/11 00:35:21 [notice] 1#1: start worker processes
+2025/04/11 00:35:21 [notice] 1#1: start worker process 36
+2025/04/11 00:35:21 [notice] 1#1: start worker process 37
+2025/04/11 00:35:21 [notice] 1#1: start worker process 38
+2025/04/11 00:35:21 [notice] 1#1: start worker process 39
