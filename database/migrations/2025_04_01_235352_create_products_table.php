@@ -16,7 +16,8 @@ return new class extends Migration {
             $table->float('price');
             $table->boolean('available');
             $table->string('image_name');
-            $table->longText('description');
+            $table->integer('stock_quantity')->default(0);
+            $table->string('unit_measurement', 3)->default('un')->comment('un: unit, kg: kilogram, g: gram, l: liter,  ml: milliliter, m: meter, cm: centimeter, mm: millimeter');
             $table->timestamps();
         });
     }

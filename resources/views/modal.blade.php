@@ -1,7 +1,3 @@
-/**
- * @author Lucas Macedo Torres
- * @date 10/04/2025
- */
 <div class="spinner d-none"></div>
 <div class="modal fade" tabindex="-1" id="modalMessage">
     <div class="modal-dialog">

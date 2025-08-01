@@ -32,12 +32,6 @@
                                     </li>
                                     <li>
                                         <a href="#" class="nav-link text-white">
-                                            <i class="fa-solid fa-gauge-high"></i>
-                                            Dashboard
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="nav-link text-white">
                                             <i class="fa-solid fa-table"></i>
                                             Orders
                                         </a>

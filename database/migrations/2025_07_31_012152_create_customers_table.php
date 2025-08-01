@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jobs', function (Blueprint $table) {
+        Schema::create('customers', function (Blueprint $table) {
             $table->id();
+            $table->string('name', 100);
+            $table->string('cpf', 11)->nullable()->unique()->comment('CPF: Cadastro de Pessoas Físicas, Brazilian individual taxpayer registry identification');
+            $table->string('phone', 15)->nullable()->comment('Phone number in the format XXXXXXXXX');
             $table->timestamps();
         });
     }
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jobs');
+        Schema::dropIfExists('customers');
     }
 };

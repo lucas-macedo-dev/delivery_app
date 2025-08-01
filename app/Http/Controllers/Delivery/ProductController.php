@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Delivery;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductRequest;
 use App\Http\Resources\Delivery\ProductResource;
 use App\Models\Product;
 use App\Traits\HttpResponse;
@@ -35,20 +36,10 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'name'        => 'required|max:50',
-                'description' => 'required',
-                'price'       => 'required|numeric',
-                'image'       => 'required|image',
-                'available'   => 'required|in:true,false,1,0',
-            ]);
-
-            if ($validator->fails()) {
-                return $this->error('Data Invalid', 422, $validator->errors());
-            }
+            $request->validated();
 
             if ($request->hasFile('image') && $request->file('image')->isValid()) {
                 $extension = $request->image->extension();
@@ -57,11 +48,12 @@ class ProductController extends Controller
             }
 
             $created = Product::query()->create([
-                'name'        => $request->name,
-                'description' => $request->description,
-                'price'       => $request->price,
-                'image_name'  => $imageName ?? null,
-                'available'   => $request->available ? 1 : 0,
+                'name'              => $request->name,
+                'price'             => $request->price,
+                'image_name'        => $imageName ?? null,
+                'available'         => $request->available ? 1 : 0,
+                'unit_measure'      => $request->unit_measure,
+                'stock_quantity'    => $request->stock
             ]);
 
             if ($created->save()) {
@@ -113,6 +105,24 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $product = Product::query()->find($id);
+
+            if (!$product) {
+                return $this->error('Produto não encontrado', 404);
+            }
+
+            if ($product->image_name && Storage::disk('delivery')->exists($product->image_name)) {
+                Storage::disk('delivery')->delete($product->image_name);
+            }
+
+            if ($product->delete()) {
+                return $this->response('Produto deletado com sucesso', 200);
+            }
+
+            return $this->error('Product não deletado', 400);
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), 500);
+        }
     }
 }
