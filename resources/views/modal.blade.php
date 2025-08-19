@@ -1,4 +1,6 @@
-<div class="spinner d-none"></div>
+<div class="spinner-border" role="status">
+  <span class="visually-hidden">Loading...</span>
+</div>
 <div class="modal fade" tabindex="-1" id="modalMessage">
     <div class="modal-dialog">
         <div class="modal-content">

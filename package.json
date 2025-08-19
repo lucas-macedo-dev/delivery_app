@@ -18,6 +18,7 @@
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.7.2",
         "bootstrap": "^5.3.3",
+        "bootstrap-icons": "^1.13.1",
         "sass-embedded": "^1.86.1"
     }
 }

@@ -10,6 +10,10 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/sass/app.scss',
                 'resources/js/delivery/products.js',
+                'resources/js/delivery/orders.js',
+                'resources/js/delivery/customers.js',
+                'resources/js/delivery/home.js',
+                'resources/js/delivery/payments.js'
             ],
             refresh: true,
         }),

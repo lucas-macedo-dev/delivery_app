@@ -18,9 +18,14 @@ class ProductResource extends JsonResource
         return [
             'name'        => $this->name,
             'description' => $this->description,
-            'image'       => $this->image,
-            'available'   => $this->available ? 'Disponível' : 'Indisponível',
-            'price'       => 'R$ ' . number_format($this->price, 2, ',', '.'),
+            'available'   => $this->available,
+            'price'       => $this->price,
+            'unit_measure' => $this->unit_measure,
+            'stock' => $this->stock_quantity,
+            'created_at'  => Carbon::parse($this->created_at)->format('d/m/Y H:i:s'),
+            'updated_at'  => Carbon::parse($this->updated_at)->format('d/m/Y H:i:s'),
+            'id'          => $this->id,
+            'image_name'  => $this->image_name,
         ];
     }
 }

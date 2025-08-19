@@ -17,13 +17,30 @@ Route::middleware('auth')->group(function () {
 
 
     Route::prefix('delivery')->group(function () {
-        Route::get('/home', function () {return view('delivery.home');})->name('delivery.home');
-        Route::get('/products/{id}', [ProductController::class, 'show'])->name('delivery.products.show');
-        Route::get('/products', [ProductController::class, 'index'])->name('delivery.products');
+        Route::get('/home', function () {
+            return view('delivery.home');
+        })->name('delivery.home');
 
-        Route::post('/new_product', [ProductController::class, 'store'])->name('products.store');
-        Route::put('/products/edit/{id}', [ProductController::class, 'update'])->name('products.update');
-        Route::delete('/products/delete/{id}', [ProductController::class, 'destroy'])->name('products.delete');
+        Route::prefix('products')->group(function () {
+            Route::get('/{id}', [ProductController::class, 'show'])->name('delivery.products.show');
+            Route::get('/', [ProductController::class, 'index'])->name('delivery.products');
+            Route::post('/new_product', [ProductController::class, 'store'])->name('products.store');
+            Route::post('/edit/{id}', [ProductController::class, 'update'])->name('products.update');
+            Route::delete('/delete/{id}', [ProductController::class, 'destroy'])->name('products.delete');
+        });
+
+
+        Route::get('/orders', function () {
+            return view('delivery.orders');
+        })->name('delivery.orders');
+
+        Route::get('/customers', function () {
+            return view('delivery.customers');
+        })->name('delivery.customers');
+
+        Route::get('/payments', function () {
+            return view('delivery.payments');
+        })->name('delivery.payments');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

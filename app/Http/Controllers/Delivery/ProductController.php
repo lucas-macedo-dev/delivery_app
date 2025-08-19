@@ -39,8 +39,6 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         try {
-            $request->validated();
-
             if ($request->hasFile('image') && $request->file('image')->isValid()) {
                 $extension = $request->image->extension();
                 $imageName = md5($request->image->getClientOriginalName() . strtotime("now")) . "." . $extension;
@@ -57,10 +55,10 @@ class ProductController extends Controller
             ]);
 
             if ($created->save()) {
-                return $this->response('Invoice Created', 200, new ProductResource($created));
+                return $this->response('Produto Criado', 200, new ProductResource($created));
             }
 
-            return $this->error('Invoice not Created', 400);
+            return $this->error('Não foi possivel criar o produto', 400);
         } catch (\Exception $e) {
             return $this->error($e->getMessage(), 500);
         }
@@ -95,9 +93,34 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(ProductRequest $request, string $id)
     {
-        //
+        $product = Product::query()->find($id);
+
+        if (!$product) {
+            return $this->error('Produto não encontrado', 404);
+        }
+
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            $extension = $request->image->extension();
+            $imageName = md5($request->image->getClientOriginalName() . strtotime("now")) . "." . $extension;
+            Storage::disk('delivery')->putFileAs('/', $request->image, $imageName);
+        }
+
+        $updated = $product->update([
+            'name'              => $request->name,
+            'price'             => $request->price,
+            'image_name'        => $imageName ?? null,
+            'available'         => $request->available ? 1 : 0,
+            'unit_measure'      => $request->unit_measure,
+            'stock_quantity'    => $request->stock
+        ]);
+
+        if ($updated) {
+            return $this->response('Produto Atualizado', 200, new ProductResource($product));
+        } else {
+            return $this->error('Produto não atualizado', 400);
+        }
     }
 
     /**
