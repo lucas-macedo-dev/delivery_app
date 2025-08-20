@@ -20,9 +20,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::query()->get();
-
-        return view('delivery.products', ['products' => $products]);
+        return view('delivery.products');
     }
 
     /**
@@ -80,6 +78,38 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             return $this->error($e->getMessage(), 500);
         }
+    }
+
+    public function showAll(): \Illuminate\Http\JsonResponse
+    {
+        $products = Product::paginate(20)->withPath('/delivery/products/showAll');
+
+        $data = ProductResource::collection($products);
+
+        if ($data->isEmpty()) {
+            return $this->error('No Products Found', 404);
+        }
+
+        $products = [
+            'products' => $data,
+            'links' => [
+                'first' => $products->url(1),
+                'last' => $products->url($products->lastPage()),
+                'prev' => $products->previousPageUrl(),
+                'next' => $products->nextPageUrl(),
+            ],
+            'meta' => [
+                'current_page' => $products->currentPage(),
+                'from' => $products->firstItem(),
+                'last_page' => $products->lastPage(),
+                'path' => $products->path(),
+                'per_page' => $products->perPage(),
+                'last_item' => $products->lastItem(),
+                'total' => $products->total(),
+            ]
+        ];
+
+        return $this->response('Products Found', 200, $products);
     }
 
     /**

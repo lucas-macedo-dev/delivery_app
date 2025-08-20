@@ -22,8 +22,9 @@ Route::middleware('auth')->group(function () {
         })->name('delivery.home');
 
         Route::prefix('products')->group(function () {
-            Route::get('/{id}', [ProductController::class, 'show'])->name('delivery.products.show');
             Route::get('/', [ProductController::class, 'index'])->name('delivery.products');
+            Route::get('/show/{id}', [ProductController::class, 'show'])->name('delivery.products.show');
+            Route::get('/showAll', [ProductController::class, 'showAll'])->name('products.showAll');
             Route::post('/new_product', [ProductController::class, 'store'])->name('products.store');
             Route::post('/edit/{id}', [ProductController::class, 'update'])->name('products.update');
             Route::delete('/delete/{id}', [ProductController::class, 'destroy'])->name('products.delete');

@@ -1,4 +1,4 @@
-@extends('delivery.home')
+@extends('header')
 @vite(['resources/js/delivery/customers.js'])
 @section('content')
 

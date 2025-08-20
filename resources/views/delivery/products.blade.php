@@ -1,4 +1,4 @@
-@extends('delivery.home')
+@extends('header')
 @vite(['resources/js/delivery/products.js'])
 @section('content')
     <div class="page-header">
@@ -14,40 +14,13 @@
     </div>
 
     <div class="row" id="productList">
-        @foreach ($products as $product)
-            <div class="col-md-6 col-lg-4 mb-4" id="product_{{ $product->id }}">
-                <div class="card h-100">
-                    <img src="{{ asset('storage/delivery/' . $product->image_name) }}" class="card-img-top"
-                        style="height: 200px; object-fit: cover;" alt="{{ $product->name }}">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">{{ $product->name }}</h5>
-                        <p class="card-text">
-                            <strong>Preço:</strong> R$ {{ number_format($product->price, 2, ',', '.') }}<br>
-                            <strong>Estoque:</strong> {{ $product->stock_quantity }} {{ $product->unit_measure }}<br>
-                            <strong>Status:</strong>
-                            <span class="badge {{ $product->available ? 'bg-success' : 'bg-danger' }}">
-                                {{ $product->available ? 'Disponível' : 'Indisponível' }}
-                            </span>
-                        </p>
-                        <div class="mt-auto">
-                            <div class="btn-group w-100" role="group">
-                                <button class="btn btn-outline-primary btn-sm" onclick="editProduct({{ $product->id }})"
-                                    id="editProduct_{{ $product->id }}">
-                                    <i class="bi bi-pencil me-1"></i>Editar
-                                </button>
-                                <button class="btn btn-outline-danger btn-sm" onclick="deleteProduct({{ $product->id }})"
-                                    id="deleteProduct_{{ $product->id }}">
-                                    <i class="bi bi-trash me-1"></i>Excluir
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endforeach
-        @if (count($products) > 20)
-        <nav aria-label="Page pagination">
-            <ul class="pagination">
+        <div class="spinner-border">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+    </div>
+    <div class="row">
+        <nav aria-label="Page pagination" class="d-none" id="pagination" >
+            <ul class="pagination" >
                 <li class="page-item"><a class="page-link" href="#">Previous</a></li>
                 <li class="page-item"><a class="page-link" href="#">1</a></li>
                 <li class="page-item"><a class="page-link" href="#">2</a></li>
@@ -55,7 +28,6 @@
                 <li class="page-item"><a class="page-link" href="#">Next</a></li>
             </ul>
         </nav>
-        @endif
     </div>
 
     <div class="modal fade" id="productModal" tabindex="-1">

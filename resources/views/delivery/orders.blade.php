@@ -1,4 +1,4 @@
-@extends('delivery.home')
+@extends('header')
 @vite(['resources/js/delivery/orders.js'])
 @section('content')
      <!-- Order Modal -->

@@ -4,6 +4,11 @@ import * as bootstrap from 'bootstrap';
 
 const baseUrl = window.location.origin;
 
+window.onload = () => {
+    getAllProducts();
+};
+
+
 window.readURL = function (input) {
     if (input.target.files[0]) {
         let reader = new FileReader();
@@ -29,7 +34,6 @@ window.closeProductModal = function () {
     }
 };
 
-
 window.getProduct = async function (id) {
     if (!id) {
         window.modalMessage({
@@ -39,7 +43,7 @@ window.getProduct = async function (id) {
         });
     }
 
-    let product = await fetch(`products/${id}`);
+    let product = await fetch(`./products/show/${id}`);
     let response = await product.json();
 
     if (response?.status === 200 && response?.data) {
@@ -52,6 +56,74 @@ window.getProduct = async function (id) {
         });
     }
     return false;
+};
+
+window.getAllProducts = async function (page = 1) {
+    let products = await fetch('./products/showAll?page=' + page);
+    let response = await products.json();
+    if (response?.status === 200 && response?.data?.products) {
+        buildProductsGrid(response.data.products);
+    } else {
+        window.modalMessage({
+            title: 'Erro ao buscar produtos',
+            description: response?.message ?? 'Nenhum produto encontrado',
+            type: 'error',
+        });
+    }
+
+    pagination({
+        page: page,
+        total: response.data.meta.total,
+        max: response.data.meta.per_page,
+        qtt: 20,
+        id: `pagination`,
+        callback: `getAllProducts`
+    });
+};
+
+window.buildProductsGrid = function (products) {
+    let html = ``;
+    document.getElementById(`productList`).innerHTML = ``;
+
+    products.forEach(product => {
+        html += buildProductCard(product);
+    });
+};
+
+window.buildProductCard = function (productData) {
+    let newProduct = `
+    <div class="col-md-6 col-lg-4 mb-4" id="product_${productData.id}">
+                <div class="card h-100">
+                    <img src="${baseUrl}/storage/delivery/${productData.image_name}" class="card-img-top"
+                        style="height: 200px; object-fit: cover;" alt="${productData.name}">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">${productData.name}</h5>
+                        <p class="card-text">
+                            <strong>Preço:</strong> R$ ${productData.price}<br>
+                            <strong>Estoque:</strong> ${productData.stock} ${productData.unit_measure}<br>
+                            <strong>Status:</strong>
+                            <span class="badge ${productData.available ? 'bg-success' : 'bg-danger'}">
+                                ${productData.available ? 'Disponível' : 'Indisponível'}
+                            </span>
+                        </p>
+                        <div class="mt-auto">
+                            <div class="btn-group w-100" role="group">
+                                <button class="btn btn-outline-primary btn-sm" onclick="editProduct(${productData.id})"
+                                id="editProduct_${productData.id}">
+                                    <i class="bi bi-pencil me-1"></i>Editar
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="deleteProduct(${productData.id})"
+                                 id="deleteProduct_${productData.id}">
+                                    <i class="bi bi-trash me-1"></i>Excluir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    `;
+
+    document.getElementById(`productList`).innerHTML += newProduct;
 };
 
 window.openProductModal = function (product = null) {
@@ -105,8 +177,9 @@ window.saveProduct = async function (action = 'create') {
     };
 
     let route = 'products/new_product';
+    let productId = document.getElementById('productId').value;
     if (action !== 'create') {
-        route = `products/edit/${document.getElementById('productId').value}`;
+        route = `products/edit/${productId}`;
     }
 
     let options = {
@@ -127,7 +200,10 @@ window.saveProduct = async function (action = 'create') {
                 description: retorno.message,
                 type: 'success',
             });
-            showNewProduct(retorno.data);
+            if (action !== 'create') {
+                document.getElementById(`product_${productId}`).remove();
+            }
+            buildProductCard(retorno.data);
         } else {
             let alerts = retorno.errors;
             let message = '';
@@ -152,42 +228,6 @@ window.saveProduct = async function (action = 'create') {
     showLoading(false);
 
     bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
-};
-
-window.showNewProduct = function (productData) {
-    let newProduct = `
-    <div class="col-md-6 col-lg-4 mb-4" id="product_${productData.id}">
-                <div class="card h-100">
-                    <img src="${baseUrl}/storage/delivery/${productData.image_name}" class="card-img-top"
-                        style="height: 200px; object-fit: cover;" alt="${productData.name}">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">${productData.name}</h5>
-                        <p class="card-text">
-                            <strong>Preço:</strong> R$ ${productData.price}<br>
-                            <strong>Estoque:</strong> ${productData.stock} ${productData.unit_measure}<br>
-                            <strong>Status:</strong>
-                            <span class="badge ${ productData.available ? 'bg-success' : 'bg-danger'}">
-                                ${productData.available ? 'Disponível' : 'Indisponível' }
-                            </span>
-                        </p>
-                        <div class="mt-auto">
-                            <div class="btn-group w-100" role="group">
-                                <button class="btn btn-outline-primary btn-sm" onclick="editProduct(${productData.id})
-                                id="editProduct_${productData.id}">
-                                    <i class="bi bi-pencil me-1"></i>Editar
-                                </button>
-                                <button class="btn btn-outline-danger btn-sm" onclick="deleteProduct(${productData.id})"
-                                 id="deleteProduct_${productData.id}">>
-                                    <i class="bi bi-trash me-1"></i>Excluir
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    `;
-
-    document.getElementById(`productList`).innerHTML += newProduct;
 };
 
 window.editProduct = async function (id) {
