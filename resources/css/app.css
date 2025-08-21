@@ -244,3 +244,11 @@ main {
     z-index: 10500;
     box-shadow: 0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3);
 }
+
+.back_to_top {
+    position: fixed;
+    bottom: 2%;
+    right: 2%;
+    cursor: pointer;
+    z-index: 99 !important;
+}

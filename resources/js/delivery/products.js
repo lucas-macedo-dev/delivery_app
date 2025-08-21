@@ -73,9 +73,9 @@ window.getAllProducts = async function (page = 1) {
 
     pagination({
         page: page,
-        total: response.data.meta.total,
-        max: response.data.meta.per_page,
-        qtt: 20,
+        total: response?.data?.meta?.total,
+        max: response?.data?.meta?.per_page,
+        qtt: 5,
         id: `pagination`,
         callback: `getAllProducts`
     });
@@ -91,7 +91,7 @@ window.buildProductsGrid = function (products) {
 };
 
 window.buildProductCard = function (productData) {
-    let newProduct = `
+    document.getElementById(`productList`).innerHTML += `
     <div class="col-md-6 col-lg-4 mb-4" id="product_${productData.id}">
                 <div class="card h-100">
                     <img src="${baseUrl}/storage/delivery/${productData.image_name}" class="card-img-top"
@@ -122,8 +122,6 @@ window.buildProductCard = function (productData) {
                 </div>
             </div>
     `;
-
-    document.getElementById(`productList`).innerHTML += newProduct;
 };
 
 window.openProductModal = function (product = null) {
@@ -236,7 +234,7 @@ window.editProduct = async function (id) {
     if (!product) {
         window.modalMessage({
             title: 'Error',
-            description: 'Product not found',
+            description: 'Produto não encontrado',
             type: 'error',
         });
         return;

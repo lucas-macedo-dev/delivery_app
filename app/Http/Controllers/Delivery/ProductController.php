@@ -7,9 +7,7 @@ use App\Http\Requests\ProductRequest;
 use App\Http\Resources\Delivery\ProductResource;
 use App\Models\Product;
 use App\Traits\HttpResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -71,9 +69,9 @@ class ProductController extends Controller
             $product = Product::query()->find($id);
 
             if ($product) {
-                return $this->response('Product Found', 200, new ProductResource($product));
+                return $this->response('Produto Encontrado', 200, new ProductResource($product));
             } else {
-                return $this->error('Product Not Found', 404);
+                return $this->error('Produto nãoo encontrado', 404);
             }
         } catch (\Exception $e) {
             return $this->error($e->getMessage(), 500);
@@ -87,7 +85,7 @@ class ProductController extends Controller
         $data = ProductResource::collection($products);
 
         if ($data->isEmpty()) {
-            return $this->error('No Products Found', 404);
+            return $this->error('Nenhum produto encontrado', 404);
         }
 
         $products = [
@@ -109,7 +107,7 @@ class ProductController extends Controller
             ]
         ];
 
-        return $this->response('Products Found', 200, $products);
+        return $this->response('Produtos encontrados', 200, $products);
     }
 
     /**

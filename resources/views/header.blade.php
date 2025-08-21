@@ -28,8 +28,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('delivery/orders') ? 'active' : '' }}" href="{{ route('delivery.orders') }}"
-                        data-page="orders">
+                    <a class="nav-link {{ request()->is('delivery/orders') ? 'active' : '' }}"
+                        href="{{ route('delivery.orders') }}" data-page="orders">
                         <i class="bi bi-cart me-2"></i>
                         Pedidos
                     </a>
@@ -42,14 +42,15 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('delivery/customers') ? 'active' : '' }}" href="{{ route('delivery.customers') }}"
-                        data-page="customers">
+                    <a class="nav-link {{ request()->is('delivery/customers') ? 'active' : '' }}"
+                        href="{{ route('delivery.customers') }}" data-page="customers">
                         <i class="bi bi-people me-2"></i>
                         Clientes
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('delivery/payments') ? 'active' : '' }}" href="{{ route('delivery.payments') }}" data-page="fee-payments">
+                    <a class="nav-link {{ request()->is('delivery/payments') ? 'active' : '' }}"
+                        href="{{ route('delivery.payments') }}" data-page="fee-payments">
                         <i class="bi bi-credit-card me-2"></i>
                         Métodos de Pagamento
                     </a>
@@ -57,7 +58,7 @@
             </ul>
         </div>
     </nav>
-    <main class="col-md-9 ms-sm-auto col-lg-10">        <!-- Top navbar -->
+    <main class="col-md-9 ms-sm-auto col-lg-10"> <!-- Top navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
             <div class="container-fluid">
                 <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse"
@@ -89,6 +90,11 @@
         <!-- Page content -->
         <div id="page-content" class="p-4">
             @yield('content')
+
+            <span class="back_to_top d-none" data-toggle="tooltip" data-bs-placement="left"
+                title="Clique para voltar ao topo da p&aacute;gina">
+                <i class="fas fa-arrow-alt-circle-up fa-2x"></i>
+            </span>
         </div>
     </main>
 </body>

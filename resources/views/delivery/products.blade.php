@@ -19,8 +19,8 @@
         </div>
     </div>
     <div class="row">
-        <nav aria-label="Page pagination" class="d-none" id="pagination" >
-            <ul class="pagination" >
+        <nav aria-label="Page pagination">
+            <ul class="pagination" class="d-none" id="pagination">
                 <li class="page-item"><a class="page-link" href="#">Previous</a></li>
                 <li class="page-item"><a class="page-link" href="#">1</a></li>
                 <li class="page-item"><a class="page-link" href="#">2</a></li>

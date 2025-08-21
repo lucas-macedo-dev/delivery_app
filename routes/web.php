@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Delivery\CustomerController;
 use App\Http\Controllers\Delivery\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -23,21 +24,25 @@ Route::middleware('auth')->group(function () {
 
         Route::prefix('products')->group(function () {
             Route::get('/', [ProductController::class, 'index'])->name('delivery.products');
-            Route::get('/show/{id}', [ProductController::class, 'show'])->name('delivery.products.show');
+            Route::get('/show/{id}', [ProductController::class, 'show'])->name('products.show');
             Route::get('/showAll', [ProductController::class, 'showAll'])->name('products.showAll');
             Route::post('/new_product', [ProductController::class, 'store'])->name('products.store');
             Route::post('/edit/{id}', [ProductController::class, 'update'])->name('products.update');
-            Route::delete('/delete/{id}', [ProductController::class, 'destroy'])->name('products.delete');
-        });
+        })->name('delivery.orders');
 
 
         Route::get('/orders', function () {
             return view('delivery.orders');
         })->name('delivery.orders');
 
-        Route::get('/customers', function () {
-            return view('delivery.customers');
-        })->name('delivery.customers');
+        Route::prefix('customers')->group(function () {
+            Route::get('/', [CustomerController::class, 'index'])->name('delivery.customers');
+            Route::get('/show/{id}', [CustomerController::class, 'show'])->name('customers.show');
+             Route::get('/showAll', [CustomerController::class, 'showAll'])->name('customers.showAll');
+            Route::post('/new_customer', [CustomerController::class, 'store'])->name('customers.store');
+            Route::post('/edit/{id}', [CustomerController::class, 'update'])->name('customers.update');
+            Route::delete('/delete/{id}', [CustomerController::class, 'destroy'])->name('customers.delete');
+        });
 
         Route::get('/payments', function () {
             return view('delivery.payments');
