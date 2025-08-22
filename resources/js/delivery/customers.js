@@ -2,8 +2,6 @@
 
 import * as bootstrap from 'bootstrap';
 
-const baseUrl = window.location.origin;
-
 window.onload = () => {
     getAllCustomers();
 };
@@ -14,12 +12,16 @@ window.openCustomerModal = function (customer = null) {
     const title = document.getElementById('customerModalTitle');
 
     if (customer) {
+        document.getElementById('updateCustomer').classList.remove('d-none');
+        document.getElementById('saveCustomer').classList.add('d-none');
         title.textContent = 'Editar Cliente';
         document.getElementById('customerId').value = customer.id;
         document.getElementById('customerName').value = customer.name;
         document.getElementById('customerPhone').value = customer.phone;
         document.getElementById('customerCpf').value = customer.cpf;
     } else {
+        document.getElementById('updateCustomer').classList.add('d-none');
+        document.getElementById('saveCustomer').classList.remove('d-none');
         title.textContent = 'Cadastrar Cliente';
         document.getElementById('customerForm').reset();
         document.getElementById('customerId').value = '';
@@ -44,10 +46,10 @@ window.saveCustomer = async function (action = 'create') {
         method: 'POST',
         headers: window.ajax_headers,
         body: JSON.stringify({
-            id: id,
-            name: name,
-            phone: phone,
-            cpf: cpf,
+            id,
+            name,
+            phone,
+            cpf
         }),
     };
 
@@ -64,7 +66,7 @@ window.saveCustomer = async function (action = 'create') {
                 type: 'success',
             });
             if (action !== 'create') {
-                document.getElementById(`customer_${productId}`).remove();
+                editCustomerLine(retorno.data);
             }
             buildCustomerLine(retorno.data);
         } else {
@@ -104,15 +106,15 @@ window.buildCustomerLine = function (customer) {
                         ${customer.id}
                     </div>
                     <div class="d-block d-md-none ms-2">
-                        <div class="fw-bold">${customer.name}</div>
-                        <div class="small text-muted">${customer.phone ?? '-'}</div>
-                        <div class="small text-muted">${customer.cpf ?? '-'}</div>
+                        <div class="fw-bold" id="custormer_${customer.id}_name_mobile">${customer.name}</div>
+                        <div class="small text-muted" id="custormer_${customer.id}_phone_mobile">${customer.phone ?? '-'}</div>
+                        <div class="small text-muted" id="custormer_${customer.id}_cpf_mobile">${customer.cpf ?? '-'}</div>
                     </div>
                 </div>
             </td>
-            <td class="d-none d-md-table-cell">${customer.name}</td>
-            <td class="d-none d-md-table-cell">${customer.phone ?? '-'}</td>
-            <td class="d-none d-md-table-cell">${customer.cpf ?? '-'}</td>
+            <td class="d-none d-md-table-cell" id="custormer_${customer.id}_name">${customer.name}</td>
+            <td class="d-none d-md-table-cell" id="custormer_${customer.id}_phone">${customer.phone ?? '-'}</td>
+            <td class="d-none d-md-table-cell" id="custormer_${customer.id}_cpf">${customer.cpf ?? '-'}</td>
             <td>
                 <div class="btn-group" role="group">
                     <button class="btn btn-sm btn-outline-primary" onclick="editCustomer(${customer.id})">
@@ -180,6 +182,79 @@ window.editCustomer = async function (id) {
     openCustomerModal(customer);
 };
 
+window.deleteCustomer = function (id) {
+    if (!id) {
+        window.modalMessage({
+            title: 'Erro ao deletar cliente',
+            description: 'Id do cliente não localizado',
+            type: 'error',
+        });
+        return;
+    }
+
+    if (confirm('Tem certeza que deseja deletar este cliente?')) {
+        showLoading(true);
+        fetch(`./customers/delete/${id}`, {
+            method: 'DELETE',
+            headers: window.ajax_headers,
+        })
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
+                if (data.status === 200) {
+                    window.modalMessage({
+                        title: 'Cliente deletado com sucesso',
+                        description: data.message,
+                        type: 'success',
+                    });
+                    document.getElementById(`customer_${id}`).remove();
+                } else {
+                    window.modalMessage({
+                        title: 'Erro ao deletar cliente',
+                        description: data.message,
+                        type: 'error',
+                    });
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                window.modalMessage({
+                    title: 'Erro ao deletar cliente',
+                    description: 'Ocorreu um erro ao tentar deletar o cliente. Por favor, tente novamente mais tarde.',
+                    type: 'error',
+                });
+            });
+    }
+};
+
+window.editCustomerLine = function (newClientData) {
+    if (!newClientData || !newClientData.id) {
+        window.modalMessage({
+            title: 'Erro ao atualizar cliente',
+            description: 'Dados do cliente inválidos',
+            type: 'error',
+        });
+        return;
+    }
+    const id = newClientData.id;
+    const customer = document.getElementById(`customer_${newClientData.id}`);
+    if (!customer) {
+        window.modalMessage({
+            title: 'Erro ao buscar cliente',
+            description: 'Cliente nao encontrado',
+            type: 'error',
+        });
+        return;
+    }
+    customer.querySelector(`#custormer_${id}_name`).textContent = newClientData.name;
+    customer.querySelector(`#custormer_${id}_phone`).textContent = newClientData.phone;
+    customer.querySelector(`#custormer_${id}_cpf`).textContent = newClientData.cpf;
+
+    customer.querySelector(`#custormer_${id}_name_mobile`).textContent = newClientData.name;
+    customer.querySelector(`#custormer_${id}_phone_mobile`).textContent = newClientData.phone;
+    customer.querySelector(`#custormer_${id}_cpf_mobile`).textContent = newClientData.cpf;
+};
+
 window.getCustomer = async function (id) {
     if (!id) {
         window.modalMessage({
@@ -189,8 +264,8 @@ window.getCustomer = async function (id) {
         });
     }
 
-    let product = await fetch(`./customers/show/${id}`);
-    let response = await product.json();
+    let customer = await fetch(`./customers/show/${id}`);
+    let response = await customer.json();
 
     if (response?.status === 200 && response?.data) {
         return response.data;

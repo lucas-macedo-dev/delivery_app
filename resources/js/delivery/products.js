@@ -141,11 +141,11 @@ window.openProductModal = function (product = null) {
         document.getElementById('category-img-tag').setAttribute('src', `${baseUrl}/storage/delivery/${product.image_name}`);
         document.getElementById('imagePreview').classList.remove('d-none');
     } else {
-        document.getElementById('category-img-tag').setAttribute('src', '');
         document.getElementById('updateProduct').classList.add('d-none');
         document.getElementById('saveProduct').classList.remove('d-none');
-        document.getElementById('imagePreview').classList.add('d-none');
         title.textContent = 'Add New Product';
+        document.getElementById('category-img-tag').setAttribute('src', '');
+        document.getElementById('imagePreview').classList.add('d-none');
         document.getElementById('productForm').reset();
         document.getElementById('productId').value = '';
     }

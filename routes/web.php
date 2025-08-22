@@ -47,6 +47,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/payments', function () {
             return view('delivery.payments');
         })->name('delivery.payments');
+
+        Route::get('/expenses', function () {
+            return view('delivery.expenses');
+        })->name('delivery.expenses');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

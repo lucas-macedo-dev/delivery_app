@@ -10,7 +10,7 @@ services:
     volumes:
       - ./:/var/www/html/
       - ./logs/nginx:/var/log/nginx/
-      - .docker/nginx/default.conf.template:/etc/nginx/templates/default.conf.template
+      - ./docker/nginx/default.conf.template:/etc/nginx/templates/default.conf.template
     container_name: ${APP_NAME}_nginx_${APP_ENV}
     environment:
       - FASTCGI_PASS=${APP_NAME}_php_${APP_ENV}:9000

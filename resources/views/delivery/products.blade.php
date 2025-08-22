@@ -14,13 +14,33 @@
     </div>
 
     <div class="row" id="productList">
-        <div class="spinner-border">
-            <span class="visually-hidden">Carregando...</span>
-        </div>
+        @for ($i = 0; $i < 3 ; $i++)
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card" aria-hidden="true">
+                    <div class="card-header">
+                        <h5 class="card-title">Carregando...</h5>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title placeholder-glow">
+                            <span class="placeholder col-6"></span>
+                        </h5>
+                        <p class="card-text placeholder-glow">
+                            <span class="placeholder col-7"></span>
+                            <span class="placeholder col-4"></span>
+                            <span class="placeholder col-4"></span>
+                            <span class="placeholder col-6"></span>
+                            <span class="placeholder col-8"></span>
+                        </p>
+                        <a class="btn btn-primary disabled placeholder col-6" aria-disabled="true"></a>
+                    </div>
+                </div>
+            </div>
+        @endfor
+
     </div>
     <div class="row">
         <nav aria-label="Page pagination">
-            <ul class="pagination" class="d-none" id="pagination">
+            <ul class="pagination d-none" id="pagination">
                 <li class="page-item"><a class="page-link" href="#">Previous</a></li>
                 <li class="page-item"><a class="page-link" href="#">1</a></li>
                 <li class="page-item"><a class="page-link" href="#">2</a></li>

@@ -112,4 +112,4 @@ const content = `
         </div>
     `;
     
-    document.getElementById('page-content').innerHTML = content;
+    //document.getElementById('page-content').innerHTML = content;

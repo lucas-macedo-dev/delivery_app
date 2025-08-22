@@ -49,6 +49,13 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link {{ request()->is('delivery/expenses') ? 'active' : '' }}"
+                        href="{{ route('delivery.expenses') }}" data-page="fee-expenses">
+                        <i class="bi bi-cash-coin"></i>
+                        Despesas
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link {{ request()->is('delivery/payments') ? 'active' : '' }}"
                         href="{{ route('delivery.payments') }}" data-page="fee-payments">
                         <i class="bi bi-credit-card me-2"></i>

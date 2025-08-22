@@ -67,10 +67,6 @@
                             <input type="text" class="form-control" id="customerName" required>
                         </div>
                         <div class="mb-3">
-                            <label for="customerEmail" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="customerEmail">
-                        </div>
-                        <div class="mb-3">
                             <label for="customerPhone" class="form-label">Celular</label>
                             <input type="tel" class="form-control" id="customerPhone">
                         </div>
@@ -82,8 +78,13 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="saveCustomer"
-                        onclick="saveCustomer()">Salvar</button>
+                    <button type="button" class="btn btn-primary" id="saveCustomer" onclick="saveCustomer()">
+                        Salvar
+                    </button>
+                    <button type="button" class="btn btn-warning d-none" id="updateCustomer"
+                        onclick="saveCustomer('update')">
+                        <i class="bi bi-floppy"></i>&nbsp;Atualizar
+                    </button>
                 </div>
             </div>
         </div>

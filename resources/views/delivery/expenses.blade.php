@@ -1,7 +1,6 @@
 @extends('header')
-@vite(['resources/js/delivery/payments.js'])
 @section('content')
-    <h1 class="page-title">Métodos de Pagamento</h1>
+    <h1 class="page-title">Despesas</h1>
     <p class="page-subtitle">Página em construção</p>
     <br>
     <div class="row">

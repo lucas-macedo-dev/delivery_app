@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Delivery;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\Delivery\CustomerResource;
 use App\Models\Customer;
-use Illuminate\Http\Request;
 use App\Traits\HttpResponse;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\CustomerRequest;
+use App\Http\Resources\Delivery\CustomerResource;
 
 class CustomerController extends Controller
 {
@@ -30,37 +30,45 @@ class CustomerController extends Controller
 
     public function showAll(): \Illuminate\Http\JsonResponse
     {
-        $products = Customer::paginate(20)->withPath('/delivery/customers/showAll');
+        $customers = Customer::query()
+            ->select(['id', 'name', 'cpf', 'phone', 'created_at', 'updated_at'])
+            ->withCount('orders')
+            ->when(request('search'), function ($query) {
+                $query->where('name', 'like', '%' . request('search') . '%');
+            })
+            ->orderBy('id', 'asc')
+            ->paginate(20)
+            ->withPath('/delivery/customers/showAll');
 
-        $data = CustomerResource::collection($products);
+        $data = CustomerResource::collection($customers);
 
         if ($data->isEmpty()) {
             return $this->response('Nenhum cliente encontrado', 404, $data);
         }
 
-        $products = [
+        $customers = [
             'customers' => $data,
             'links' => [
-                'first' => $products->url(1),
-                'last' => $products->url($products->lastPage()),
-                'prev' => $products->previousPageUrl(),
-                'next' => $products->nextPageUrl(),
+                'first' => $customers->url(1),
+                'last' => $customers->url($customers->lastPage()),
+                'prev' => $customers->previousPageUrl(),
+                'next' => $customers->nextPageUrl(),
             ],
             'meta' => [
-                'current_page' => $products->currentPage(),
-                'from' => $products->firstItem(),
-                'last_page' => $products->lastPage(),
-                'path' => $products->path(),
-                'per_page' => $products->perPage(),
-                'last_item' => $products->lastItem(),
-                'total' => $products->total(),
+                'current_page' => $customers->currentPage(),
+                'from' => $customers->firstItem(),
+                'last_page' => $customers->lastPage(),
+                'path' => $customers->path(),
+                'per_page' => $customers->perPage(),
+                'last_item' => $customers->lastItem(),
+                'total' => $customers->total(),
             ]
         ];
 
-        return $this->response('Clientes encontrados', 200, $products);
+        return $this->response('Clientes encontrados', 200, $customers);
     }
 
-    public function store(Request $request)
+    public function store(CustomerRequest $request)
     {
         try {
             $created = Customer::query()->create([
@@ -79,13 +87,40 @@ class CustomerController extends Controller
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(CustomerRequest $request, $id)
     {
-        // Logic to update an existing customer
+        $customer = Customer::query()->find($id);
+
+        if (!$customer) {
+            return $this->error('Cliente não encontrado', 404);
+        }
+
+
+        $updated = $customer->update([
+            'name'              => $request->name,
+            'cpf'             => $request->cpf,
+            'phone'        => $request->phone
+        ]);
+
+        if ($updated) {
+            return $this->response('Cliente Atualizado', 200, new CustomerResource($customer));
+        } else {
+            return $this->error('Cliente não atualizado', 400);
+        }
     }
 
     public function destroy($id)
     {
-        // Logic to delete a customer
+        $customer = Customer::query()->find($id);
+
+        if (!$customer) {
+            return $this->error('Cliente não encontrado', 404);
+        }
+
+        if ($customer->delete()) {
+            return $this->response('Cliente deletado', 200);
+        } else {
+            return $this->error('Não foi possível deletar o cliente', 400);
+        }
     }
 }
