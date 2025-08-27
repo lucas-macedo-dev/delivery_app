@@ -32,7 +32,7 @@ class CustomerController extends Controller
     {
         $customers = Customer::query()
             ->select(['id', 'name', 'cpf', 'phone', 'created_at', 'updated_at'])
-            ->withCount('orders')
+            // ->withCount('orders') TODO MELHORAR RELACIONAMENTO
             ->when(request('search'), function ($query) {
                 $query->where('name', 'like', '%' . request('search') . '%');
             })

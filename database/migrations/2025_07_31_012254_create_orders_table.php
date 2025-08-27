@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
-            $table->json('details')->comment('Order details including product IDs and quantities');
-            $table->decimal('total_price', 10, 2)->comment('Total price of the order calculated as quantity * product price');
-            $table->float('delivery_fee')->default(0)->comment('Delivery fee for the order');
-            $table->foreignId('payment_method_id')->constrained('payment_methods')->onDelete('cascade')->comment('Payment method used for the order');
+            $table->uuid('ifood_id')->unique()->comment('Unique identifier from iFood system')->default(null)->nullable();
+            $table->integer('ifood_order_number')->comment('Order number as provided by iFood')->default(null)->nullable()->index();
+            // $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade')->nullable()->default(null)->comment('Reference to the customer who placed the order');
+            $table->dateTime('order_date')->comment('Date when the order was placed');
+            $table->decimal('total_amount_order', 12, 2)->default(0)->comment('Total amount paid by the customer');
+            $table->decimal('total_amount_received', 12, 2)->default(0)->comment('Total amount to be received by our company');
             $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending')->comment('Current status of the order');
-            $table->foreignId('user_inserter_id')->nullable()->constrained('users')->onDelete('set null')->comment('User who created the order');
-            $table->foreignId('user_updater_id')->nullable()->constrained('users')->onDelete('set null')->comment('User who last updated the order');
+            // $table->foreignId('payment_method_id')->constrained('payment_methods')->onDelete('cascade')->nullable()->default(null)->comment('Payment method used for the order');
             $table->timestamps();
         });
     }

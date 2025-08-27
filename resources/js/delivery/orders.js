@@ -1,21 +1,66 @@
-// Mock data storage
-let orders = [
-    { id: 1, customer: 'John Doe', status: 'Delivered', amount: 142.50, date: '2025-01-18', address: '123 Main St, City', items: 'Pizza, Drinks' },
-    { id: 2, customer: 'Jane Smith', status: 'In Transit', amount: 89.20, date: '2025-01-18', address: '456 Oak Ave, Town', items: 'Burger, Fries' },
-    { id: 3, customer: 'Mike Johnson', status: 'Processing', amount: 267.80, date: '2025-01-17', address: '789 Pine St, Village', items: 'Pasta, Salad' },
-    { id: 4, customer: 'Sarah Wilson', status: 'Delivered', amount: 156.90, date: '2025-01-17', address: '321 Elm St, City', items: 'Sushi, Soup' },
-    { id: 5, customer: 'Tom Brown', status: 'Pending', amount: 98.75, date: '2025-01-16', address: '654 Maple Ave, Town', items: 'Sandwich, Coffee' }
-];
+'use strict';
 
-function renderOrdersTable() {
-    return orders.map(order => `
+window.onload = () => {
+    getAllOrders();
+};
+
+window.getAllOrders = async function (page = 1, filterParams = {}) {
+
+    const possibleParams = ['search', 'status'];
+    const queryParams = new URLSearchParams();
+    Object.entries(filterParams).forEach(([key, value]) => {
+        if (possibleParams.includes(key) && value) {
+            queryParams.set(key, value);
+        }
+    });
+    console.log(queryParams.toString());
+
+    let orders = await fetch('./orders/showAll?page=' + page + '&' + queryParams.toString());
+    let response = await orders.json();
+    if (response?.status === 200 && response?.data?.orders) {
+        renderOrdersTable(response.data.orders);
+        renderStatusFilter(response.data.orders);
+    } else {
+        document.getElementById('ordersTableBody').innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center"> Nenhum cliente encontrado.
+                </td>
+            </tr>
+        `;
+    }
+
+    window.pagination({
+        page: page,
+        total: response?.data?.meta?.total,
+        max: response?.data?.meta?.per_page,
+        qtt: 5,
+        id: `pagination`,
+        callback: `getAllOrders`
+    });
+};
+
+window.renderStatusFilter = function (orders) {
+    const statusFilter = document.getElementById('statusFilter');
+    const status = [...new Set(orders.map(order => order.status))];
+
+    statusFilter.innerHTML = '<option value="all">Todos Status</option>' +
+        status.map(status => `<option value="${status}" ${status === statusFilter.value ? 'selected' : ''}>${status}</option>`).join('');
+
+    statusFilter.classList.remove('disabled');
+};
+
+window.renderOrdersTable = function (orders) {
+    let rows = '';
+    const tbody = document.querySelector('#ordersTable tbody');
+    if (!tbody) return;
+    rows = orders.map(order => `
         <tr>
-            <td>#${order.id.toString().padStart(3, '0')}</td>
-            <td>${order.customer}</td>
+            <td>#${order.id}</td>
+            <td>${order.ifood_order_number || 'N/A'}</td>
+            <td>R$ ${order.total_amount_order || 'N/A'}</td>
+            <td>R$ ${order.total_amount_received || 'N/A'}</td>
             <td><span class="status-badge status-${order.status.toLowerCase().replace(' ', '-')}">${order.status}</span></td>
-            <td>$${order.amount.toFixed(2)}</td>
-            <td>${order.date}</td>
-            <td>${order.address}</td>
+            <td>${order.order_date}</td>
             <td>
                 <div class="btn-group" role="group">
                     <button class="btn btn-sm btn-outline-primary" onclick="editOrder(${order.id})">
@@ -28,57 +73,28 @@ function renderOrdersTable() {
             </td>
         </tr>
     `).join('');
-}
+    tbody.innerHTML = rows;
+};
 
-function filterOrders() {
+window.filterOrders = function () {
     const search = document.getElementById('orderSearch').value.toLowerCase();
-    const statusFilter = document.getElementById('statusFilter').value;
-
-    let filtered = orders;
+    const status = document.getElementById('statusFilter').value;
 
     if (search) {
-        filtered = filtered.filter(order =>
-            order.customer.toLowerCase().includes(search) ||
-            order.id.toString().includes(search) ||
-            order.address.toLowerCase().includes(search)
-        );
+        getAllOrders(1, { search });
+    } else if (status) {
+        getAllOrders(1, { status});
     }
+};
 
-    if (statusFilter) {
-        filtered = filtered.filter(order => order.status === statusFilter);
-    }
-
-    const tbody = document.querySelector('#ordersTable tbody');
-    tbody.innerHTML = filtered.map(order => `
-        <tr>
-            <td>#${order.id.toString().padStart(3, '0')}</td>
-            <td>${order.customer}</td>
-            <td><span class="status-badge status-${order.status.toLowerCase().replace(' ', '-')}">${order.status}</span></td>
-            <td>$${order.amount.toFixed(2)}</td>
-            <td>${order.date}</td>
-            <td>${order.address}</td>
-            <td>
-                <div class="btn-group" role="group">
-                    <button class="btn btn-sm btn-outline-primary" onclick="editOrder(${order.id})">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteOrder(${order.id})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            </td>
-        </tr>
-    `).join('');
-}
-
-function openOrderModal(order = null) {
+window.openOrderModal = function (order = null) {
     const modal = new bootstrap.Modal(document.getElementById('orderModal'));
     const title = document.getElementById('orderModalTitle');
     const customerSelect = document.getElementById('orderCustomer');
 
     // Populate customer options
     customerSelect.innerHTML = '<option value="">Select customer</option>' +
-        customers.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+        orders.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
 
     if (order) {
         title.textContent = 'Edit Order';
@@ -97,10 +113,9 @@ function openOrderModal(order = null) {
     }
 
     modal.show();
-}
+};
 
-
-function saveOrder() {
+window.saveOrder = function () {
     const id = document.getElementById('orderId').value;
     const customer = document.getElementById('orderCustomer').value;
     const status = document.getElementById('orderStatus').value;
@@ -109,93 +124,57 @@ function saveOrder() {
     const items = document.getElementById('orderItems').value;
     const amount = parseFloat(document.getElementById('orderAmount').value);
 
-    if (id) {
-        // Update existing order
-        const index = orders.findIndex(o => o.id == id);
-        orders[index] = { id: parseInt(id), customer, status, address, date, items, amount };
-    } else {
-        // Add new order
-        const newId = Math.max(...orders.map(o => o.id)) + 1;
-        orders.push({ id: newId, customer, status, address, date, items, amount });
-    }
+};
 
-    bootstrap.Modal.getInstance(document.getElementById('orderModal')).hide();
-    loadOrdersPage();
-}
-
-function editOrder(id) {
-    const order = orders.find(o => o.id === id);
+window.editOrder = function (id) {
     openOrderModal(order);
-}
+};
 
-function deleteOrder(id) {
+window.deleteOrder = function (id) {
     if (confirm('Are you sure you want to delete this order?')) {
         orders = orders.filter(o => o.id !== id);
         loadOrdersPage();
     }
-}
+};
 
 
-const content = `
-        <div class="page-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="page-title">Gerenciar Pedidos</h1>
-                    <p class="page-subtitle">Gerencie seus pedidos</p>
-                </div>
-                <button class="btn btn-primary" onclick="openOrderModal()">
-                    <i class="bi bi-plus me-2"></i>Adicionar Pedido
-                </button>
-            </div>
-        </div>
-        
-        <div class="card">
-            <div class="card-header">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <div class="input-group search-box">
-                            <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" class="form-control" placeholder="Search orders..." id="orderSearch">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="d-flex action-buttons justify-content-md-end">
-                            <select class="form-select" id="statusFilter" style="max-width: 150px;">
-                                <option value="">All Status</option>
-                                <option value="Pending">Pending</option>
-                                <option value="Processing">Processing</option>
-                                <option value="In Transit">In Transit</option>
-                                <option value="Delivered">Delivered</option>
-                                <option value="Cancelled">Cancelled</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0" id="ordersTable">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>Status</th>
-                                <th>Amount</th>
-                                <th>Date</th>
-                                <th>Address</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${renderOrdersTable()}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    `;
+window.importOrders = function () {
+    let input = document.getElementById('ordersFile');
+    if (input.files.length === 0) {
+        alert("Selecione um arquivo!");
+        return;
+    }
 
-document.getElementById('page-content').innerHTML = content;
+    let formData = new FormData();
+    formData.append('file', input.files[0]);
+    window.showLoading(true);
+
+    fetch("orders/import", {
+        method: "POST",
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    }).then(res => res.json())
+        .then(data => {
+            window.showLoading(false);
+            window.modalMessage({
+                title: data.message,
+                description: data.errors ? data.errors?.description : data.message,
+                type: data.status === 200 ? 'success' : 'error'
+            });
+            getAllOrders();
+        }).catch(err => {
+            window.showLoading(false);
+            window.modalMessage({
+                title: 'Erro na importação',
+                description: err.message,
+                type: 'error'
+            });
+            console.error(err);
+        });
+};
 
 // Add event listeners
 document.getElementById('orderSearch').addEventListener('input', filterOrders);

@@ -2,7 +2,7 @@
   <span class="visually-hidden">Loading...</span>
 </div>
 <div class="modal fade" tabindex="-1" id="modalMessage">
-    <div class="modal-dialog">
+    <div class="modal-dialog d-flex align-items-center justify-content-center" style="min-height: 100vh;">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalMessageHeaderTitle"></h5>

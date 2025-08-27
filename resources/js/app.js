@@ -108,38 +108,6 @@ window.showLoading = function(loading = true) {
     }
 };
 
-// Switch the side nav view
-document.getElementById('sidenavToggler')?.addEventListener('click', function(event) {
-    event.preventDefault();
-    document.body.classList.toggle('sidenav-toggled');
-    document.querySelectorAll('.navbar-sidenav .nav-link-collapse').forEach(element => {
-        element.classList.add('collapsed');
-    });
-    document.querySelectorAll('.navbar-sidenav .sidenav-second-level, .navbar-sidenav .sidenav-third-level')
-        .forEach(element => {
-            element.classList.remove('show');
-        });
-});
-
-// Força a classe habilitada a ser removida quando o link for clicado
-document.querySelectorAll('.navbar-sidenav .nav-link-collapse').forEach(element => {
-    element.addEventListener('click', function(event) {
-        event.preventDefault();
-        document.body.classList.remove('sidenav-toggled');
-    });
-});
-
-// Previne a rolagem do conteúdo quando o mouse está sobre a barra de navegação lateral
-document.querySelectorAll(
-    'body.fixed-nav .navbar-sidenav, body.fixed-nav .sidenav-toggler, body.fixed-nav .navbar-collapse')
-    .forEach(element => {
-        element.addEventListener('wheel', function(event) {
-            let delta = event.wheelDelta || -event.detail;
-            this.scrollTop += (delta < 0 ? 1 : -1) * 30;
-            event.preventDefault();
-        });
-    });
-
 // Aparecimento do botão de rolagem para o topo
 window.addEventListener('scroll', function(event) {
     let scroll_distance = this.scrollY;

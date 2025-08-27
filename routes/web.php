@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\Delivery\CustomerController;
-use App\Http\Controllers\Delivery\ProductController;
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Delivery\OrderController;
+use App\Http\Controllers\Delivery\ProductController;
+use App\Http\Controllers\Delivery\CustomerController;
 
 
 
@@ -38,10 +39,20 @@ Route::middleware('auth')->group(function () {
         Route::prefix('customers')->group(function () {
             Route::get('/', [CustomerController::class, 'index'])->name('delivery.customers');
             Route::get('/show/{id}', [CustomerController::class, 'show'])->name('customers.show');
-             Route::get('/showAll', [CustomerController::class, 'showAll'])->name('customers.showAll');
+            Route::get('/showAll', [CustomerController::class, 'showAll'])->name('customers.showAll');
             Route::post('/new_customer', [CustomerController::class, 'store'])->name('customers.store');
             Route::post('/edit/{id}', [CustomerController::class, 'update'])->name('customers.update');
             Route::delete('/delete/{id}', [CustomerController::class, 'destroy'])->name('customers.delete');
+        });
+
+        Route::prefix('orders')->group(function () {
+            Route::get('/', [OrderController::class, 'index'])->name('delivery.orders');
+            Route::get('/show/{id}', [OrderController::class, 'show'])->name('orders.show');
+            Route::get('/showAll', [OrderController::class, 'showAll'])->name('orders.showAll');
+            Route::post('/new_customer', [OrderController::class, 'store'])->name('orders.store');
+            Route::post('/edit/{id}', [OrderController::class, 'update'])->name('orders.update');
+            Route::post('/import', [OrderController::class, 'import'])->name('orders.import');
+            Route::delete('/delete/{id}', [OrderController::class, 'destroy'])->name('orders.delete');
         });
 
         Route::get('/payments', function () {

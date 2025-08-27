@@ -65,7 +65,7 @@
             </ul>
         </div>
     </nav>
-    <main class="col-md-9 ms-sm-auto col-lg-10"> <!-- Top navbar -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 position-sticky"> <!-- Top navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
             <div class="container-fluid">
                 <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse"
