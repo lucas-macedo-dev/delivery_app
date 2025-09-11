@@ -9,7 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Página Inicial</title>
-    @vite(['resources/sass/app.scss', 'resources/js/app.js', 'resources/css/app.css', 'resources/js/delivery/home.js'])
+    @vite(['resources/sass/app.scss', 'resources/js/app.js', 'resources/css/app.css'])
 </head>
 
 <body>
@@ -65,7 +65,7 @@
             </ul>
         </div>
     </nav>
-    <main class="col-md-9 ms-sm-auto col-lg-10 position-sticky"> <!-- Top navbar -->
+    <main class="col-md-9 ms-sm-auto col-lg-10"> <!-- Top navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
             <div class="container-fluid">
                 <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse"

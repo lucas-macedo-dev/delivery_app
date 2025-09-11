@@ -2,8 +2,9 @@ import * as bootstrap from 'bootstrap';
 
 import Alpine from 'alpinejs';
 
-window.Alpine = Alpine;
+window.bootstrap = bootstrap; // 🔑 deixa disponível globalmente
 
+window.Alpine = Alpine;
 Alpine.start();
 
 /**

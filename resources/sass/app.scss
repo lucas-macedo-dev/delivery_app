@@ -6,3 +6,10 @@ $bootstrap-icons-font-dir: "bootstrap-icons/font/fonts";
 
 // Import the Sass files as usual
 @import "bootstrap-icons/font/bootstrap-icons";
+
+.modal-backdrop {
+    z-index: 1050 !important;
+}
+.modal {
+    z-index: 1055 !important;
+}

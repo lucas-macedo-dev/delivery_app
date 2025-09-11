@@ -1,6 +1,5 @@
 'use strict';
 
-import * as bootstrap from 'bootstrap';
 
 const baseUrl = window.location.origin;
 
@@ -61,14 +60,11 @@ window.getProduct = async function (id) {
 window.getAllProducts = async function (page = 1) {
     let products = await fetch('./products/showAll?page=' + page);
     let response = await products.json();
+
     if (response?.status === 200 && response?.data?.products) {
         buildProductsGrid(response.data.products);
     } else {
-        window.modalMessage({
-            title: 'Erro ao buscar produtos',
-            description: response?.message ?? 'Nenhum produto encontrado',
-            type: 'error',
-        });
+        buildProductsGrid([]);
     }
 
     pagination({
@@ -79,18 +75,34 @@ window.getAllProducts = async function (page = 1) {
         id: `pagination`,
         callback: `getAllProducts`
     });
+
 };
 
 window.buildProductsGrid = function (products) {
     let html = ``;
     document.getElementById(`productList`).innerHTML = ``;
 
+    if (!products || products.length === 0) {
+        document.getElementById(`productList`).innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-info text-center" role="alert">
+                    Nenhum produto encontrado.
+                </div>
+            </div>
+        `;
+        return;
+    }
     products.forEach(product => {
         html += buildProductCard(product);
     });
 };
 
 window.buildProductCard = function (productData) {
+    let cards = document.querySelectorAll('.card');
+    if (cards.length === 0) {
+        document.getElementById(`productList`).innerHTML = ``;
+    }
+    
     document.getElementById(`productList`).innerHTML += `
     <div class="col-md-6 col-lg-4 mb-4" id="product_${productData.id}">
                 <div class="card h-100">

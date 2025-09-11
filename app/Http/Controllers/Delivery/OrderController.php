@@ -10,52 +10,58 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Database\QueryException;
 use App\Http\Resources\Delivery\OrderResource;
 use Maatwebsite\Excel\Validators\ValidationException as ExcelValidationException;
+use App\Http\Resources\Delivery\ProductResource;
+use App\Models\Product;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory
     {
-        return view('delivery.orders');
+        $products = Product::all();
+        $products = ProductResource::collection($products);
+        return view('delivery.orders', compact('products'));
     }
-
 
     public function showAll(): \Illuminate\Http\JsonResponse
     {
         try {
             $orders = Order::query()
-                ->select(['id', 'ifood_order_number', 'order_date', 'total_amount_order', 'total_amount_received', 'status'])
+                ->select(
+                    ['id', 'ifood_order_number', 'order_date', 'total_amount_order', 'total_amount_received', 'status']
+                )
+                ->with(['items.product'])
                 ->when(request()->filled('search'), function ($query) {
                     $query->where('id', 'like', '%' . request('search') . '%');
                 })
                 ->when(request()->filled('status') && request('status') !== 'all', function ($query) {
                     $query->where('status', request('status'));
                 })
-                ->orderBy('id', 'asc')
+                ->orderBy('id', 'desc')
                 ->paginate(20)
                 ->withPath('/delivery/orders/showAll');
 
             $data = OrderResource::collection($orders);
 
             if ($data->isEmpty()) {
-                return $this->response('Nenhum pedido encontrado', 404, $data);
+                return $this->response('Nenhum pedido encontrado', 200, $data);
             }
 
             $ordersResponse = [
                 'orders' => $data,
-                'links' => [
+                'links'  => [
                     'first' => $orders->url(1),
-                    'last' => $orders->url($orders->lastPage()),
-                    'prev' => $orders->previousPageUrl(),
-                    'next' => $orders->nextPageUrl(),
+                    'last'  => $orders->url($orders->lastPage()),
+                    'prev'  => $orders->previousPageUrl(),
+                    'next'  => $orders->nextPageUrl(),
                 ],
-                'meta' => [
+                'meta'   => [
                     'current_page' => $orders->currentPage(),
-                    'from' => $orders->firstItem(),
-                    'last_page' => $orders->lastPage(),
-                    'path' => $orders->path(),
-                    'per_page' => $orders->perPage(),
-                    'last_item' => $orders->lastItem(),
-                    'total' => $orders->total(),
+                    'from'         => $orders->firstItem(),
+                    'last_page'    => $orders->lastPage(),
+                    'path'         => $orders->path(),
+                    'per_page'     => $orders->perPage(),
+                    'last_item'    => $orders->lastItem(),
+                    'total'        => $orders->total(),
                 ]
             ];
 
@@ -63,7 +69,7 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             return $this->error('Ocorreu um erro ao buscar os pedidos.', 500, [
                 'description' => 'Não foi possível recuperar os pedidos. Por favor, tente novamente mais tarde.',
-                'error' => $e->getMessage(),
+                'error'       => $e->getMessage(),
             ]);
         }
     }
@@ -81,7 +87,7 @@ class OrderController extends Controller
         return $this->response('Pedido encontrado', 200, new OrderResource($order));
     }
 
-    public function import(Request $request)
+    public function import(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls'
@@ -91,12 +97,10 @@ class OrderController extends Controller
             Excel::import(new OrdersImport, $request->file('file'));
             return $this->response('Arquivo importado com sucesso', 200);
         } catch (ExcelValidationException $e) {
-
             return $this->error('Erro na importação de arquivos.', 422, [
                 'description' => 'O arquivo possui linhas inválidas. Verifique os dados e tente novamente.',
             ]);
         } catch (QueryException $e) {
-
             if ($e->errorInfo[1] == 1062) { // Duplicate entry
                 return $this->error(
                     'Erro na importação de arquivos.',
@@ -111,9 +115,68 @@ class OrderController extends Controller
                 'description' => 'Erro ao salvar no banco de dados.',
             ]);
         } catch (\Exception $e) {
-
             return $this->error('Ocorreu um erro inesperado durante a importação.', 500, [
                 'description' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function store(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $request->validate([
+            'ifoodOrderNumber'        => 'nullable|unique:orders,ifood_order_number',
+            'ifoodId'                 => 'nullable|unique:orders,ifood_id',
+            'orderDate'               => 'required|date',
+            'customerAmount'          => 'required|numeric',
+            'receivedAmount'          => 'required|numeric',
+            'orderStatus'             => 'required|string',
+            'orderItems'              => 'required|array',
+            'orderItems.*.product_id' => 'required|exists:products,id',
+            'orderItems.*.quantity'   => 'required|integer|min:1',
+            'orderItems.*.price'      => 'required|numeric|min:0',
+        ]);
+
+        try {
+            $order = Order::create([
+                'ifood_order_number'    => $request->ifoodOrderNumber,
+                'ifood_id'              => $request->ifoodId,
+                'order_date'            => $request->orderDate,
+                'total_amount_received' => $request->customerAmount,
+                'total_amount_order'    => $request->receivedAmount,
+                'status'                => $request->orderStatus,
+            ]);
+
+            if ($request->has('orderItems')) {
+                foreach ($request->orderItems as $item) {
+                    $order->items()->create([
+                        'product_id'  => $item['product_id'],
+                        'quantity'    => $item['quantity'],
+                        'unit_price'  => $item['price'],
+                        'total_price' => $item['total'],
+                    ]);
+                }
+            }
+
+            return $this->response('Pedido criado com sucesso', 201, new OrderResource($order));
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1062) { // Duplicate entry
+                return $this->error(
+                    'Erro ao criar pedido.',
+                    409,
+                    [
+                        'description' => 'O número do pedido já está cadastrado no sistema.',
+                    ]
+                );
+            }
+
+            return $this->error('Ocorreu um erro ao criar o pedido.', 500, [
+                'description' => 'Não foi possível salvar o pedido. Por favor, tente novamente mais tarde.',
+                'error'       => $e->getMessage(),
+            ]);
+        } catch (\Exception $e) {
+            return $this->error('Ocorreu um erro ao criar o pedido.', 500, [
+                'description' => 'Não foi possível salvar o pedido. Por favor, tente novamente mais tarde.',
+                'error'       => $e->getMessage(),
             ]);
         }
     }

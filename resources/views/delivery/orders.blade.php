@@ -71,12 +71,11 @@
         </ul>
     </nav>
 
-    <!-- Order Modal -->
     <div class="modal fade" id="orderModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="orderModalTitle">Add New Order</h5>
+                    <h5 class="modal-title" id="orderModalTitle">Adicionar Pedido</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -85,54 +84,109 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="orderCustomer" class="form-label">Customer</label>
-                                    <select class="form-select" id="orderCustomer" required>
-                                        <option value="">Select customer</option>
-                                    </select>
+                                    <label for="orderIdIfood" class="form-label">Id do Pedido no Ifood</label>
+                                    <input type="text" class="form-control" id="orderIdIfood"
+                                           placeholder="Número do Pedido" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="orderStatus" class="form-label">Status</label>
-                                    <select class="form-select" id="orderStatus" required>
-                                        <option value="Pending">Pending</option>
-                                        <option value="Processing">Processing</option>
-                                        <option value="In Transit">In Transit</option>
-                                        <option value="Delivered">Delivered</option>
-                                        <option value="Cancelled">Cancelled</option>
-                                    </select>
+                                    <label for="ifoodOrderNumber" class="form-label">Número do Pedido no Ifood</label>
+                                    <input type="text" class="form-control" id="ifoodOrderNumber"
+                                           placeholder="Número do Pedido no Ifood">
                                 </div>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="orderAddress" class="form-label">Delivery Address</label>
-                            <textarea class="form-control" id="orderAddress" rows="3" required></textarea>
+                            <label for="orderDate" class="form-label">Status do Pedido</label>
+                            <select class="form-select" id="orderStatus" required>
+                                <option value="completed" selected>Completo</option>
+                                <option value="pending">Pendente</option>
+                                <option value="processing">Em processamento</option>
+                                <option value="cancelled">Cancelado</option>
+                            </select>
                         </div>
                         <div class="mb-3">
-                            <label for="orderDate" class="form-label">Order Date</label>
-                            <input type="date" class="form-control" id="orderDate" required>
+                            <label for="orderDate" class="form-label"><i class="bi bi-calendar-date"></i>&nbsp;Data do Pedido</label>
+                            <input type="datetime-local" class="form-control" id="orderDate" required>
+                        </div>
+                        <div id="itemsSection" class=" p-3 mb-3 rounded border">
+                            <h6><i class="bi bi-box-seam"></i>&nbsp;Itens do Pedido</h6>
+                            <div class="row g-2 align-items-end mb-3">
+                                <div class="col-md-5">
+                                    <label class="form-label" for="itemId">Nome do Item</label>
+                                    <select class="form-select" id="itemId">
+                                        <option value="">Selecione o Item</option>
+                                        @foreach ($products as $product)
+                                            <option value="{{ $product->id }}">{{ $product->id }}
+                                                - {{ $product->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Quantidade</label>
+                                    <input type="number" class="form-control" id="itemQuantity" value="1"
+                                           min="1">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Preço Unitário</label>
+                                    <input type="number" min="0" class="form-control" id="itemPrice" step="0.01">
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-success w-100" id="addItem">
+                                        <i class="bi bi-plus"></i> Adicionar Item
+                                    </button>
+                                </div>
+                            </div>
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Quantidade</th>
+                                        <th>Preço Unitário</th>
+                                        <th>Total</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itemsTableBody">
+                                    <!-- Linhas de itens serão inseridas aqui via JS -->
+                                </tbody>
+                            </table>
                         </div>
                         <div class="mb-3">
-                            <label for="orderItems" class="form-label">Items</label>
-                            <textarea class="form-control" id="orderItems" rows="3" placeholder="Enter order items"></textarea>
+                            <label for="orderAmount" class="form-label">
+                                <i class="bi bi-cash-coin"></i> Total Recebido pela Loja
+                            </label>
+                            <input type="number" value="0" min="0" class="form-control" id="receivedAmount" step="0.01"
+                                   required disabled>
                         </div>
                         <div class="mb-3">
-                            <label for="orderAmount" class="form-label">Total Amount</label>
-                            <input type="number" class="form-control" id="orderAmount" step="0.01" required>
+                            <label for="customerAmount" class="form-label">
+                                <i class="bi bi-cash"></i> Total Pago pelo Cliente
+                            </label>
+                            <input type="number" value="0" min="0" class="form-control" id="customerAmount" step="0.01"
+                                   required>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="saveOrder">Save Order</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x"></i>&nbsp;Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" id="saveOrder" onclick="saveOrder('create')">
+                        <i class="bi bi-floppy"></i>&nbsp;Salvar Pedido
+                    </button>
+                    <button type="button" class="btn btn-warning d-none" id="updateOrder" onclick="saveOrder('update')">
+                        <i class="bi bi-pencil"></i>&nbsp;Atualizar Pedido
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
 
-    <!-- Order Modal -->
-    <div class="modal fade" id="importOrderModal" tabindex="-1">
+    <!-- Import Order Modal -->
+    <div class="modal fade" id="importOrderModal">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -151,9 +205,6 @@
                                     <i class="bi bi-file-arrow-up-fill"></i>&nbsp;Importar Pedidos
                                 </button>
                             </div>
-                            {{-- <a href="{{ asset('templates/orders_template.xlsx') }}" class="btn btn-info" download>
-                                <i class="bi bi-download"></i>&nbsp;Baixar Modelo
-                            </a> --}}
                         </div>
                     </form>
                 </div>

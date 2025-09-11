@@ -13,14 +13,48 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->uuid('ifood_id')->unique()->comment('Unique identifier from iFood system')->default(null)->nullable();
-            $table->integer('ifood_order_number')->comment('Order number as provided by iFood')->default(null)->nullable()->index();
-            // $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade')->nullable()->default(null)->comment('Reference to the customer who placed the order');
-            $table->dateTime('order_date')->comment('Date when the order was placed');
-            $table->decimal('total_amount_order', 12, 2)->default(0)->comment('Total amount paid by the customer');
-            $table->decimal('total_amount_received', 12, 2)->default(0)->comment('Total amount to be received by our company');
-            $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending')->comment('Current status of the order');
-            // $table->foreignId('payment_method_id')->constrained('payment_methods')->onDelete('cascade')->nullable()->default(null)->comment('Payment method used for the order');
+
+            $table->uuid('ifood_id')
+                ->unique()
+                ->nullable()
+                ->default(null)
+                ->comment('Unique identifier from iFood system');
+
+            $table->integer('ifood_order_number')
+                ->nullable()
+                ->default(null)
+                ->index()
+                ->comment('Order number as provided by iFood');
+
+            // $table->foreignId('customer_id')
+            //     ->nullable()
+            //     ->default(null)
+            //     ->constrained('customers')
+            //     ->onDelete('cascade')
+            //     ->comment('Reference to the customer who placed the order');
+
+            $table->dateTime('order_date')
+                ->comment('Date when the order was placed');
+
+            $table->decimal('total_amount_order', 12, 2)
+                ->default(0)
+                ->comment('Total amount paid by the customer');
+
+            $table->decimal('total_amount_received', 12, 2)
+                ->default(0)
+                ->comment('Total amount to be received by our company');
+
+            $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])
+                ->default('pending')
+                ->comment('Current status of the order');
+
+            // $table->foreignId('payment_method_id')
+            //     ->nullable()
+            //     ->default(null)
+            //     ->constrained('payment_methods')
+            //     ->onDelete('cascade')
+            //     ->comment('Payment method used for the order');
+
             $table->timestamps();
         });
     }

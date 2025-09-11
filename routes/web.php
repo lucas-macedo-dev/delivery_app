@@ -29,11 +29,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/showAll', [ProductController::class, 'showAll'])->name('products.showAll');
             Route::post('/new_product', [ProductController::class, 'store'])->name('products.store');
             Route::post('/edit/{id}', [ProductController::class, 'update'])->name('products.update');
-        })->name('delivery.orders');
-
-
-        Route::get('/orders', function () {
-            return view('delivery.orders');
+            Route::delete('/delete/{id}', [ProductController::class, 'destroy'])->name('products.delete');
         })->name('delivery.orders');
 
         Route::prefix('customers')->group(function () {
@@ -49,7 +45,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [OrderController::class, 'index'])->name('delivery.orders');
             Route::get('/show/{id}', [OrderController::class, 'show'])->name('orders.show');
             Route::get('/showAll', [OrderController::class, 'showAll'])->name('orders.showAll');
-            Route::post('/new_customer', [OrderController::class, 'store'])->name('orders.store');
+            Route::post('/new_order', [OrderController::class, 'store'])->name('orders.store');
             Route::post('/edit/{id}', [OrderController::class, 'update'])->name('orders.update');
             Route::post('/import', [OrderController::class, 'import'])->name('orders.import');
             Route::delete('/delete/{id}', [OrderController::class, 'destroy'])->name('orders.delete');
