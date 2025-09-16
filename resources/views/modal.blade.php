@@ -1,4 +1,4 @@
-<div class="spinner-border d-none" role="status">
+<div class="spinner-border main-loading d-none" role="status">
   <span class="visually-hidden">Loading...</span>
 </div>
 <div class="modal fade" tabindex="-1" id="modalMessage">

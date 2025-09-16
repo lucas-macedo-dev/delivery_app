@@ -38,7 +38,7 @@ class OrderController extends Controller
                 })
                 ->orderBy('id', 'desc')
                 ->paginate(20)
-                ->withPath('/delivery/orders/showAll');
+                ->withPath('/orders/showAll');
 
             $data = OrderResource::collection($orders);
 
@@ -76,7 +76,7 @@ class OrderController extends Controller
 
     public function show($id): \Illuminate\Http\JsonResponse
     {
-        $order = Order::find($id);
+        $order = Order::with(['items.product'])->find($id);
 
         if (!$order) {
             return $this->error('Pedido não encontrado', 404, [
@@ -99,6 +99,7 @@ class OrderController extends Controller
         } catch (ExcelValidationException $e) {
             return $this->error('Erro na importação de arquivos.', 422, [
                 'description' => 'O arquivo possui linhas inválidas. Verifique os dados e tente novamente.',
+                'teste' => $e->getMessage()
             ]);
         } catch (QueryException $e) {
             if ($e->errorInfo[1] == 1062) { // Duplicate entry
@@ -107,12 +108,14 @@ class OrderController extends Controller
                     409,
                     [
                         'description' => 'Alguns pedidos já estão cadastrados no sistema.',
+                        'teste' => $e->getMessage()
                     ]
                 );
             }
 
             return $this->error('Ocorreu um erro inesperado durante a importação.', 500, [
                 'description' => 'Erro ao salvar no banco de dados.',
+                'teste' => $e->getMessage()
             ]);
         } catch (\Exception $e) {
             return $this->error('Ocorreu um erro inesperado durante a importação.', 500, [
@@ -176,6 +179,104 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             return $this->error('Ocorreu um erro ao criar o pedido.', 500, [
                 'description' => 'Não foi possível salvar o pedido. Por favor, tente novamente mais tarde.',
+                'error'       => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function update(Request $request, $id): \Illuminate\Http\JsonResponse
+    {
+        $order = Order::find($id);
+
+        if (!$order) {
+            return $this->error('Pedido não encontrado', 404, [
+                'description' => 'O pedido com o ID especificado não existe.',
+            ]);
+        }
+
+        $request->validate([
+            'ifoodOrderNumber'        => 'nullable|unique:orders,ifood_order_number,' . $id,
+            'ifoodId'                 => 'nullable|unique:orders,ifood_id,' . $id,
+            'orderDate'               => 'required|date',
+            'customerAmount'          => 'required|numeric',
+            'receivedAmount'          => 'required|numeric',
+            'orderStatus'             => 'required|string',
+            'orderItems'              => 'required|array',
+            'orderItems.*.product_id' => 'required|exists:products,id',
+            'orderItems.*.quantity'   => 'required|integer|min:1',
+            'orderItems.*.price'      => 'required|numeric|min:0',
+        ]);
+
+        try {
+            $order->update([
+                'ifood_order_number'    => $request->ifoodOrderNumber,
+                'ifood_id'              => $request->ifoodId,
+                'order_date'            => $request->orderDate,
+                'total_amount_received' => $request->customerAmount,
+                'total_amount_order'    => $request->receivedAmount,
+                'status'                => $request->orderStatus,
+            ]);
+
+            // Remove existing items
+            $order->items()->delete();
+
+            // Add new items
+            if ($request->has('orderItems')) {
+                foreach ($request->orderItems as $item) {
+                    $order->items()->create([
+                        'product_id'  => $item['product_id'],
+                        'quantity'    => $item['quantity'],
+                        'unit_price'  => $item['price'],
+                        'total_price' => $item['total'],
+                    ]);
+                }
+            }
+
+            return $this->response('Pedido atualizado com sucesso', 200, new OrderResource($order));
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1062) { // Duplicate entry
+                return $this->error(
+                    'Erro ao atualizar pedido.',
+                    409,
+                    [
+                        'description' => 'O número do pedido já está cadastrado no sistema.',
+                    ]
+                );
+            }
+
+            return $this->error('Ocorreu um erro ao atualizar o pedido.', 500, [
+                'description' => 'Não foi possível salvar o pedido. Por favor, tente novamente mais tarde.',
+                'error'       => $e->getMessage(),
+            ]);
+        } catch (\Exception $e) {
+            return $this->error('Ocorreu um erro ao atualizar o pedido.', 500, [
+                'description' => 'Não foi possível salvar o pedido. Por favor, tente novamente mais tarde.',
+                'error'       => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function destroy($id): \Illuminate\Http\JsonResponse
+    {
+        $order = Order::find($id);
+
+        if (!$order) {
+            return $this->error('Pedido não encontrado', 404, [
+                'description' => 'O pedido com o ID especificado não existe.',
+            ]);
+        }
+
+        try {
+            // Delete related items first
+            $order->items()->delete();
+
+            // Delete the order
+            $order->delete();
+
+            return $this->response('Pedido excluído com sucesso', 200);
+        } catch (\Exception $e) {
+            return $this->error('Ocorreu um erro ao excluir o pedido.', 500, [
+                'description' => 'Não foi possível excluir o pedido. Por favor, tente novamente mais tarde.',
                 'error'       => $e->getMessage(),
             ]);
         }

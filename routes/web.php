@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Delivery\ExpenseController;
+use App\Http\Controllers\Delivery\HomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Delivery\OrderController;
@@ -19,9 +21,7 @@ Route::middleware('auth')->group(function () {
 
 
     Route::prefix('delivery')->group(function () {
-        Route::get('/home', function () {
-            return view('delivery.home');
-        })->name('delivery.home');
+        Route::get('/home', [HomeController::class, 'index'])->name('delivery.home');
 
         Route::prefix('products')->group(function () {
             Route::get('/', [ProductController::class, 'index'])->name('delivery.products');
@@ -55,9 +55,16 @@ Route::middleware('auth')->group(function () {
             return view('delivery.payments');
         })->name('delivery.payments');
 
-        Route::get('/expenses', function () {
-            return view('delivery.expenses');
-        })->name('delivery.expenses');
+        Route::prefix('expenses')->group(function () {
+            Route::get('/', [ExpenseController::class, 'index'])->name('delivery.expenses');
+            Route::get('/show/{id}', [ExpenseController::class, 'show'])->name('expenses.show');
+            Route::get('/showAll', [ExpenseController::class, 'showAll'])->name('expenses.showAll');
+            Route::post('/new_expense', [ExpenseController::class, 'store'])->name('expenses.store');
+            Route::post('/edit/{id}', [ExpenseController::class, 'update'])->name('expenses.update');
+            Route::delete('/delete/{id}', [ExpenseController::class, 'destroy'])->name('expenses.delete');
+
+            Route::get('/summary', [ExpenseController::class, 'summary']);
+        });
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

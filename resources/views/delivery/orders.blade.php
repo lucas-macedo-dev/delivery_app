@@ -145,7 +145,7 @@
                                         <th>Quantidade</th>
                                         <th>Preço Unitário</th>
                                         <th>Total</th>
-                                        <th>Ações</th>
+                                        <th class="text-center">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody id="itemsTableBody">
@@ -186,12 +186,12 @@
 
 
     <!-- Import Order Modal -->
-    <div class="modal fade" id="importOrderModal">
+    <div class="modal fade" id="importOrderModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="importOrderModalTitle">Importar planilha de pedidos</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeImportOrderModal"></button>
                 </div>
                 <div class="modal-body">
                     <form enctype="multipart/form-data">

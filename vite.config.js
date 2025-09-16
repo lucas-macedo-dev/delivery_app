@@ -13,7 +13,8 @@ export default defineConfig({
                 'resources/js/delivery/orders.js',
                 'resources/js/delivery/customers.js',
                 'resources/js/delivery/home.js',
-                'resources/js/delivery/payments.js'
+                'resources/js/delivery/payments.js',
+                'resources/js/delivery/expenses.js'
             ],
             refresh: true,
         }),

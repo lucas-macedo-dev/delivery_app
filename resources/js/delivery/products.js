@@ -1,18 +1,41 @@
 'use strict';
 
-
+let currentProductImage = null;
 const baseUrl = window.location.origin;
 
 window.onload = () => {
     getAllProducts();
 };
 
+function addImageIndicator(message) {
+    removeImageIndicator(); // Remove existing indicator first
+
+    const imagePreview = document.getElementById('imagePreview');
+    const indicator = document.createElement('div');
+    indicator.id = 'imageIndicator';
+    indicator.className = 'alert alert-info alert-sm mt-2';
+    indicator.innerHTML = `<small><i class="bi bi-info-circle"></i> ${message}</small>`;
+
+    imagePreview.appendChild(indicator);
+}
+
+// Helper function to remove image status indicator
+function removeImageIndicator() {
+    const indicator = document.getElementById('imageIndicator');
+    if (indicator) {
+        indicator.remove();
+    }
+}
 
 window.readURL = function (input) {
     if (input.target.files[0]) {
         let reader = new FileReader();
         reader.onload = function (e) {
             document.getElementById("category-img-tag").setAttribute('src', e.target.result);
+            // Update indicator when new image is selected in edit mode
+            if (currentProductImage) {
+                addImageIndicator('Nova imagem selecionada - substituirá a imagem atual');
+            }
         };
         document.getElementById("imagePreview").classList.remove("d-none");
         reader.readAsDataURL(input.target.files[0]);
@@ -25,14 +48,20 @@ document.getElementById("productImage").addEventListener(`change`, function (eve
 
 window.closeProductModal = function () {
     bootstrap.Modal.getOrCreateInstance('#productModal').hide();
+
+    // Clean up
+    currentProductImage = null;
+    removeImageIndicator();
+
     for (let i = 0; i < document.querySelectorAll('.btn_close_modal').length; i++) {
         document.querySelectorAll('.btn_close_modal')[i].addEventListener('click', function (event) {
-            document.getElementById('image_preview').classList.add("d-none");
+            document.getElementById('imagePreview').classList.add("d-none");
             document.getElementById('category-img-tag').setAttribute('src', '');
+            currentProductImage = null;
+            removeImageIndicator();
         });
     }
 };
-
 window.getProduct = async function (id) {
     if (!id) {
         window.modalMessage({
@@ -102,7 +131,7 @@ window.buildProductCard = function (productData) {
     if (cards.length === 0) {
         document.getElementById(`productList`).innerHTML = ``;
     }
-    
+
     document.getElementById(`productList`).innerHTML += `
     <div class="col-md-6 col-lg-4 mb-4" id="product_${productData.id}">
                 <div class="card h-100">
@@ -150,8 +179,18 @@ window.openProductModal = function (product = null) {
         document.getElementById('productStock').value = product.stock;
         document.getElementById('productUnit').value = product.unit_measure;
         document.getElementById('productAvailable').checked = product.available;
-        document.getElementById('category-img-tag').setAttribute('src', `${baseUrl}/storage/delivery/${product.image_name}`);
+        document.getElementById('category').value = product.category;
+
+        currentProductImage = {
+            name: product.image_name,
+            url: `${baseUrl}/storage/delivery/${product.image_name}`
+        };
+
+        document.getElementById('category-img-tag').setAttribute('src', currentProductImage.url);
         document.getElementById('imagePreview').classList.remove('d-none');
+
+        document.getElementById('productImage').value = '';
+        addImageIndicator('Imagem atual será mantida se nenhuma nova imagem for selecionada');
     } else {
         document.getElementById('updateProduct').classList.add('d-none');
         document.getElementById('saveProduct').classList.remove('d-none');
@@ -160,6 +199,9 @@ window.openProductModal = function (product = null) {
         document.getElementById('imagePreview').classList.add('d-none');
         document.getElementById('productForm').reset();
         document.getElementById('productId').value = '';
+        
+        currentProductImage = null;
+        removeImageIndicator();
     }
 
     modal.show();
@@ -170,16 +212,39 @@ window.saveProduct = async function (action = 'create') {
     const price = parseFloat(document.getElementById('productValue').value);
     const stock = parseInt(document.getElementById('productStock').value);
     const unitMeasure = document.getElementById('productUnit').value;
-    const image = document.getElementById('productImage');
+    const category = document.getElementById('category').value;
+    const imageInput = document.getElementById('productImage');
     const available = document.getElementById('productAvailable').checked;
 
     const data = new FormData();
     data.append('name', name);
     data.append('price', price);
     data.append('stock', stock);
-    data.append('image', image.files[0]);
     data.append('available', available);
     data.append('unit_measure', unitMeasure);
+    data.append('category', category);
+
+    if (action === 'create') {
+        if (!imageInput.files[0]) {
+            window.modalMessage({
+                title: 'Erro',
+                description: 'Imagem é obrigatória para novos produtos',
+                type: 'error',
+            });
+            return;
+        }
+        data.append('image', imageInput.files[0]);
+    } else {
+        if (imageInput.files[0]) {
+            data.append('image', imageInput.files[0]);
+            data.append('update_image', 'true');
+        } else {
+            data.append('keep_existing_image', 'true');
+            if (currentProductImage) {
+                data.append('existing_image_name', currentProductImage.name);
+            }
+        }
+    }
 
     let headers = {
         'X-Requested-With': 'XMLHttpRequest',
@@ -223,15 +288,15 @@ window.saveProduct = async function (action = 'create') {
                 }
             }
             window.modalMessage({
-                title: 'Erro ao criar produto',
+                title: 'Erro ao salvar produto',
                 description: message,
                 type: 'error',
             });
         }
     } else {
         window.modalMessage({
-            title: 'Erro ao criar produto',
-            description: 'Ocorreu um erro ao criar o produto',
+            title: 'Erro ao salvar produto',
+            description: 'Ocorreu um erro ao salvar o produto',
             type: 'error',
         });
     }
@@ -299,4 +364,4 @@ window.deleteProduct = function (id) {
             });
         });
     }
-}; 
+};

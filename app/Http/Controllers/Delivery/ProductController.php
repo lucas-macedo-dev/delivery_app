@@ -47,7 +47,8 @@ class ProductController extends Controller
                 'image_name'        => $imageName ?? null,
                 'available'         => $request->available ? 1 : 0,
                 'unit_measure'      => $request->unit_measure,
-                'stock_quantity'    => $request->stock
+                'stock_quantity'    => $request->stock,
+                'category'          => $request->category
             ]);
 
             if ($created->save()) {
@@ -129,22 +130,31 @@ class ProductController extends Controller
             return $this->error('Produto não encontrado', 404);
         }
 
+        $updateData = [
+            'name'              => $request->name,
+            'price'             => $request->price,
+            'available'         => $request->available ? 1 : 0,
+            'unit_measure'      => $request->unit_measure,
+            'stock_quantity'    => $request->stock,
+            'category'          => $request->category
+        ];
+
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $extension = $request->image->extension();
             $imageName = md5($request->image->getClientOriginalName() . strtotime("now")) . "." . $extension;
-            Storage::disk('delivery')->putFileAs('/', $request->image, $imageName);
-        }
 
-        $updated = $product->update([
-            'name'              => $request->name,
-            'price'             => $request->price,
-            'image_name'        => $imageName ?? null,
-            'available'         => $request->available ? 1 : 0,
-            'unit_measure'      => $request->unit_measure,
-            'stock_quantity'    => $request->stock
-        ]);
+            Storage::disk('delivery')->putFileAs('/', $request->image, $imageName);
+
+            if ($product->image_name && Storage::disk('delivery')->exists($product->image_name)) {
+                Storage::disk('delivery')->delete($product->image_name);
+            }
+
+            $updateData['image_name'] = $imageName;
+        }
+        $updated = $product->update($updateData);
 
         if ($updated) {
+            $product->refresh();
             return $this->response('Produto Atualizado', 200, new ProductResource($product));
         } else {
             return $this->error('Produto não atualizado', 400);

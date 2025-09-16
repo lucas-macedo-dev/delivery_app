@@ -81,6 +81,17 @@
                             <input type="number" class="form-control" id="productStock" required>
                         </div>
                         <div class="mb-3">
+                            <label for="category" class="form-label">Categoria</label>
+                            <select class="form-select" id="category" required>
+                                <option value="">Selecione</option>
+                                <option value="food">Alimentos</option>
+                                <option value="drink">Bebidas</option>
+                                <option value="snack">Lanches</option>
+                                <option value="dessert">Doces</option>
+                                <option value="other">Outros</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label for="productUnit" class="form-label">Unidade de Medida</label>
                             <select class="form-select" id="productUnit" required>
                                 <option value="un">UN - UNIDADE</option>

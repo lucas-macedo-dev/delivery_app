@@ -96,6 +96,9 @@ window.saveCustomer = async function (action = 'create') {
 
 
 window.buildCustomerLine = function (customer) {
+    if (document.querySelector('#customersTableBody td[colspan="5"]')) {
+        document.getElementById('customersTableBody').innerHTML = '';
+    }
     document.getElementById('customersTableBody').innerHTML += `
         <tr id="customer_${customer.id}" class="align-middle">
             <td>

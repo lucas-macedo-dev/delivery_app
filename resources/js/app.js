@@ -102,10 +102,10 @@ window.showLoading = function(loading = true) {
     document.activeElement.blur();
     if (loading) {
         document.body.classList.add('pe-none');
-        document.querySelector('.spinner-border').classList.remove('d-none');
+        document.querySelector('.main-loading').classList.remove('d-none');
     } else {
         document.body.classList.remove('pe-none');
-        document.querySelector('.spinner-border').classList.add('d-none');
+        document.querySelector('.main-loading').classList.add('d-none');
     }
 };
 
@@ -278,3 +278,54 @@ window.pagination = function(params = {}) {
         document.getElementById(params.id)?.classList.add('d-none');
     }
 };
+
+
+window.showFormErrors = function (errors) {
+    Object.keys(errors).forEach(field => {
+        const input = document.getElementById(field);
+        if (input) {
+            const feedback = input.parentElement.querySelector('.invalid-feedback');
+
+            input.classList.add('is-invalid');
+            if (feedback) {
+                feedback.textContent = errors[field][0];
+            }
+        }
+    });
+}
+
+window.clearFormErrors = function () {
+    document.querySelectorAll('.is-invalid').forEach(input => {
+        input.classList.remove('is-invalid');
+    });
+}
+
+window.formatCurrency = function (value) {
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    }).format(value || 0);
+}
+
+window.formatDate = function (dateString) {
+    if (!dateString) return 'N/A';
+
+    try {
+        let date;
+
+        if (dateString.includes('T')) {
+            date = new Date(dateString);
+        } else {
+            date = new Date(dateString + 'T00:00:00');
+        }
+
+        if (isNaN(date.getTime())) {
+            return 'Data inválida';
+        }
+
+        return date.toLocaleDateString('pt-BR');
+    } catch (error) {
+        console.error('Error formatting date:', error, dateString);
+        return 'Data inválida';
+    }
+}

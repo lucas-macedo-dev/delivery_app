@@ -1,137 +1,261 @@
 'use strict';
 
+// Global state variables
+let orderItems   = [];
+let currentPage  = 1;
+let filterParams = {};
+
+/**
+ * Initialize the orders manager
+ */
 window.onload = () => {
-    getAllOrders().then(r => {
+    loadOrders().then(r => {
     });
-};
+    bindEventListeners();
+    document.getElementById('closeImportOrderModal').addEventListener('click', () => {
+        document.getElementById('ordersFile').value = '';
+    })
+}
 
-window.orderItems = [];
+/**
+ * Bind event listeners
+ */
+function bindEventListeners() {
+    const searchInput  = document.getElementById('orderSearch');
+    const statusFilter = document.getElementById('statusFilter');
 
-window.getAllOrders = async function (page = 1, filterParams = {}) {
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(() => filterOrders(), 300));
+    }
 
+    if (statusFilter) {
+        statusFilter.addEventListener('change', () => filterOrders());
+    }
+}
+
+/**
+ * Debounce utility function
+ */
+function debounce(func, wait) {
+    if (typeof func !== 'function') {
+        return () => {
+        };
+    }
+
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+/**
+ * Load orders from API
+ */
+window.loadOrders = async function (page = 1, filterParameters = {}) {
+    console.log(page);
+    try {
+        currentPage  = page;
+        filterParams = filterParameters || {};
+
+        const queryParams = buildQueryParams(filterParameters);
+        const response    = await fetchOrders(page, queryParams);
+
+        if (response?.status === 200 && response?.data?.orders) {
+            renderOrdersTable(response.data.orders);
+            renderStatusFilter(response.data.orders);
+            window.pagination({
+                page    : page,
+                total   : response.data.meta?.total || 0,
+                max     : response.data.meta?.per_page || 10,
+                qtt     : 5,
+                id      : 'pagination',
+                callback: 'loadOrders'
+            });
+        } else {
+            renderEmptyState();
+        }
+    } catch (error) {
+        console.error('Error loading orders:', error);
+        showErrorMessage('Erro ao carregar pedidos');
+        renderEmptyState();
+    }
+}
+
+/**
+ * Build query parameters
+ */
+function buildQueryParams(filterParameters) {
     const possibleParams = ['search', 'status'];
     const queryParams    = new URLSearchParams();
-    Object.entries(filterParams).forEach(([key, value]) => {
-        if (possibleParams.includes(key) && value) {
-            queryParams.set(key, value);
-        }
-    });
 
-    let orders   = await fetch('./orders/showAll?page=' + page + '&' + queryParams.toString());
-    let response = await orders.json();
-    if (response?.status === 200 && response?.data?.orders) {
-        renderOrdersTable(response.data.orders);
-        renderStatusFilter(response.data.orders);
-    } else {
-        document.getElementById('ordersTableBody').innerHTML = `
+    if (filterParameters && typeof filterParameters === 'object') {
+        Object.entries(filterParameters).forEach(([key, value]) => {
+            if (possibleParams.includes(key) && value && value.toString().trim()) {
+                queryParams.set(key, value.toString().trim());
+            }
+        });
+    }
+
+    return queryParams;
+}
+
+/**
+ * Fetch orders from API
+ */
+async function fetchOrders(page, queryParams) {
+    const url      = `./orders/showAll?page=${page}&${queryParams.toString()}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+}
+
+/**
+ * Render empty state
+ */
+function renderEmptyState() {
+    const tbody = document.getElementById('ordersTableBody');
+    if (tbody) {
+        tbody.innerHTML = `
             <tr>
-                <td colspan="7" class="text-center"> Nenhum pedido encontrado.
-                </td>
+                <td colspan="7" class="text-center">Nenhum pedido encontrado.</td>
             </tr>
         `;
     }
 
-    window.pagination({
-        page    : page,
-        total   : response?.data?.meta?.total,
-        max     : response?.data?.meta?.per_page,
-        qtt     : 5,
-        id      : `pagination`,
-        callback: `getAllOrders`
-    });
-};
+    // Also clear mobile cards
+    const cardsContainer = document.getElementById('ordersCardsContainer');
+    if (cardsContainer) {
+        cardsContainer.innerHTML = `<div class="p-3 text-center text-muted">Nenhum pedido encontrado.</div>`;
+    }
+}
 
-window.renderStatusFilter = function (orders) {
+/**
+ * Render status filter options
+ */
+function renderStatusFilter(orders) {
     const statusFilter = document.getElementById('statusFilter');
-    const status       = [...new Set(orders.map(order => order.status))];
+    if (!statusFilter) return;
+
+    if (!orders || !Array.isArray(orders)) {
+        return;
+    }
+
+    const statuses     = [...new Set(orders.map(order => order.status).filter(Boolean))];
+    const currentValue = statusFilter.value;
 
     statusFilter.innerHTML = '<option value="all">Todos Status</option>' +
-        status.map(status => `<option value="${status}" ${status === statusFilter.value ? 'selected' : ''}>${status}</option>`)
-            .join('');
+        statuses.map(status =>
+            `<option value="${status}" ${status === currentValue ? 'selected' : ''}>${status}</option>`
+        ).join('');
 
     statusFilter.classList.remove('disabled');
-};
+}
 
-window.oldRenderOrdersTable = function (orders) {
-    let rows    = '';
-    const tbody = document.querySelector('#ordersTable tbody');
-    if (!tbody) return;
-    rows            = orders.map(order => `
-        <tr>
-            <td>#${order.id}</td>
-            <td>${order.ifood_order_number || 'N/A'}</td>
-            <td>R$ ${order.total_amount_order || 'N/A'}</td>
-            <td>R$ ${order.total_amount_received || 'N/A'}</td>
-            <td><span class="status-badge status-${order.status.toLowerCase().replace(' ', '-')}">${order.status}</span></td>
-            <td>${order.order_date}</td>
-            <td>
-                <div class="btn-group" role="group">
-                    <button class="btn btn-sm btn-outline-primary" onclick="editOrder(${order.id})">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteOrder(${order.id})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            </td>
-        </tr>
-    `).join('');
-    tbody.innerHTML = rows;
-};
-// javascript
-window.renderOrdersTable = function (orders) {
+/**
+ * Render orders table
+ */
+function renderOrdersTable(orders) {
     const table = document.getElementById('ordersTable');
     if (!table) return;
 
-    // Ensure table has bootstrap table classes and is visible only on md+ (desktop/tablet)
-    table.classList.add('table', 'table-striped', 'table-hover', 'd-none', 'd-md-table');
-    // Wrap table in .table-responsive if not already
-    if (!table.parentElement.classList.contains('table-responsive')) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'table-responsive d-none d-md-block'; // only for md+
-        table.parentElement.insertBefore(wrapper, table);
-        wrapper.appendChild(table);
-    } else {
-        // ensure responsive wrapper visible only on md+
-        table.parentElement.classList.add('d-none', 'd-md-block');
-    }
+    setupTableWrapper(table);
 
     const tbody = table.querySelector('tbody');
     if (!tbody) return;
 
-    // Create or update mobile cards container (visible on small screens only)
+    const cardsContainer = setupCardsContainer(table);
+
+    // Render table (desktop)
+    tbody.innerHTML = renderTableRows(orders);
+
+    // Render cards (mobile)
+    if (cardsContainer) {
+        cardsContainer.innerHTML = renderMobileCards(orders);
+    }
+}
+
+/**
+ * Setup table wrapper for responsive design
+ */
+function setupTableWrapper(table) {
+    if (!table) return;
+
+    table.classList.add('table', 'table-striped', 'table-hover', 'd-none', 'd-md-table');
+
+    if (table.parentElement && !table.parentElement.classList.contains('table-responsive')) {
+        const wrapper     = document.createElement('div');
+        wrapper.className = 'table-responsive d-none d-md-block';
+        table.parentElement.insertBefore(wrapper, table);
+        wrapper.appendChild(table);
+    } else if (table.parentElement) {
+        table.parentElement.classList.add('d-none', 'd-md-block');
+    }
+}
+
+/**
+ * Setup cards container for mobile view
+ */
+function setupCardsContainer(table) {
     let cardsContainer = document.getElementById('ordersCardsContainer');
     if (!cardsContainer) {
-        cardsContainer = document.createElement('div');
-        cardsContainer.id = 'ordersCardsContainer';
-        cardsContainer.className = 'd-block d-md-none'; // visible on small only
-        table.parentElement.parentElement.insertBefore(cardsContainer, table.parentElement.nextSibling);
+        cardsContainer           = document.createElement('div');
+        cardsContainer.id        = 'ordersCardsContainer';
+        cardsContainer.className = 'd-block d-md-none';
+
+        if (table.parentElement && table.parentElement.parentElement) {
+            table.parentElement.parentElement.insertBefore(cardsContainer, table.parentElement.nextSibling);
+        }
+    }
+    return cardsContainer;
+}
+
+/**
+ * Get status badge class
+ */
+function getStatusBadgeClass(status) {
+    if (!status) return 'badge bg-secondary';
+
+    const s = String(status).toLowerCase();
+    if (s.includes('pending') || s.includes('pendente')) return 'badge bg-warning text-dark';
+    if (s.includes('completed') || s.includes('concluído') || s.includes('concluido')) return 'badge bg-success';
+    if (s.includes('cancel')) return 'badge bg-danger';
+    if (s.includes('processing') || s.includes('processando')) return 'badge bg-info text-dark';
+    return 'badge bg-secondary';
+}
+
+/**
+ * Render table rows for desktop view
+ */
+function renderTableRows(orders) {
+    if (!orders || !Array.isArray(orders) || orders.length === 0) {
+        return `<tr><td colspan="7" class="text-center">Nenhum pedido encontrado.</td></tr>`;
     }
 
-    // Helper to map status to bootstrap badge classes
-    const statusBadgeClass = (status) => {
-        const s = String(status || '').toLowerCase();
-        if (s.includes('pending') || s.includes('pendente')) return 'badge bg-warning text-dark';
-        if (s.includes('completed') || s.includes('concluído') || s.includes('concluido')) return 'badge bg-success';
-        if (s.includes('cancel') || s.includes('cancelled') || s.includes('cancelado')) return 'badge bg-danger';
-        if (s.includes('processing') || s.includes('processando')) return 'badge bg-info text-dark';
-        return 'badge bg-secondary';
-    };
-
-    // Build desktop table rows (md+)
-    const tableRows = orders.map(order => {
-        const id = order.id;
-        const itemsId = `items-section-${id}`;
+    return orders.map(order => {
+        const id       = order.id || 'N/A';
+        const itemsId  = `items-section-${id}`;
         const hasItems = Array.isArray(order.items) && order.items.length > 0;
 
-        const itemsRows = hasItems ? order.items.map(item => `
-            <tr>
-                <td>${item.product?.name || 'N/A'}</td>
-                <td>${item.quantity}</td>
-                <td>R$ ${Number(item.price || 0).toFixed(2)}</td>
-                <td>R$ ${Number(item.total || (item.quantity * item.price) || 0).toFixed(2)}</td>
-            </tr>
-        `).join('') : `<tr><td colspan="4">No items</td></tr>`;
+        const itemsRows = hasItems
+            ? order.items.map(item => `
+                <tr>
+                    <td>${item.product?.name || 'N/A'}</td>
+                    <td>${item.quantity}</td>
+                    <td>R$ ${Number(item.price || 0).toFixed(2)}</td>
+                    <td>R$ ${Number(item.total || item.quantity * item.price || 0).toFixed(2)}</td>
+                </tr>
+            `).join('')
+            : `<tr><td colspan="4">No items</td></tr>`;
 
         return `
             <tr>
@@ -139,13 +263,19 @@ window.renderOrdersTable = function (orders) {
                 <td>${order.ifood_order_number || 'N/A'}</td>
                 <td>R$ ${Number(order.total_amount_order || 0).toFixed(2)}</td>
                 <td>R$ ${Number(order.total_amount_received || 0).toFixed(2)}</td>
-                <td><span class="${statusBadgeClass(order.status)}">${order.status || 'N/A'}</span></td>
+                <td><span class="${getStatusBadgeClass(order.status)}">${order.status || 'N/A'}</span></td>
                 <td>${order.order_date || 'N/A'}</td>
                 <td>
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-outline-primary" onclick="editOrder(${id})"><i class="bi bi-pencil"></i></button>
-                        ${hasItems ? `<button class="btn btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#${itemsId}" aria-expanded="false"><i class="fa-solid fa-box"></i></button>` : ''}
-                        <button class="btn btn-outline-danger" onclick="deleteOrder(${id})"><i class="bi bi-trash"></i></button>
+                    <div class="d-flex justify-content-between">
+                        <div class="btn-group">
+                            <button class="btn btn-outline-primary" onclick="editOrder(${id})" title="Editar pedido">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            ${hasItems ? `<button class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#${itemsId}" title="Ver itens"><i class="fa-solid fa-box"></i></button>` : ''}
+                        </div>
+                        <button class="btn btn-outline-danger" onclick="deleteOrder(${id})" title="Excluir pedido">
+                            <i class="bi bi-trash"></i>
+                        </button>
                     </div>
                 </td>
             </tr>
@@ -161,293 +291,557 @@ window.renderOrdersTable = function (orders) {
                                 <th>Total</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            ${itemsRows}
-                        </tbody>
+                        <tbody>${itemsRows}</tbody>
                     </table>
                 </td>
-            </tr>
-            ` : ''}
+            </tr>` : ''}
         `;
     }).join('');
+}
 
-    tbody.innerHTML = tableRows || `
-        <tr>
-            <td colspan="7" class="text-center">Nenhum pedido encontrado.</td>
-        </tr>
-    `;
+/**
+ * Render mobile cards
+ */
+function renderMobileCards(orders) {
+    if (!orders || !Array.isArray(orders) || orders.length === 0) {
+        return `<div class="p-3 text-center text-muted">Nenhum pedido encontrado.</div>`;
+    }
 
-    // Build mobile cards
-    const mobileHtml = orders.map(order => {
-        const id = order.id;
-        const itemsId = `items-mobile-${id}`;
+    return orders.map(order => {
+        const id       = order.id || 'N/A';
+        const itemsId  = `items-mobile-${id}`;
         const hasItems = Array.isArray(order.items) && order.items.length > 0;
 
-        const itemsHtml = hasItems ? order.items.map(item => `
-            <div class="d-flex justify-content-between">
-                <div>${item.product?.name || 'N/A'}</div>
-                <div>${item.quantity} x R$ ${Number(item.price || 0).toFixed(2)} = R$ ${Number(item.total || (item.quantity * item.price) || 0).toFixed(2)}</div>
-            </div>
-        `).join('') : `<div class="text-muted">No items</div>`;
+        const itemsHtml = hasItems
+            ? order.items.map(item => `
+                <div class="d-flex justify-content-between">
+                    <div>${item.product?.name || 'N/A'}</div>
+                    <div>${item.quantity} x R$ ${Number(item.price || 0)
+                .toFixed(2)} = R$ ${Number(item.total || item.quantity * item.price || 0).toFixed(2)}</div>
+                </div>
+            `).join('')
+            : `<div class="text-muted">No items</div>`;
 
         return `
-            <div class="card mb-2">
+            <div class="card border mb-3">
                 <div class="card-body">
-                    <div class="d-flex w-100 justify-content-between align-items-start">
+                    <div class="d-flex justify-content-between">
                         <div>
                             <h6 class="card-title mb-1">#${id} ${order.ifood_order_number ? `- ${order.ifood_order_number}` : ''}</h6>
                             <div class="small text-muted">${order.order_date || 'N/A'}</div>
                         </div>
                         <div class="text-end">
-                            <div class="mb-1">Total: <strong>R$ ${Number(order.total_amount_order || 0).toFixed(2)}</strong></div>
-                            <div class="mb-1">Recebido: <strong>R$ ${Number(order.total_amount_received || 0).toFixed(2)}</strong></div>
-                            <div>${order.status ? `<span class="${statusBadgeClass(order.status)}">${order.status}</span>` : ''}</div>
+                            <div>Total: <strong>R$ ${Number(order.total_amount_order || 0).toFixed(2)}</strong></div>
+                            <div>Recebido: <strong>R$ ${Number(order.total_amount_received || 0).toFixed(2)}</strong></div>
+                            <div>${order.status ? `<span class="${getStatusBadgeClass(order.status)}">${order.status}</span>` : ''}</div>
                         </div>
                     </div>
-
                     <div class="mt-3 d-flex justify-content-between">
                         <div>
-                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editOrder(${id})"><i class="bi bi-pencil"></i></button>
-                        ${hasItems ? `<button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#${itemsId}" aria-expanded="false"><i class="fa-solid fa-box"></i></button>` : ''}
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editOrder(${id})" title="Editar pedido">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            ${hasItems ? `<button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#${itemsId}" title="Ver itens"><i class="fa-solid fa-box"></i></button>` : ''}
                         </div>
-                            <button class="btn btn-sm btn-outline-danger me-1" onclick="deleteOrder(${id})"><i class="bi bi-trash"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteOrder(${id})" title="Excluir pedido">
+                            <i class="bi bi-trash"></i>
+                        </button>
                     </div>
-
                     ${hasItems ? `
                     <div class="collapse mt-3" id="${itemsId}">
-                        <div class="card card-body p-2">
-                            ${itemsHtml}
-                        </div>
-                    </div>
-                    ` : ''}
+                        <div class="card card-body p-2">${itemsHtml}</div>
+                    </div>` : ''}
                 </div>
             </div>
         `;
     }).join('');
+}
 
-    cardsContainer.innerHTML = mobileHtml || `<div class="p-3 text-center text-muted">Nenhum pedido encontrado.</div>`;
-};
+/**
+ * Filter orders
+ */
+function filterOrders() {
+    const search = document.getElementById('orderSearch')?.value?.toLowerCase() || '';
+    const status = document.getElementById('statusFilter')?.value || '';
 
-window.filterOrders = function () {
-    const search = document.getElementById('orderSearch').value.toLowerCase();
-    const status = document.getElementById('statusFilter').value;
+    const filterParameters = {};
+    if (search && search.trim()) filterParameters.search = search.trim();
+    if (status && status !== 'all') filterParameters.status = status;
 
-    if (search) {
-        getAllOrders(1, {search}).then(r => {});
-    } else if (status) {
-        getAllOrders(1, {status}).then(r => {});
+    loadOrders(1, filterParameters);
+}
+
+/**
+ * Edit order
+ */
+window.editOrder = async function (id) {
+    if (!id) {
+        showErrorMessage('ID do pedido não fornecido');
+        return;
     }
-};
 
-window.setOrderModalTitle = function (isEdit) {
-    const title       = document.getElementById('orderModalTitle');
-    title.textContent = isEdit ? 'Editar Pedido' : 'Adicionar Pedido';
-    document.getElementById('saveOrder').classList.toggle('d-none', isEdit);
-    document.getElementById('updateOrder').classList.toggle('d-none', !isEdit);
-};
+    try {
+        const response = await fetch(`./orders/show/${id}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-window.fillOrderForm = function (order) {
-    document.getElementById('orderId').value     = order.id || '';
-    document.getElementById('orderStatus').value = order.status || '';
-    document.getElementById('orderDate').value   = order.date || new Date().toISOString().split('T')[0];
-    // If order.items and order.amount exist, set them, else clear
-    if (order.items !== undefined) {
-        document.getElementById('orderItems').value = order.items;
+        const result = await response.json();
+        if (result?.status === 200 && result?.data) {
+            openOrderModal(result.data, true);
+        } else {
+            showErrorMessage('Erro ao carregar dados do pedido');
+        }
+    } catch (error) {
+        console.error('Error loading order:', error);
+        showErrorMessage('Erro ao carregar pedido para edição');
     }
-    if (order.amount !== undefined) {
-        document.getElementById('receivedAmount').value = order.amount;
+}
+
+/**
+ * Delete order
+ */
+window.deleteOrder = async function (id) {
+    if (!id) {
+        showErrorMessage('ID do pedido não fornecido');
+        return;
     }
-};
 
-window.resetOrderForm = function () {
-    document.getElementById('orderForm').reset();
-    document.getElementById('orderId').value   = '';
-    document.getElementById('orderDate').value = new Date().toISOString().split('T')[0];
-};
+    if (!confirm('Tem certeza que deseja excluir este pedido?')) {
+        return;
+    }
 
-window.setupAddItem = function (addItemBtn, itemsTableBody, receivedAmountRef) {
+    try {
+        const response = await fetch(`./orders/delete/${id}`, {
+            method : 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN'    : document.querySelector('meta[name="csrf-token"]')?.content || '',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type'    : 'application/json'
+            }
+        });
+
+        const result = await response.json();
+
+        if (result?.status === 200) {
+            showSuccessMessage('Pedido excluído com sucesso!');
+            loadOrders(currentPage, filterParams);
+        } else {
+            showErrorMessage(result?.message || 'Erro ao excluir pedido');
+        }
+    } catch (error) {
+        console.error('Error deleting order:', error);
+        showErrorMessage('Erro ao excluir pedido');
+    }
+}
+
+/**
+ * Set order modal title
+ */
+function setOrderModalTitle(isEdit) {
+    const title = document.getElementById('orderModalTitle');
+    if (title) {
+        title.textContent = isEdit ? 'Editar Pedido' : 'Adicionar Pedido';
+    }
+
+    const saveBtn   = document.getElementById('saveOrder');
+    const updateBtn = document.getElementById('updateOrder');
+
+    if (saveBtn) saveBtn.classList.toggle('d-none', isEdit);
+    if (updateBtn) updateBtn.classList.toggle('d-none', !isEdit);
+}
+
+/**
+ * Fill order form with data
+ */
+function fillOrderForm(order) {
+    console.log(order.order_date);
+    const fields = {
+        'orderId'         : order.id || '',
+        'orderStatus'     : order.status || '',
+        'orderDate'       : order.order_date || new Date().toISOString().split('T')[0],
+        'ifoodOrderNumber': order.ifood_order_number || '',
+        'customerAmount'  : order.total_amount_order || '',
+        'receivedAmount'  : order.total_amount_received || '',
+        'orderIdIfood'    : order.ifood_id || ''
+    };
+
+    Object.entries(fields).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.value = value;
+        }
+    });
+
+    // Load order items if they exist
+    if (order.items && Array.isArray(order.items)) {
+        orderItems = order.items.map(item => ({
+            product_id: item.product_id || '',
+            quantity  : item.quantity || 0,
+            price     : item.unit_price || 0,
+            total     : item.total_price || 0,
+            product   : item.product || null
+        }));
+        renderOrderItems();
+    } else {
+        orderItems = [];
+        renderOrderItems();
+    }
+}
+
+/**
+ * Reset order form
+ */
+function resetOrderForm() {
+    const form = document.getElementById('orderForm');
+    if (form) {
+        form.reset();
+    }
+
+    const orderId   = document.getElementById('orderId');
+    const orderDate = document.getElementById('orderDate');
+
+    if (orderId) orderId.value = '';
+    if (orderDate) orderDate.value = new Date().toISOString().split('T')[0];
+
+    orderItems = [];
+    renderOrderItems();
+    updateOrderTotal();
+}
+
+/**
+ * Render order items in the modal
+ */
+function renderOrderItems() {
+    const itemsTableBody = document.getElementById('itemsTableBody');
+    if (!itemsTableBody) return;
+
+    if (!orderItems || !Array.isArray(orderItems)) {
+        itemsTableBody.innerHTML = '';
+        return;
+    }
+
+    itemsTableBody.innerHTML = orderItems.map((item, index) => `
+        <tr>
+            <td>${item.product?.name || item.product_id || 'N/A'}</td>
+            <td>${item.quantity || 0}</td>
+            <td>R$ ${Number(item.price || 0).toFixed(2)}</td>
+            <td>R$ ${Number(item.total || item.quantity * item.price || 0).toFixed(2)}</td>
+            <td>
+                <button type="button" class="btn btn-sm btn-danger remove-item" data-index="${index}">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+
+    // Add event listeners for remove buttons
+    itemsTableBody.querySelectorAll('.remove-item').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const index = parseInt(e.target.closest('.remove-item').dataset.index);
+            removeOrderItem(index);
+        });
+    });
+}
+
+/**
+ * Remove order item
+ */
+function removeOrderItem(index) {
+    if (!orderItems || !Array.isArray(orderItems) || index < 0 || index >= orderItems.length) {
+        return;
+    }
+
+    orderItems.splice(index, 1);
+    renderOrderItems();
+    updateOrderTotal();
+}
+
+/**
+ * Update order total
+ */
+function updateOrderTotal() {
+    if (!orderItems || !Array.isArray(orderItems)) {
+        return;
+    }
+
+    const total = orderItems.reduce((sum, item) => {
+        const itemTotal = item.total || (item.quantity * item.price) || 0;
+        return sum + Number(itemTotal);
+    }, 0);
+
+    const receivedAmountField = document.getElementById('receivedAmount');
+    if (receivedAmountField) {
+        receivedAmountField.value = total.toFixed(2);
+    }
+}
+
+/**
+ * Setup add item functionality
+ */
+function setupAddItem() {
+    const addItemBtn = document.getElementById('addItem');
+    if (!addItemBtn) return;
+
     // Remove previous event listeners by cloning
     const newAddBtn = addItemBtn.cloneNode(true);
-    addItemBtn.parentNode.replaceChild(newAddBtn, addItemBtn);
+    if (addItemBtn.parentNode) {
+        addItemBtn.parentNode.replaceChild(newAddBtn, addItemBtn);
+    }
 
-    let orderTotal = 0;
-
-    newAddBtn.addEventListener("click", () => {
-        const product_id = document.getElementById("itemId").value;
-        const quantity   = parseInt(document.getElementById("itemQuantity").value);
-        const price      = parseFloat(document.getElementById("itemPrice").value);
-        const total      = (quantity * price).toFixed(2);
-        window.orderItems.push({product_id, quantity, price, total});
-
-        if (!product_id || isNaN(quantity) || isNaN(price)) {
-            alert("Preencha todos os campos do item");
-            return;
-        }
-        orderTotal += +total;
-        receivedAmountRef.value = orderTotal.toFixed(2);
-
-        const row     = document.createElement("tr");
-        row.innerHTML = `
-              <td class="text-truncate" id="itemid_${product_id}">${product_id}</td>
-              <td class="text-truncate" id="itemQuantity_${quantity}">${quantity}</td>
-              <td class="text-truncate" id="itemPrice_${price}">R$ ${price.toFixed(2)}</td>
-              <td class="text-truncate" id="itemTotal_${total}">R$ ${total}</td>
-              <td><button type="button" class="btn btn-sm btn-danger remove-item">X</button></td>
-            `;
-
-        row.querySelector(".remove-item").addEventListener("click", () => {
-            row.remove();
-            orderTotal -= +total;
-            receivedAmountRef.value = orderTotal.toFixed(2);
-            window.orderItems       = orderItems.filter(item => item.product_id + item.quantity !== product_id + quantity);
-
-        });
-        itemsTableBody.appendChild(row);
-
-        // limpa os campos
-        document.getElementById("itemId").value       = "";
-        document.getElementById("itemQuantity").value = 1;
-        document.getElementById("itemPrice").value    = "";
+    newAddBtn.addEventListener('click', () => {
+        addOrderItem();
     });
-    return newAddBtn;
-};
 
-window.openOrderModal = function (order = null) {
-    const modal  = new bootstrap.Modal(document.getElementById('orderModal'));
-    const isEdit = !!order;
+    return newAddBtn;
+}
+
+/**
+ * Add order item
+ */
+function addOrderItem() {
+    const productId = document.getElementById('itemId')?.value?.trim();
+    const quantity  = parseInt(document.getElementById('itemQuantity')?.value);
+    const price     = parseFloat(document.getElementById('itemPrice')?.value);
+
+    if (!productId || isNaN(quantity) || isNaN(price) || quantity <= 0 || price <= 0) {
+        showErrorMessage('Preencha todos os campos do item corretamente');
+        return;
+    }
+
+    const total   = quantity * price;
+    const newItem = {
+        product_id: productId,
+        quantity  : quantity,
+        price     : price,
+        total     : total
+    };
+
+    if (!orderItems) {
+        orderItems = [];
+    }
+
+    orderItems.push(newItem);
+    renderOrderItems();
+    updateOrderTotal();
+    clearItemForm();
+}
+
+/**
+ * Clear item form
+ */
+function clearItemForm() {
+    const fields = ['itemId', 'itemQuantity', 'itemPrice'];
+    fields.forEach(id => {
+        const element = document.getElementById(id);
+        if (element && element.value !== undefined) {
+            if (id === 'itemQuantity') {
+                element.value = '1';
+            } else {
+                element.value = '';
+            }
+        }
+    });
+}
+
+/**
+ * Open order modal
+ */
+window.openOrderModal = function (order = null, isEdit = false) {
+    const modalElement = document.getElementById('orderModal');
+    if (!modalElement) return;
+
+    const modal = new bootstrap.Modal(modalElement);
 
     setOrderModalTitle(isEdit);
 
-    if (isEdit) {
+    if (isEdit && order) {
         fillOrderForm(order);
     } else {
         resetOrderForm();
     }
 
-    const toggleItems    = document.getElementById("toggleItems");
-    const itemsSection   = document.getElementById("itemsSection");
-    const addItemBtn     = document.getElementById("addItem");
-    const itemsTableBody = document.getElementById("itemsTableBody");
-    let receivedAmount   = document.getElementById("receivedAmount");
-
-    setupAddItem(addItemBtn, itemsTableBody, receivedAmount);
-
+    setupAddItem();
     modal.show();
-};
+}
 
+/**
+ * Save order (create or update)
+ */
 window.saveOrder = async function (action = 'create', id = null) {
+    if (!validateOrderForm()) {
+        return;
+    }
 
-    // Validate that the element with id 'orderItems' exists
-    if (!window.orderItems || window.orderItems.length === 0) {
+    const orderData = getOrderFormData();
+
+    // Get order ID from form if not provided
+    if (action === 'update' && !id) {
+        id = document.getElementById('orderId')?.value;
+    }
+
+    if (action === 'update' && !id) {
+        showErrorMessage('ID do pedido não encontrado para atualização');
+        return;
+    }
+
+    const route = action === 'create' ? 'orders/new_order' : `orders/edit/${id}`;
+
+    try {
+        showLoading(true);
+
+        const response = await fetch(route, {
+            method : 'POST',
+            headers: {
+                'X-CSRF-TOKEN'    : document.querySelector('meta[name="csrf-token"]')?.content || '',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type'    : 'application/json'
+            },
+            body   : JSON.stringify(orderData)
+        });
+
+        const result = await response.json();
+
+        if ([200, 201].includes(result?.status)) {
+            showSuccessMessage(result.message || 'Pedido salvo com sucesso!');
+            closeModal();
+            loadOrders(currentPage, filterParams);
+        } else {
+            showErrorMessage(result.message || 'Erro ao salvar pedido');
+        }
+    } catch (error) {
+        console.error('Error saving order:', error);
+        showErrorMessage('Erro ao salvar pedido');
+    } finally {
+        showLoading(false);
+    }
+}
+
+/**
+ * Validate order form
+ */
+function validateOrderForm() {
+    if (!orderItems || !Array.isArray(orderItems) || orderItems.length === 0) {
+        showErrorMessage('Nenhum item adicionado ao pedido');
+        return false;
+    }
+
+    const requiredFields = ['orderStatus', 'orderDate'];
+    for (const field of requiredFields) {
+        const element = document.getElementById(field);
+        if (!element || !element.value || !element.value.trim()) {
+            showErrorMessage(`Campo ${field} é obrigatório`);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/**
+ * Get order form data
+ */
+function getOrderFormData() {
+    return {
+        ifoodId         : document.getElementById('orderIdIfood')?.value || '',
+        orderStatus     : document.getElementById('orderStatus')?.value || '',
+        orderDate       : document.getElementById('orderDate')?.value || '',
+        orderItems      : orderItems || [],
+        receivedAmount  : parseFloat(document.getElementById('receivedAmount')?.value) || 0,
+        customerAmount  : parseFloat(document.getElementById('customerAmount')?.value) || 0,
+        ifoodOrderNumber: document.getElementById('ifoodOrderNumber')?.value || ''
+    };
+}
+
+/**
+ * Close modal
+ */
+function closeModal() {
+    const modalElement = document.getElementById('orderModal');
+    if (modalElement) {
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) {
+            modal.hide();
+        }
+    }
+}
+
+/**
+ * Import orders from file
+ */
+window.importOrders = async function () {
+    const input = document.getElementById('ordersFile');
+    if (!input || !input.files || input.files.length === 0) {
+        showErrorMessage('Selecione um arquivo!');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', input.files[0]);
+
+    try {
+        showLoading(true);
+
+        const response = await fetch('orders/import', {
+            method : 'POST',
+            body   : formData,
+            headers: {
+                'X-CSRF-TOKEN'    : document.querySelector('meta[name="csrf-token"]')?.content || '',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.status === 200) {
+            showSuccessMessage(data.message || 'Pedidos importados com sucesso!');
+            loadOrders();
+        } else {
+            showErrorMessage(data.message || 'Erro na importação');
+        }
+    } catch (error) {
+        console.error('Error importing orders:', error);
+        showErrorMessage('Erro na importação');
+    } finally {
+        showLoading(false);
+    }
+}
+
+/**
+ * Show loading state
+ */
+function showLoading(show) {
+    if (typeof window.showLoading === 'function') {
+        window.showLoading(show);
+    }
+}
+
+/**
+ * Show success message
+ */
+function showSuccessMessage(message) {
+    if (typeof window.modalMessage === 'function') {
+        window.modalMessage({
+            title      : 'Sucesso',
+            description: message,
+            type       : 'success'
+        });
+    } else {
+        alert(message);
+    }
+}
+
+/**
+ * Show error message
+ */
+function showErrorMessage(message) {
+    if (typeof window.modalMessage === 'function') {
         window.modalMessage({
             title      : 'Erro',
-            description: 'Nenhum item adicionado ao pedido',
-            type       : 'error',
-        });
-        showLoading(false);
-        return;
-    }
-    const orderItems       = window.orderItems;
-    const receivedAmount   = parseFloat(document.getElementById('receivedAmount').value);
-    const ifoodOrderNumber = document.getElementById('ifoodOrderNumber').value;
-    const customerAmount   = parseFloat(document.getElementById('customerAmount').value) || 0;
-    const ifoodId          = document.getElementById('orderIdIfood').value;
-    const orderStatus      = document.getElementById('orderStatus').value;
-    const orderDate        = document.getElementById('orderDate').value;
-
-    let route = 'orders/new_order';
-    if (action !== 'create') {
-        route = `orders/edit/${id}`;
-    }
-
-    let options = {
-        method : 'POST',
-        headers: window.ajax_headers,
-        body   : JSON.stringify({
-            ifoodId,
-            orderStatus,
-            orderDate,
-            orderItems,
-            receivedAmount,
-            customerAmount,
-            ifoodOrderNumber
-        }),
-    };
-
-    showLoading(true);
-    let response = await fetch(`${route}`, options);
-    let retorno  = await response.json();
-
-    if (retorno) {
-        if (retorno?.status === 200 && retorno?.data) {
-            window.modalMessage({
-                title      : retorno.message,
-                description: retorno.message,
-                type       : 'success',
-            });
-        }
-    } else {
-        window.modalMessage({
-            title      : 'Erro ao criar pedido',
-            description: 'Ocorreu um erro ao criar o pedido',
-            type       : 'error',
-        });
-    }
-    showLoading(false);
-    bootstrap.Modal.getInstance(document.getElementById('orderModal')).hide();
-};
-
-window.editOrder = function (id) {
-    openOrderModal(order);
-};
-
-window.deleteOrder = function (id) {
-    if (confirm('Are you sure you want to delete this order?')) {
-        orders = orders.filter(o => o.id !== id);
-        loadOrdersPage();
-    }
-};
-
-
-window.importOrders = function () {
-    let input = document.getElementById('ordersFile');
-    if (input.files.length === 0) {
-        alert("Selecione um arquivo!");
-        return;
-    }
-
-    let formData = new FormData();
-    formData.append('file', input.files[0]);
-    window.showLoading(true);
-
-    fetch("orders/import", {
-        method : "POST",
-        body   : formData,
-        headers: {
-            'X-CSRF-TOKEN'    : document.querySelector('meta[name="csrf-token"]').content,
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    }).then(res => res.json())
-        .then(data => {
-            window.showLoading(false);
-            window.modalMessage({
-                title      : data.message,
-                description: data.errors ? data.errors?.description : data.message,
-                type       : data.status === 200 ? 'success' : 'error'
-            });
-            getAllOrders();
-        }).catch(err => {
-        window.showLoading(false);
-        window.modalMessage({
-            title      : 'Erro na importação',
-            description: err.message,
+            description: message,
             type       : 'error'
         });
-        console.error(err);
-    });
-};
-
-// Add event listeners
-document.getElementById('orderSearch').addEventListener('input', filterOrders);
-document.getElementById('statusFilter').addEventListener('change', filterOrders);
-
+    } else {
+        alert(message);
+    }
+}

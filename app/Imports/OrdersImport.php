@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\Order;
+use Illuminate\Database\Eloquent\Model;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Carbon\Carbon;
@@ -13,9 +14,9 @@ class OrdersImport implements ToModel, WithHeadingRow
     /**
      * @param array $row
      *
-     * @return \Illuminate\Database\Eloquent\Model|null
+     * @return Model|Order|null
      */
-    public function model(array $row)
+    public function model(array $row): Model|Order|null
     {
         return new Order([
             'ifood_id'              => $row['id_do_pedido'] ?? null,
