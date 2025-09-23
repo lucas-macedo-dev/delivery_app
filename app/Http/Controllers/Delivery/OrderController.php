@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Delivery;
 
 use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use App\Imports\OrdersImport;
 use App\Http\Controllers\Controller;
@@ -267,10 +268,7 @@ class OrderController extends Controller
         }
 
         try {
-            // Delete related items first
             $order->items()->delete();
-
-            // Delete the order
             $order->delete();
 
             return $this->response('Pedido excluído com sucesso', 200);

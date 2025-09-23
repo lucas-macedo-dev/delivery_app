@@ -16,17 +16,17 @@ class ProductResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'name'        => $this->name,
-            'description' => $this->description,
-            'available'   => $this->available,
-            'price'       => $this->price,
+            'name'         => $this->name,
+            'description'  => $this->description,
+            'available'    => $this->available,
+            'price'        => $this->price,
             'unit_measure' => $this->unit_measure,
-            'stock' => $this->stock_quantity,
-            'created_at'  => Carbon::parse($this->created_at)->format('d/m/Y H:i:s'),
-            'updated_at'  => Carbon::parse($this->updated_at)->format('d/m/Y H:i:s'),
-            'category'    => $this->category,
-            'id'          => $this->id,
-            'image_name'  => $this->image_name,
+            'stock'        => $this->stock_quantity,
+            'created_at'   => Carbon::parse($this->created_at)->format('d/m/Y H:i:s'),
+            'updated_at'   => Carbon::parse($this->updated_at)->format('d/m/Y H:i:s'),
+            'category'     => $this->category,
+            'id'           => $this->id,
+            'image_name'   => $this->image_name,
         ];
     }
 }

@@ -105,8 +105,18 @@ window.getAllExpenses = async function (page = 1) {
         const data = await response.json();
 
         if (data.status === 200 && data.data) {
-            buildExpensesTable(data.data.expenses);
-            buildPagination(data.data.meta);
+            buildExpensesTable(data.data?.expenses);
+            console.log(data.data.meta);
+            window.pagination(
+                {
+                    page: data.data.meta.current_page,
+                    max: data.data.meta.per_page,
+                    total: data.data.meta.total,
+                    qtt: 5,
+                    id: 'pagination',
+                    callback: 'getAllExpenses'
+                })
+                ;
         } else {
             buildExpensesTable([]);
             window.modalMessage({
@@ -138,7 +148,7 @@ window.getExpense = async function (id) {
     }
 
     try {
-        const response = await fetch(`./expenses/${id}`, {
+        const response = await fetch(`./expenses/show/${id}`, {
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 'Accept': 'application/json',
@@ -269,53 +279,6 @@ window.buildExpensesTable = function (expenses) {
     tbody.innerHTML = html;
 };
 
-// Build pagination
-window.buildPagination = function (meta) {
-    const pagination = document.getElementById('pagination');
-
-    if (!pagination || meta.last_page <= 1) {
-        if (pagination) pagination.innerHTML = '';
-        return;
-    }
-
-    let paginationHTML = '';
-
-    // Previous button
-    if (meta.current_page > 1) {
-        paginationHTML += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="getAllExpenses(${meta.current_page - 1})">Anterior</a></li>`;
-    }
-
-    // Page numbers
-    const startPage = Math.max(1, meta.current_page - 2);
-    const endPage = Math.min(meta.last_page, meta.current_page + 2);
-
-    if (startPage > 1) {
-        paginationHTML += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="getAllExpenses(1)">1</a></li>`;
-        if (startPage > 2) {
-            paginationHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
-        }
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-        const activeClass = i === meta.current_page ? 'active' : '';
-        paginationHTML += `<li class="page-item ${activeClass}"><a class="page-link" href="javascript:void(0)" onclick="getAllExpenses(${i})">${i}</a></li>`;
-    }
-
-    if (endPage < meta.last_page) {
-        if (endPage < meta.last_page - 1) {
-            paginationHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
-        }
-        paginationHTML += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="getAllExpenses(${meta.last_page})">${meta.last_page}</a></li>`;
-    }
-
-    // Next button
-    if (meta.current_page < meta.last_page) {
-        paginationHTML += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="getAllExpenses(${meta.current_page + 1})">Próximo</a></li>`;
-    }
-
-    pagination.innerHTML = paginationHTML;
-};
-
 // Show table loading state
 function showTableLoading() {
     const tbody = document.getElementById('expensesTableBody');
@@ -362,7 +325,6 @@ window.editExpense = async function (id) {
 
     if (modalLabel) modalLabel.textContent = 'Editar Despesa';
 
-    // Fill form fields
     const description = document.getElementById('description');
     const value = document.getElementById('value');
     const expenseDate = document.getElementById('expense_date');
@@ -375,7 +337,6 @@ window.editExpense = async function (id) {
     modal.show();
 };
 
-// Open delete modal
 window.openDeleteModal = function (id, description, value) {
     deleteExpenseId = id;
     const deleteExpenseInfo = document.getElementById('deleteExpenseInfo');
@@ -388,7 +349,6 @@ window.openDeleteModal = function (id, description, value) {
     modal.show();
 };
 
-// Handle form submission
 async function handleFormSubmit(e) {
     e.preventDefault();
 
@@ -396,7 +356,6 @@ async function handleFormSubmit(e) {
     const spinner = submitBtn ? submitBtn.querySelector('.spinner-border') : null;
 
     try {
-        // Show loading state
         if (submitBtn) submitBtn.disabled = true;
         if (spinner) spinner.classList.remove('d-none');
 
@@ -668,14 +627,4 @@ window.showLoading = function(show) {
     // Implement your loading logic here
     // This matches the pattern from your products.js
     console.log(show ? 'Loading...' : 'Loaded');
-};
-
-// Pagination helper function (matches your products.js pattern)
-window.pagination = function(config) {
-    buildPagination({
-        current_page: config.page,
-        last_page: Math.ceil(config.total / config.max),
-        total: config.total,
-        per_page: config.max
-    });
 };

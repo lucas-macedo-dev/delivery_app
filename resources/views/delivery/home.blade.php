@@ -34,7 +34,7 @@
                     <h6 class="text-muted mb-1">Total de Clientes</h6>
                     <h3 class="mb-2 fw-bold text-primary">{{number_format($data['customers'] ?? 0, 0, ',', '.')}}</h3>
                     <small class="text-success">
-                        <i class="bi bi-arrow-up"></i> +5% este mês
+                        <i class="bi bi-arrow-up"></i> -% este mês
                     </small>
                     <div class="position-absolute top-0 end-0 p-3 opacity-25">
                         <i class="bi bi-people fs-1"></i>
@@ -50,7 +50,7 @@
                         style="width: 60px; height: 60px;">
                         <i class="bi bi-truck text-info fs-3"></i>
                     </div>
-                    <h6 class="text-muted mb-1">Pedidos Total</h6>
+                    <h6 class="text-muted mb-1">Total de Pedidos</h6>
                     <h3 class="mb-2 fw-bold text-info">{{number_format($data['orders'] ?? 0)}}</h3>
                     <small class="text-warning">
                         <i class="bi bi-clock"></i> {{ $data['pending_orders'] ?? 0 }} pendentes
@@ -72,7 +72,7 @@
                     <h6 class="text-muted mb-1">Faturamento</h6>
                     <h3 class="mb-2 fw-bold text-success">R$ {{number_format($data['amount'] ?? 0, 2, ',', '.')}}</h3>
                     <small class="text-success">
-                        <i class="bi bi-arrow-up"></i> +12% este mês
+                        <i class="bi bi-arrow-up"></i> -% este mês
                     </small>
                     <div class="position-absolute top-0 end-0 p-3 opacity-25">
                         <i class="bi bi-graph-up fs-1"></i>
@@ -91,7 +91,7 @@
                     <h6 class="text-muted mb-1">Gastos</h6>
                     <h3 class="mb-2 fw-bold text-danger">R$ {{number_format($data['expenses'] ?? 0, 2, ',', '.')}}</h3>
                     <small class="text-muted">
-                        <i class="bi bi-calendar3"></i> Este mês
+                        <i class="bi bi-calendar3"></i> -% Este mês
                     </small>
                     <div class="position-absolute top-0 end-0 p-3 opacity-25">
                         <i class="bi bi-receipt fs-1"></i>
@@ -125,7 +125,7 @@
                         <i class="bi bi-star text-primary fs-4"></i>
                     </div>
                     <h6 class="text-muted mb-1">Avaliação Média</h6>
-                    <h4 class="mb-0 fw-bold">{{ $data['avg_rating'] ?? '4.5' }}</h4>
+                    <h4 class="mb-0 fw-bold">{{ $data['avg_rating'] ?? '-' }}</h4>
                 </div>
             </div>
         </div>
@@ -138,7 +138,7 @@
                         <i class="bi bi-clock text-info fs-4"></i>
                     </div>
                     <h6 class="text-muted mb-1">Tempo Médio</h6>
-                    <h4 class="mb-0 fw-bold">{{ $data['avg_delivery_time'] ?? '35' }}min</h4>
+                    <h4 class="mb-0 fw-bold">{{ $data['avg_delivery_time'] ?? '-' }}min</h4>
                 </div>
             </div>
         </div>
@@ -183,42 +183,24 @@
                     <h5 class="mb-0">Produtos Mais Vendidos</h5>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="flex-shrink-0">
-                            <div class="bg-success rounded" style="width: 40px; height: 40px;"></div>
+                    @if (empty($data['most_saled_product']))
+                        <p class="text-muted mb-0">Nenhum produto vendido ainda.</p>
+                    @endif
+                    @foreach ($data['most_saled_product'] ?? [] as $product)
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <img src="/storage/delivery/{{$product['image_name']}}" alt="{{ $product['name'] }}"
+                                     class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">{{ $product['name'] }}</h6>
+                                <small class="text-muted">{{ $product['total_quantity'] }} vendas</small>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <span class="badge bg-secondary">{{ $loop->iteration }}º</span>
+                            </div>
                         </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h6 class="mb-1">Pizza Margherita</h6>
-                            <small class="text-muted">156 vendas</small>
-                        </div>
-                        <div class="flex-shrink-0">
-                            <span class="badge bg-success">1º</span>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="flex-shrink-0">
-                            <div class="bg-primary rounded" style="width: 40px; height: 40px;"></div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h6 class="mb-1">Hambúrguer Clássico</h6>
-                            <small class="text-muted">142 vendas</small>
-                        </div>
-                        <div class="flex-shrink-0">
-                            <span class="badge bg-primary">2º</span>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="flex-shrink-0">
-                            <div class="bg-warning rounded" style="width: 40px; height: 40px;"></div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h6 class="mb-1">Refrigerante Coca</h6>
-                            <small class="text-muted">128 vendas</small>
-                        </div>
-                        <div class="flex-shrink-0">
-                            <span class="badge bg-warning">3º</span>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -232,15 +214,25 @@
                 </div>
                 <div class="card-body">
                     <div class="list-group list-group-flush">
+                        @if (!empty($data['last_orders']))
                             @foreach ($data['last_orders'] as $order)
-                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
-                                <div>
-                                    <h6 class="mb-1">Pedido #{{$order['id']}}</h6>
-                                    <small class="text-muted">Total recebido - R$ {{$order['total_amount_received']}}</small>
+                                <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <div>
+                                        <h6 class="mb-1">Pedido #{{$order['id']}}</h6>
+                                        <small class="text-muted">Total recebido -
+                                            R$ {{$order['total_amount_received']}}</small>
+                                    </div>
+                                    <span
+                                        class="badge {{ $order['status'] == 'completed' ? 'bg-success' : 'bg-danger'}} ">{{ $order['status'] }}</span>
                                 </div>
-                                <span class="badge {{ $order['status'] == 'completed' ? 'bg-success' : 'bg-danger'}} ">{{ $order['status'] }}</span>
-                            </div>
                             @endforeach
+                        @else
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <div>
+                                    <h6 class="mb-1">Nenhum pedido encontrado</h6>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

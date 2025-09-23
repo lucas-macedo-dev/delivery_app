@@ -16,7 +16,7 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
     {
         return view('delivery.products');
     }
@@ -32,7 +32,7 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ProductRequest $request)
+    public function store(ProductRequest $request): \Illuminate\Http\JsonResponse
     {
         try {
             if ($request->hasFile('image') && $request->file('image')->isValid()) {
@@ -42,13 +42,13 @@ class ProductController extends Controller
             }
 
             $created = Product::query()->create([
-                'name'              => $request->name,
-                'price'             => $request->price,
-                'image_name'        => $imageName ?? null,
-                'available'         => $request->available ? 1 : 0,
-                'unit_measure'      => $request->unit_measure,
-                'stock_quantity'    => $request->stock,
-                'category'          => $request->category
+                'name'           => $request->name,
+                'price'          => $request->price,
+                'image_name'     => $imageName ?? null,
+                'available'      => $request->available ? 1 : 0,
+                'unit_measure'   => $request->unit_measure,
+                'stock_quantity' => $request->stock,
+                'category'       => $request->category
             ]);
 
             if ($created->save()) {
@@ -91,20 +91,20 @@ class ProductController extends Controller
 
         $products = [
             'products' => $data,
-            'links' => [
+            'links'    => [
                 'first' => $products->url(1),
-                'last' => $products->url($products->lastPage()),
-                'prev' => $products->previousPageUrl(),
-                'next' => $products->nextPageUrl(),
+                'last'  => $products->url($products->lastPage()),
+                'prev'  => $products->previousPageUrl(),
+                'next'  => $products->nextPageUrl(),
             ],
-            'meta' => [
+            'meta'     => [
                 'current_page' => $products->currentPage(),
-                'from' => $products->firstItem(),
-                'last_page' => $products->lastPage(),
-                'path' => $products->path(),
-                'per_page' => $products->perPage(),
-                'last_item' => $products->lastItem(),
-                'total' => $products->total(),
+                'from'         => $products->firstItem(),
+                'last_page'    => $products->lastPage(),
+                'path'         => $products->path(),
+                'per_page'     => $products->perPage(),
+                'last_item'    => $products->lastItem(),
+                'total'        => $products->total(),
             ]
         ];
 
@@ -112,17 +112,9 @@ class ProductController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(ProductRequest $request, string $id)
+    public function update(ProductRequest $request, string $id): \Illuminate\Http\JsonResponse
     {
         $product = Product::query()->find($id);
 
@@ -131,12 +123,12 @@ class ProductController extends Controller
         }
 
         $updateData = [
-            'name'              => $request->name,
-            'price'             => $request->price,
-            'available'         => $request->available ? 1 : 0,
-            'unit_measure'      => $request->unit_measure,
-            'stock_quantity'    => $request->stock,
-            'category'          => $request->category
+            'name'           => $request->name,
+            'price'          => $request->price,
+            'available'      => $request->available ? 1 : 0,
+            'unit_measure'   => $request->unit_measure,
+            'stock_quantity' => $request->stock,
+            'category'       => $request->category
         ];
 
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
@@ -164,7 +156,7 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): \Illuminate\Http\JsonResponse
     {
         try {
             $product = Product::query()->find($id);
@@ -185,5 +177,16 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             return $this->error($e->getMessage(), 500);
         }
+    }
+
+    public function mostSaledProduct()
+    {
+        return Product::query()
+                ->join('order_items', 'products.id', '=', 'order_items.product_id')
+                ->selectRaw('products.*, SUM(order_items.quantity) as total_quantity')
+                ->groupBy('products.id')
+                ->orderBy('total_quantity', 'desc')
+                ->limit(3)
+                ->get();
     }
 }
