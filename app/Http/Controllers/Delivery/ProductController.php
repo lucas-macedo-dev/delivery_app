@@ -125,7 +125,7 @@ class ProductController extends Controller
         $updateData = [
             'name'           => $request->name,
             'price'          => $request->price,
-            'available'      => $request->available ? 1 : 0,
+            'available'      => $request->available == 'true' ? 1 : 0,
             'unit_measure'   => $request->unit_measure,
             'stock_quantity' => $request->stock,
             'category'       => $request->category
@@ -179,14 +179,14 @@ class ProductController extends Controller
         }
     }
 
-    public function mostSaledProduct()
+    public function mostSaledProduct(): \Illuminate\Database\Eloquent\Collection
     {
         return Product::query()
                 ->join('order_items', 'products.id', '=', 'order_items.product_id')
                 ->selectRaw('products.*, SUM(order_items.quantity) as total_quantity')
                 ->groupBy('products.id')
                 ->orderBy('total_quantity', 'desc')
-                ->limit(3)
+                ->limit(5)
                 ->get();
     }
 }

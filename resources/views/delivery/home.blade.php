@@ -172,8 +172,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-body">
-                    <canvas id="salesChart" height="300"></canvas>
+                <div class="card-body text-center">
+{{--                     <canvas id="salesChart" height="300"></canvas> --}}
+                    <img src="{{ asset('images/em_construcao.png') }}" style="max-width: 80%; height: auto;" class="img-fluid" alt="Página em construção">
                 </div>
             </div>
         </div>

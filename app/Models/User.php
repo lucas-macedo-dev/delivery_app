@@ -21,6 +21,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_approved',
+        'approved_at',
+        'approved_by'
     ];
 
     /**
@@ -42,7 +45,19 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
+            'approved_at'       => 'datetime',
+            'is_approved'       => 'boolean'
         ];
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function isApproved()
+    {
+        return $this->is_approved;
     }
 }

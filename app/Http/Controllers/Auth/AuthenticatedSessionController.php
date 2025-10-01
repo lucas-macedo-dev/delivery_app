@@ -26,9 +26,14 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
-        $request->session()->regenerate();
+        if (!auth()->user()->is_approved) {
+            auth()->logout();
+            return redirect()->route('login')
+                ->with('error', 'Sua conta ainda não foi aprovada. Aguarde a aprovação do administrador.');
+        }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $request->session()->regenerate();
+        return redirect()->intended(route('delivery.home'));
     }
 
     /**
@@ -37,11 +42,8 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
-
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
-
         return redirect('/');
     }
 }

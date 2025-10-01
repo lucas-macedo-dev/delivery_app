@@ -7,10 +7,26 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Delivery\OrderController;
 use App\Http\Controllers\Delivery\ProductController;
 use App\Http\Controllers\Delivery\CustomerController;
+use App\Http\Controllers\Admin\UserApprovalController;
 
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/users/approve/{user}', [UserApprovalController::class, 'approve'])
+        ->name('users.approve');
+    Route::get('/users/reject/{user}', [UserApprovalController::class, 'reject'])
+        ->name('users.reject');
+});
 
+Route::middleware(['auth', 'check.approved'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/users', [UserApprovalController::class, 'index'])->name('users.index');
+    Route::post('/users/{user}/approve', [UserApprovalController::class, 'approveAction'])
+        ->name('users.approve.action');
+    Route::delete('/users/{user}/reject', [UserApprovalController::class, 'rejectAction'])
+        ->name('users.reject.action');
+    Route::patch('/users/{user}/revoke', [UserApprovalController::class, 'revokeAccess'])
+        ->name('users.revoke');
+});
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'check.approved'])->group(function () {
     Route::get('/', function () {
         return view('delivery.home');
     })->name('dashboard');

@@ -55,13 +55,22 @@
                         Despesas
                     </a>
                 </li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link {{ request()->is('delivery/payments') ? 'active' : '' }}"
                         href="{{ route('delivery.payments') }}" data-page="fee-payments">
                         <i class="bi bi-credit-card me-2"></i>
                         Métodos de Pagamento
                     </a>
-                </li>
+                </li> --}}
+                @if (Auth::user() && Auth::user()->role === 'admin')
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->is('admin/users') ? 'active' : '' }}"
+                            href="{{ route('admin.users.index') }}" data-page="users">
+                            <i class="bi bi-person me-2"></i>
+                            Usuários
+                        </a>
+                    </li>
+                @endif
             </ul>
         </div>
     </nav>
@@ -74,12 +83,26 @@
                 </button>
                 <div class="ms-auto">
                     @auth
-                        <form id="logout_form" action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" id="btn_logout" class="btn bg-secondary-subtle text-dark me-2">
-                                <i class="fa-solid fa-person-running"></i>&nbsp;Sair
+                        <div class="dropdown">
+                            <button class="btn bg-secondary-subtle text-dark me-2 dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-user"></i>&nbsp;{{ Auth::user()->name }}
                             </button>
-                        </form>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                                        <i class="fa-solid fa-id-badge"></i>&nbsp;Perfil
+                                    </a>
+                                </li>
+                                <li>
+                                    <form id="logout_form" action="{{ route('logout') }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" id="btn_logout" class="dropdown-item">
+                                            <i class="fa-solid fa-person-running"></i>&nbsp;Sair
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
                     @endauth
 
                     @guest
