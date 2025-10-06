@@ -28,8 +28,7 @@
 
                 <p>Se você tiver alguma dúvida, não hesite em entrar em contato conosco.</p>
 
-                <p>Atenciosamente,<br>
-                    {{ config('app.name') }}</p>
+                <p>Atenciosamente,<br> {{ config('app.name') }}</p>
             </div>
         </div>
     </body>
