@@ -1,5 +1,6 @@
 @extends('header')
 @vite(['resources/js/delivery/customers.js'])
+@section('title', 'Clientes')
 @section('content')
     <div class="page-header">
         <div class="d-flex justify-content-between align-items-center">

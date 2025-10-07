@@ -1,4 +1,5 @@
 @extends('header')
+@section('title', 'Dashboard')
 @section('content')
     <!-- Welcome Section -->
     <div class="row mb-4">

@@ -1,5 +1,6 @@
 @extends('header')
 @vite(['resources/js/delivery/orders.js'])
+@section('title', 'Pedidos')
 @section('content')
     <div class="page-header">
         <div class="row justify-content-between align-items-center">

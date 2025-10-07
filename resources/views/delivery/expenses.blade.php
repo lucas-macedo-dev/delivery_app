@@ -1,5 +1,6 @@
 @extends('header')
 @vite(['resources/js/delivery/expenses.js'])
+@section('title', 'Despesas')
 @section('content')
     <div class="container-fluid">
         <div class="row">
