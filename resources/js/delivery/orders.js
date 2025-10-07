@@ -77,6 +77,7 @@ window.loadOrders = async function (page = 1, filterParameters = {}) {
                 callback: 'loadOrders'
             });
         } else {
+            renderOrdersTable({})
             renderEmptyState();
         }
     } catch (error) {
@@ -329,11 +330,15 @@ function renderMobileCards(orders) {
                         <div>
                             <h6 class="card-title mb-1">#${id} ${order.ifood_order_number ? `- ${order.ifood_order_number}` : ''}</h6>
                             <div class="small text-muted">${order.order_date || 'N/A'}</div>
+                            <div class="small my-2 rounded  text-white text-center
+                                ${order.ifood_order_number ? 'bg-danger' : 'bg-primary'}">${order.ifood_order_number ? 'ifood' : 'próprio'}
+                            </div>
+
                         </div>
                         <div class="text-end">
                             <div>Total: <strong>R$ ${Number(order.total_amount_order || 0).toFixed(2)}</strong></div>
                             <div>Recebido: <strong>R$ ${Number(order.total_amount_received || 0).toFixed(2)}</strong></div>
-                            <div>${order.status ? `<span class="${getStatusBadgeClass(order.status)}">${order.status}</span>` : ''}</div>
+                            <div class="my-2">${order.status ? `<span class="${getStatusBadgeClass(order.status)}">${order.status}</span>` : ''}</div>
                         </div>
                     </div>
                     <div class="mt-3 d-flex justify-content-between">

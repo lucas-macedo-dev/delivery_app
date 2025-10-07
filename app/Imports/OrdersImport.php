@@ -19,12 +19,12 @@ class OrdersImport implements ToModel, WithHeadingRow
     public function model(array $row): Model|Order|null
     {
         return new Order([
-            'ifood_id'              => $row['id_do_pedido'] ?? null,
-            'ifood_order_number'    => $row['n_pedido'] ?? null,
-            'order_date'            => Carbon::parse(ExcelDate::excelToDateTimeObject($row['data'])->format('Y-m-d H:i:s')),
-            'total_amount_order'    => isset($row['total_do_parceiro']) ? str_replace(',', '.', $row['total_do_parceiro']) : 0,
-            'total_amount_received' => isset($row['total_do_pedido']) ? str_replace(',', '.', $row['total_do_pedido']) : 0,
-            'status'                => !empty($row['origem_do_cancelamento']) ? 'cancelled' : 'completed',
+            'ifood_id'              => $row['id_completo_do_pedido'] ?? null,
+            'ifood_order_number'    => $row['id_curto_do_pedido'] ?? null,
+            'order_date'            => Carbon::parse($row['data_e_hora_do_pedido'])->format('Y-m-d H:i:s'),
+            'total_amount_order'    => $row['total_pago_pelo_cliente_r'] ?? 0,
+            'total_amount_received' => $row['valor_dos_itens_r'] ?? 0,
+            'status'                => $row['status_final_do_pedido'] === 'CONCLUIDO' ? 'completed' : 'cancelled',
         ]);
     }
 }

@@ -9,12 +9,13 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Página Inicial</title>
+    <link rel="icon" href="{{ asset('images/logo.ico') }}">
     @vite(['resources/sass/app.scss', 'resources/js/app.js', 'resources/css/app.css'])
 </head>
 
 <body>
     <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-        <div class="position-sticky pt-3">
+        <div class="pt-3">
             <div class="text-center mb-4">
                 <i class="bi bi-truck text-primary fs-1"></i>
                 <h5 class="mt-2">Rock and Burger</h5>
@@ -55,13 +56,6 @@
                         Despesas
                     </a>
                 </li>
-                {{-- <li class="nav-item">
-                    <a class="nav-link {{ request()->is('delivery/payments') ? 'active' : '' }}"
-                        href="{{ route('delivery.payments') }}" data-page="fee-payments">
-                        <i class="bi bi-credit-card me-2"></i>
-                        Métodos de Pagamento
-                    </a>
-                </li> --}}
                 @if (Auth::user() && Auth::user()->role === 'admin')
                     <li class="nav-item">
                         <a class="nav-link {{ request()->is('admin/users') ? 'active' : '' }}"
@@ -72,10 +66,15 @@
                     </li>
                 @endif
             </ul>
+            <a class="nav-link d-sm-none bg-secondary-subtle text-dark" data-bs-toggle="collapse"
+               data-bs-target="#sidebar">
+                <i class="bi bi-list"></i>
+                Fechar Menu
+            </a>
         </div>
     </nav>
     <main class="col-md-9 ms-sm-auto col-lg-10"> <!-- Top navbar -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom" id="main_navbar">
             <div class="container-fluid">
                 <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse"
                     data-bs-target="#sidebar">

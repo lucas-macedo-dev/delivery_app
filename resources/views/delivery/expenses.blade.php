@@ -91,19 +91,17 @@
                             </div>
                             <div class="col-12 col-sm-6 col-md-4 col-xl-2 d-flex align-items-end">
                                 <div class="d-grid gap-2 w-100">
-                                    <div class="btn-group d-block d-sm-flex" role="group">
-                                        <button type="button" class="btn btn-outline-secondary btn-sm mb-2 mb-sm-0"
-                                                onclick="clearFilters()">
-                                            <i class="bi bi-x me-1"></i>
-                                            <span class="d-none d-sm-inline">Limpar</span>
-                                            <span class="d-sm-none">Limpar Filtros</span>
-                                        </button>
-                                        <button type="button" class="btn btn-primary btn-sm" onclick="getAllExpenses()">
-                                            <i class="bi bi-search me-1"></i>
-                                            <span class="d-none d-sm-inline">Buscar</span>
-                                            <span class="d-sm-none">Aplicar Filtros</span>
-                                        </button>
-                                    </div>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            onclick="clearFilters()">
+                                        <i class="bi bi-x me-1"></i>
+                                        <span class="d-none d-sm-inline">Limpar</span>
+                                        <span class="d-sm-none">Limpar Filtros</span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="getAllExpenses()">
+                                        <i class="bi bi-search me-1"></i>
+                                        <span class="d-none d-sm-inline">Buscar</span>
+                                        <span class="d-sm-none">Aplicar Filtros</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
