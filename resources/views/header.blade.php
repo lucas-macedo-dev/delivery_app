@@ -17,7 +17,7 @@
     <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
         <div class="pt-3">
             <div class="text-center mb-4">
-                <i class="bi bi-truck text-primary fs-1"></i>
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" width="200">
                 <h5 class="mt-2">Rock and Burger</h5>
             </div>
             <ul class="nav flex-column">
