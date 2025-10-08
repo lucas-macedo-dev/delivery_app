@@ -1,5 +1,6 @@
 @extends('header')
 @section('title', 'Dashboard')
+@vite('resources/js/delivery/home.js')
 @section('content')
     <!-- Welcome Section -->
     <div class="row mb-4">
@@ -17,6 +18,39 @@
                             <i class="bi bi-speedometer2" style="font-size: 4rem; opacity: 0.3;"></i>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-funnel-fill"></i> Filtros</h5>
+        </div>
+        <div class="card-body">
+            <div class="row justify-content-center g-2 g-md-3">
+                <div class="col-12 col-md-4 col-xl-4 mb-2 mb-xl-0">
+                    <label for="startDate" class="form-label">Data Início</label>
+                    <input type="date" class="form-control" id="startDate" value="{{date('Y-m-d')}}">
+                </div>
+                <div class="col-12 col-md-4 col-xl-4 mb-2 mb-xl-0">
+                    <label for="endDate" class="form-label">Data Fim</label>
+                    <input type="date" class="form-control" id="endDate">
+                </div>
+                <div class="col-12 d-flex col-md-2 col-xl-2  align-items-end">
+                    <button type="button" class="btn btn-outline-secondary w-100"
+                            onclick="clearFilters()">
+                        <i class="bi bi-x me-1"></i>
+                        <span class="d-none d-sm-inline">Limpar</span>
+                        <span class="d-sm-none">Limpar Filtros</span>
+                    </button>
+                </div>
+                <div class="col-12 d-flex col-md-2 col-xl-2 align-items-end">
+                    <button type="button" class="btn btn-primary w-100" onclick="searchData()">
+                        <i class="bi bi-search me-1"></i>
+                        <span class="d-none d-sm-inline">Buscar</span>
+                        <span class="d-sm-none">Aplicar Filtros</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -157,8 +191,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Charts and Activity Section -->
     <div class="row g-4 mb-4">
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm">
@@ -174,8 +206,9 @@
                     </div>
                 </div>
                 <div class="card-body text-center">
-{{--                     <canvas id="salesChart" height="300"></canvas> --}}
-                    <img src="{{ asset('images/em_construcao.png') }}" style="max-width: 80%; height: auto;" class="img-fluid" alt="Página em construção">
+                    {{--                     <canvas id="salesChart" height="300"></canvas> --}}
+                    <img src="{{ asset('images/em_construcao.png') }}" style="max-width: 80%; height: auto;"
+                         class="img-fluid" alt="Página em construção">
                 </div>
             </div>
         </div>
@@ -207,7 +240,6 @@
             </div>
         </div>
     </div>
-
     <div class="row g-4">
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm">
@@ -225,7 +257,7 @@
                                             R$ {{$order['total_amount_received']}}</small>
                                     </div>
                                     <span
-                                        class="badge {{ $order['status'] == 'completed' ? 'bg-success' : 'bg-danger'}} ">{{ $order['status'] }}</span>
+                                        class="badge {{ $order['status'] == 'completed' ? 'bg-success' : 'bg-danger'}} ">{{ $order['status']  == 'completed' ? 'Concluído' : 'Pendente'}}</span>
                                 </div>
                             @endforeach
                         @else

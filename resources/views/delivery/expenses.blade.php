@@ -2,24 +2,32 @@
 @vite(['resources/js/delivery/expenses.js'])
 @section('title', 'Despesas')
 @section('content')
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="mb-0">
-                        <i class="bi bi-receipt me-2"></i>
-                        Gestão de Despesas
-                    </h2>
+    <div class="page-header">
+        <div class="row justify-content-between align-items-center">
+            <div class="col-12 col-md-6 mb-3 mb-md-0">
+                <h1 class="page-title">
+                    <i class="bi bi-receipt me-2"></i>Gestão de Despesas
+                </h1>
+                <p class="page-subtitle">Gerencie suas despesas</p>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="d-flex flex-column flex-md-row justify-content-md-end gap-2">
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#expenseModal"
                             onclick="openCreateModal()">
                         <i class="bi bi-plus me-2"></i>
                         Nova Despesa
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
                 <!-- Summary Cards -->
-                <div class="row mb-4" id="summaryCards">
+                <div class="row justify-content-center mb-4" id="summaryCards">
                     <div class="col-sm-6 col-lg-4 mb-3 mb-lg-0">
-                        <div class="card bg-primary text-white h-100">
+                        <div class="card bg-danger text-white h-100">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="flex-grow-1">
@@ -34,7 +42,7 @@
                         </div>
                     </div>
                     <div class="col-sm-6 col-lg-4 mb-3 mb-lg-0">
-                        <div class="card bg-info text-white h-100">
+                        <div class="card bg-danger-subtle  h-100">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="flex-grow-1">
@@ -43,21 +51,6 @@
                                     </div>
                                     <div class="ms-2">
                                         <i class="bi bi-list-ul" style="font-size: 2rem;"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-lg-4">
-                        <div class="card bg-success text-white h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="flex-grow-1">
-                                        <h6 class="card-title mb-0 small">Média por Despesa</h6>
-                                        <h4 class="mb-0 fw-bold" id="averageExpense">R$ 0,00</h4>
-                                    </div>
-                                    <div class="ms-2">
-                                        <i class="bi bi-graph-up" style="font-size: 2rem;"></i>
                                     </div>
                                 </div>
                             </div>
@@ -112,16 +105,16 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-dark">
+                            <table class="table table-hover mb-0 table-striped d-none d-md-table">
+                                <thead>
                                     <tr>
                                         <th>ID</th>
                                         <th>Descrição</th>
                                         <th>Valor</th>
-                                        <th>Data da Despesa</th>
-                                        <th>Criado por</th>
-                                        <th>Atualizado por</th>
-                                        <th>Ações</th>
+                                        <th class="d-none d-lg-table-cell">Data da Despesa</th>
+                                        <th class="d-none d-lg-table-cell">Criado por</th>
+                                        <th class="d-none d-md-table-cell">Atualizado por</th>
+                                        <th class="d-none text-center d-lg-table-cell">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody id="expensesTableBody">

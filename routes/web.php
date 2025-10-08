@@ -32,12 +32,16 @@ Route::middleware(['auth', 'check.approved'])->group(function () {
     })->name('dashboard');
 
     Route::get('/dashboard', function () {
-        return view('delivery.home');
+        Route::get('/home', [HomeController::class, 'index'])->name('delivery.home');
     });
 
 
     Route::prefix('delivery')->group(function () {
         Route::get('/home', [HomeController::class, 'index'])->name('delivery.home');
+
+        Route::prefix('home')->group(function () {
+            Route::get('/searchData', [HomeController::class, 'searchData'])->name('delivery.searchData');
+        });
 
         Route::prefix('products')->group(function () {
             Route::get('/', [ProductController::class, 'index'])->name('delivery.products');
