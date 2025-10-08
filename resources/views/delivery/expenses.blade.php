@@ -105,7 +105,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0 table-striped d-none d-md-table">
+                            <table class="table table-hover mb-0 table-striped d-md-table">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
