@@ -26,7 +26,7 @@ class ProductResource extends JsonResource
             'updated_at'   => Carbon::parse($this->updated_at)->format('d/m/Y H:i:s'),
             'category'     => $this->category,
             'icon'         => $this->categories->icon,
-            'need_stok'    => $this->categories->need_stock,
+            'need_stock'    => $this->categories->need_stock,
             'id'           => $this->id,
             'image_name'   => $this->image_name,
         ];
