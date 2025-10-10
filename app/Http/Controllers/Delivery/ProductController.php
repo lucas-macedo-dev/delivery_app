@@ -162,6 +162,7 @@ class ProductController extends Controller
 
     public function mostSaledProduct(): \Illuminate\Database\Eloquent\Collection
     {
+        // @todo usar relacionamento nessa query
         return Product::query()
                 ->join('order_items', 'products.id', '=', 'order_items.product_id')
                 ->selectRaw('products.*, SUM(order_items.quantity) as total_quantity')

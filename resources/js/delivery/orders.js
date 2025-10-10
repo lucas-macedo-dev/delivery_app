@@ -5,9 +5,6 @@ let orderItems   = [];
 let currentPage  = 1;
 let filterParams = {};
 
-/**
- * Initialize the orders manager
- */
 window.onload = () => {
     loadOrders().then(r => {
     });
@@ -17,9 +14,6 @@ window.onload = () => {
     })
 }
 
-/**
- * Bind event listeners
- */
 function bindEventListeners() {
     const searchInput  = document.getElementById('orderSearch');
     const statusFilter = document.getElementById('statusFilter');
@@ -33,9 +27,6 @@ function bindEventListeners() {
     }
 }
 
-/**
- * Debounce utility function
- */
 function debounce(func, wait) {
     if (typeof func !== 'function') {
         return () => {
@@ -53,9 +44,6 @@ function debounce(func, wait) {
     };
 }
 
-/**
- * Load orders from API
- */
 window.loadOrders = async function (page = 1, filterParameters = {}) {
     console.log(page);
     try {
@@ -87,9 +75,6 @@ window.loadOrders = async function (page = 1, filterParameters = {}) {
     }
 }
 
-/**
- * Build query parameters
- */
 function buildQueryParams(filterParameters) {
     const possibleParams = ['search', 'status'];
     const queryParams    = new URLSearchParams();
@@ -105,9 +90,6 @@ function buildQueryParams(filterParameters) {
     return queryParams;
 }
 
-/**
- * Fetch orders from API
- */
 async function fetchOrders(page, queryParams) {
     const url      = `./orders/showAll?page=${page}&${queryParams.toString()}`;
     const response = await fetch(url);
@@ -120,9 +102,6 @@ async function fetchOrders(page, queryParams) {
     return data;
 }
 
-/**
- * Render empty state
- */
 function renderEmptyState() {
     const tbody = document.getElementById('ordersTableBody');
     if (tbody) {
@@ -133,16 +112,12 @@ function renderEmptyState() {
         `;
     }
 
-    // Also clear mobile cards
     const cardsContainer = document.getElementById('ordersCardsContainer');
     if (cardsContainer) {
         cardsContainer.innerHTML = `<div class="p-3 text-center text-muted">Nenhum pedido encontrado.</div>`;
     }
 }
 
-/**
- * Render status filter options
- */
 function renderStatusFilter(orders) {
     const statusFilter = document.getElementById('statusFilter');
     if (!statusFilter) return;
@@ -162,9 +137,6 @@ function renderStatusFilter(orders) {
     statusFilter.classList.remove('disabled');
 }
 
-/**
- * Render orders table
- */
 function renderOrdersTable(orders) {
     const table = document.getElementById('ordersTable');
     if (!table) return;
@@ -185,9 +157,6 @@ function renderOrdersTable(orders) {
     }
 }
 
-/**
- * Setup table wrapper for responsive design
- */
 function setupTableWrapper(table) {
     if (!table) return;
 
@@ -203,9 +172,6 @@ function setupTableWrapper(table) {
     }
 }
 
-/**
- * Setup cards container for mobile view
- */
 function setupCardsContainer(table) {
     let cardsContainer = document.getElementById('ordersCardsContainer');
     if (!cardsContainer) {
@@ -300,9 +266,6 @@ function renderTableRows(orders) {
     }).join('');
 }
 
-/**
- * Render mobile cards
- */
 function renderMobileCards(orders) {
     if (!orders || !Array.isArray(orders) || orders.length === 0) {
         return `<div class="p-3 text-center text-muted">Nenhum pedido encontrado.</div>`;
@@ -362,9 +325,6 @@ function renderMobileCards(orders) {
     }).join('');
 }
 
-/**
- * Filter orders
- */
 function filterOrders() {
     const search = document.getElementById('orderSearch')?.value?.toLowerCase() || '';
     const status = document.getElementById('statusFilter')?.value || '';
@@ -376,9 +336,6 @@ function filterOrders() {
     loadOrders(1, filterParameters);
 }
 
-/**
- * Edit order
- */
 window.editOrder = async function (id) {
     if (!id) {
         showErrorMessage('ID do pedido não fornecido');
@@ -403,9 +360,6 @@ window.editOrder = async function (id) {
     }
 }
 
-/**
- * Delete order
- */
 window.deleteOrder = async function (id) {
     if (!id) {
         showErrorMessage('ID do pedido não fornecido');
@@ -440,9 +394,6 @@ window.deleteOrder = async function (id) {
     }
 }
 
-/**
- * Set order modal title
- */
 function setOrderModalTitle(isEdit) {
     const title = document.getElementById('orderModalTitle');
     if (title) {
@@ -456,15 +407,12 @@ function setOrderModalTitle(isEdit) {
     if (updateBtn) updateBtn.classList.toggle('d-none', !isEdit);
 }
 
-/**
- * Fill order form with data
- */
 function fillOrderForm(order) {
     console.log(order.order_date);
     const fields = {
         'orderId'         : order.id || '',
         'orderStatus'     : order.status || '',
-        'orderDate'       : order.order_date || new Date().toISOString().split('T')[0],
+        'orderDate'       : order.order_date,
         'ifoodOrderNumber': order.ifood_order_number || '',
         'customerAmount'  : order.total_amount_order || '',
         'receivedAmount'  : order.total_amount_received || '',
@@ -478,7 +426,6 @@ function fillOrderForm(order) {
         }
     });
 
-    // Load order items if they exist
     if (order.items && Array.isArray(order.items)) {
         orderItems = order.items.map(item => ({
             product_id: item.product_id || '',
@@ -494,9 +441,6 @@ function fillOrderForm(order) {
     }
 }
 
-/**
- * Reset order form
- */
 function resetOrderForm() {
     const form = document.getElementById('orderForm');
     if (form) {
@@ -514,9 +458,6 @@ function resetOrderForm() {
     updateOrderTotal();
 }
 
-/**
- * Render order items in the modal
- */
 function renderOrderItems() {
     const itemsTableBody = document.getElementById('itemsTableBody');
     if (!itemsTableBody) return;
@@ -540,7 +481,6 @@ function renderOrderItems() {
         </tr>
     `).join('');
 
-    // Add event listeners for remove buttons
     itemsTableBody.querySelectorAll('.remove-item').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const index = parseInt(e.target.closest('.remove-item').dataset.index);
@@ -549,9 +489,6 @@ function renderOrderItems() {
     });
 }
 
-/**
- * Remove order item
- */
 function removeOrderItem(index) {
     if (!orderItems || !Array.isArray(orderItems) || index < 0 || index >= orderItems.length) {
         return;
@@ -562,9 +499,6 @@ function removeOrderItem(index) {
     updateOrderTotal();
 }
 
-/**
- * Update order total
- */
 function updateOrderTotal() {
     if (!orderItems || !Array.isArray(orderItems)) {
         return;
@@ -581,14 +515,10 @@ function updateOrderTotal() {
     }
 }
 
-/**
- * Setup add item functionality
- */
 function setupAddItem() {
     const addItemBtn = document.getElementById('addItem');
     if (!addItemBtn) return;
 
-    // Remove previous event listeners by cloning
     const newAddBtn = addItemBtn.cloneNode(true);
     if (addItemBtn.parentNode) {
         addItemBtn.parentNode.replaceChild(newAddBtn, addItemBtn);
@@ -601,9 +531,6 @@ function setupAddItem() {
     return newAddBtn;
 }
 
-/**
- * Add order item
- */
 function addOrderItem() {
     const productId = document.getElementById('itemId')?.value?.trim();
     const quantity  = parseInt(document.getElementById('itemQuantity')?.value);
@@ -632,9 +559,6 @@ function addOrderItem() {
     clearItemForm();
 }
 
-/**
- * Clear item form
- */
 function clearItemForm() {
     const fields = ['itemId', 'itemQuantity', 'itemPrice'];
     fields.forEach(id => {
@@ -649,9 +573,6 @@ function clearItemForm() {
     });
 }
 
-/**
- * Open order modal
- */
 window.openOrderModal = function (order = null, isEdit = false) {
     const modalElement = document.getElementById('orderModal');
     if (!modalElement) return;
@@ -670,9 +591,6 @@ window.openOrderModal = function (order = null, isEdit = false) {
     modal.show();
 }
 
-/**
- * Save order (create or update)
- */
 window.saveOrder = async function (action = 'create', id = null) {
     if (!validateOrderForm()) {
         return;
@@ -680,7 +598,6 @@ window.saveOrder = async function (action = 'create', id = null) {
 
     const orderData = getOrderFormData();
 
-    // Get order ID from form if not provided
     if (action === 'update' && !id) {
         id = document.getElementById('orderId')?.value;
     }
@@ -722,9 +639,6 @@ window.saveOrder = async function (action = 'create', id = null) {
     }
 }
 
-/**
- * Validate order form
- */
 function validateOrderForm() {
     if (!orderItems || !Array.isArray(orderItems) || orderItems.length === 0) {
         showErrorMessage('Nenhum item adicionado ao pedido');
@@ -743,9 +657,6 @@ function validateOrderForm() {
     return true;
 }
 
-/**
- * Get order form data
- */
 function getOrderFormData() {
     return {
         ifoodId         : document.getElementById('orderIdIfood')?.value || '',
@@ -758,9 +669,6 @@ function getOrderFormData() {
     };
 }
 
-/**
- * Close modal
- */
 function closeModal() {
     const modalElement = document.getElementById('orderModal');
     if (modalElement) {
@@ -771,9 +679,6 @@ function closeModal() {
     }
 }
 
-/**
- * Import orders from file
- */
 window.importOrders = async function () {
     const input = document.getElementById('ordersFile');
     if (!input || !input.files || input.files.length === 0) {
@@ -812,18 +717,12 @@ window.importOrders = async function () {
     }
 }
 
-/**
- * Show loading state
- */
 function showLoading(show) {
     if (typeof window.showLoading === 'function') {
         window.showLoading(show);
     }
 }
 
-/**
- * Show success message
- */
 function showSuccessMessage(message) {
     if (typeof window.modalMessage === 'function') {
         window.modalMessage({
@@ -836,9 +735,6 @@ function showSuccessMessage(message) {
     }
 }
 
-/**
- * Show error message
- */
 function showErrorMessage(message) {
     if (typeof window.modalMessage === 'function') {
         window.modalMessage({

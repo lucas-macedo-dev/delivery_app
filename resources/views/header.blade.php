@@ -117,7 +117,7 @@
         </nav>
 
         <!-- Page content -->
-        <div id="page-content" class="p-4">
+        <div id="page-content" class="p-3">
             @yield('content')
 
             <span class="back_to_top d-none" data-toggle="tooltip" data-bs-placement="left"
