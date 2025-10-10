@@ -27,14 +27,11 @@ Route::middleware(['auth', 'check.approved'])->prefix('admin')->name('admin.')->
 });
 
 Route::middleware(['auth', 'check.approved'])->group(function () {
-    Route::get('/', function () {
-        return view('delivery.home');
-    })->name('dashboard');
+    Route::get('/', [HomeController::class, 'index'])->name('dashboard');
 
     Route::get('/dashboard', function () {
         Route::get('/home', [HomeController::class, 'index'])->name('delivery.home');
     });
-
 
     Route::prefix('delivery')->group(function () {
         Route::get('/home', [HomeController::class, 'index'])->name('delivery.home');
@@ -43,6 +40,7 @@ Route::middleware(['auth', 'check.approved'])->group(function () {
             Route::get('/searchData', [HomeController::class, 'searchData'])->name('delivery.searchData');
         });
 
+        Route::get('categories/showAll', [ProductController::class, 'loadCategories'])->name('categories.show');
         Route::prefix('products')->group(function () {
             Route::get('/', [ProductController::class, 'index'])->name('delivery.products');
             Route::get('/show/{id}', [ProductController::class, 'show'])->name('products.show');

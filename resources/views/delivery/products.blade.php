@@ -8,36 +8,24 @@
                 <h1 class="page-title">Gerenciar Produtos</h1>
                 <p class="page-subtitle">Gerencie seu estoque</p>
             </div>
-            <button class="btn btn-primary" onclick="openProductModal()">
-                <i class="bi bi-folder-plus"></i>&nbsp;Adicionar Produto
-            </button>
+            <div>
+                <button class="btn btn-secondary mb-2" disabled>
+                    <i class="bi bi-diagram-2"></i>&nbsp;Adicionar Categoria
+                </button>
+                <button class="btn btn-primary mb-2" onclick="openProductModal()">
+                    <i class="bi bi-folder-plus"></i>&nbsp;Adicionar Produto
+                </button>
+
+            </div>
         </div>
     </div>
 
     <div class="row" id="productList">
-        @for ($i = 0; $i < 3 ; $i++)
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card" aria-hidden="true">
-                    <div class="card-header">
-                        <h5 class="card-title">Carregando...</h5>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title placeholder-glow">
-                            <span class="placeholder col-6"></span>
-                        </h5>
-                        <p class="card-text placeholder-glow">
-                            <span class="placeholder col-7"></span>
-                            <span class="placeholder col-4"></span>
-                            <span class="placeholder col-4"></span>
-                            <span class="placeholder col-6"></span>
-                            <span class="placeholder col-8"></span>
-                        </p>
-                        <a class="btn btn-primary disabled placeholder col-6" aria-disabled="true"></a>
-                    </div>
-                </div>
+        <div class="col-12 mb-3">
+            <div class="card h-100 p-4 shadow-sm text-center">
+                <h5>Carregando produtos <i class="fa-solid fa-ellipsis fa-bounce"></i></h5>
             </div>
-        @endfor
-
+        </div>
     </div>
     <div class="row">
         <nav aria-label="Page pagination">
@@ -62,34 +50,23 @@
                 </div>
                 <div class="modal-body">
                     <form id="productForm">
-                        <div class="row justify-content-center text-center d-none" id="imagePreview">
-                            <div class="col-auto">
-                                <img src="#" id="category-img-tag" class="figure-img img-fluid rounded"
-                                    style="max-width: 200px;" />
-                            </div>
-                        </div>
                         <input type="hidden" id="productId">
                         <div class="mb-3">
                             <label for="productName" class="form-label">Nome do Produto</label>
-                            <input type="text" class="form-control" id="productName" required>
+                            <input type="text" class="form-control" id="productName" placeholder="Nome do Produto" required>
                         </div>
                         <div class="mb-3">
                             <label for="productValue" class="form-label">Valor</label>
-                            <input type="number" class="form-control" id="productValue" step="0.01" required>
+                            <input type="number" class="form-control" id="productValue" step="0.01" placeholder="0.00" required>
                         </div>
                         <div class="mb-3">
                             <label for="productStock" class="form-label">Estoque</label>
-                            <input type="number" class="form-control" id="productStock" required>
+                            <input type="number" class="form-control" id="productStock" placeholder="0" value="0" required>
                         </div>
                         <div class="mb-3">
                             <label for="category" class="form-label">Categoria</label>
                             <select class="form-select" id="category" required>
-                                <option value="">Selecione</option>
-                                <option value="food">Alimentos</option>
-                                <option value="drink">Bebidas</option>
-                                <option value="snack">Lanches</option>
-                                <option value="dessert">Doces</option>
-                                <option value="other">Outros</option>
+                                <option value="">Selecione...</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -101,17 +78,6 @@
                                 <option value="l">L - LITRO</option>
                                 <option value="ml">ML - MILILITRO</option>
                             </select>
-                        </div>
-                        <div class="mx-0 rounded mb-3 row border">
-                            <div class="align-content-center col d-flex flex-wrap justify-content-center">
-                                <div class="my-3">
-                                    <label for="productImage" class="form-label">
-                                        <i class="bi bi-file-earmark-image"></i>&nbsp;Imagem
-                                    </label>
-                                    <input class="bg-light-subtle form-control p-1 rounded" type="file"
-                                        id="productImage" name="productImage">
-                                </div>
-                            </div>
                         </div>
                         <div class="mb-3">
                             <div class="form-check">

@@ -3,21 +3,18 @@
 let currentPage = 1;
 let editingExpenseId = null;
 let deleteExpenseId = null;
-const baseUrl = window.location.origin;
 
 window.onload = () => {
     getAllExpenses();
     loadSummary();
     setupEventListeners();
 
-    // Set today's date as default for new expenses
     const expenseDateInput = document.getElementById('expense_date');
     if (expenseDateInput) {
         expenseDateInput.valueAsDate = new Date();
     }
 };
 
-// Setup event listeners
 function setupEventListeners() {
     // Search input with debounce
     let searchTimeout;
@@ -74,7 +71,6 @@ function setupEventListeners() {
     }
 }
 
-// Get all expenses with pagination and filters
 window.getAllExpenses = async function (page = 1) {
     currentPage = page;
 
@@ -136,7 +132,6 @@ window.getAllExpenses = async function (page = 1) {
     }
 };
 
-// Get a specific expense
 window.getExpense = async function (id) {
     if (!id) {
         window.modalMessage({
@@ -179,7 +174,6 @@ window.getExpense = async function (id) {
     return false;
 };
 
-// Load summary statistics
 window.loadSummary = async function () {
     try {
         const startDate = document.getElementById('startDate');
@@ -214,7 +208,6 @@ window.loadSummary = async function () {
     }
 };
 
-// Build expenses table
 window.buildExpensesTable = function (expenses) {
     const tbody = document.getElementById('expensesTableBody');
 
@@ -279,7 +272,6 @@ window.buildExpensesTable = function (expenses) {
     tbody.innerHTML = html;
 };
 
-// Show table loading state
 function showTableLoading() {
     const tbody = document.getElementById('expensesTableBody');
     if (tbody) {
@@ -295,7 +287,6 @@ function showTableLoading() {
     }
 }
 
-// Open create modal
 window.openCreateModal = function () {
     editingExpenseId = null;
     const modal = new bootstrap.Modal(document.getElementById('expenseModal'));
@@ -311,7 +302,6 @@ window.openCreateModal = function () {
     modal.show();
 };
 
-// Edit expense
 window.editExpense = async function (id) {
     const expense = await getExpense(id);
 
@@ -386,10 +376,8 @@ async function handleFormSubmit(e) {
         const result = await response.json();
 
         if (result.status === 200 || result.status === 201) {
-            // Close modal first
             closeExpenseModal();
 
-            // Show success message
             if (typeof window.modalMessage === 'function') {
                 window.modalMessage({
                     title: 'Sucesso',
@@ -398,7 +386,6 @@ async function handleFormSubmit(e) {
                 });
             }
 
-            // Reload data
             getAllExpenses(currentPage);
             loadSummary();
         } else {
@@ -425,13 +412,11 @@ async function handleFormSubmit(e) {
             });
         }
     } finally {
-        // Hide loading state
         if (submitBtn) submitBtn.disabled = false;
         if (spinner) spinner.classList.add('d-none');
     }
 }
 
-// Delete expense
 async function deleteExpense() {
     const confirmBtn = document.getElementById('confirmDeleteBtn');
     const spinner = confirmBtn ? confirmBtn.querySelector('.spinner-border') : null;
@@ -439,7 +424,6 @@ async function deleteExpense() {
     if (!deleteExpenseId) return;
 
     try {
-        // Show loading state
         if (confirmBtn) confirmBtn.disabled = true;
         if (spinner) spinner.classList.remove('d-none');
 
@@ -455,11 +439,9 @@ async function deleteExpense() {
         const data = await response.json();
 
         if (data.status === 200) {
-            // Close delete modal first
             const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
             if (modal) modal.hide();
 
-            // Show success message
             if (typeof window.modalMessage === 'function') {
                 window.modalMessage({
                     title: 'Sucesso',
@@ -468,7 +450,6 @@ async function deleteExpense() {
                 });
             }
 
-            // Remove row from table
             const expenseRow = document.getElementById(`expense_${deleteExpenseId}`);
             if (expenseRow) expenseRow.remove();
 
@@ -493,16 +474,14 @@ async function deleteExpense() {
             });
         }
     } finally {
-        // Hide loading state
         if (confirmBtn) confirmBtn.disabled = false;
         if (spinner) spinner.classList.add('d-none');
 
-        // Reset delete ID
         deleteExpenseId = null;
     }
 }
 
-// Close expense modal
+
 window.closeExpenseModal = function () {
     try {
         const modal = bootstrap.Modal.getInstance(document.getElementById('expenseModal'));
@@ -510,7 +489,6 @@ window.closeExpenseModal = function () {
             modal.hide();
         }
 
-        // Force cleanup in case modal instance is stuck
         const modalElement = document.getElementById('expenseModal');
         if (modalElement) {
             modalElement.classList.remove('show');
@@ -520,18 +498,15 @@ window.closeExpenseModal = function () {
             modalElement.removeAttribute('role');
         }
 
-        // Remove backdrop if it exists
         const backdrop = document.querySelector('.modal-backdrop');
         if (backdrop) {
             backdrop.remove();
         }
 
-        // Remove modal-open class from body
         document.body.classList.remove('modal-open');
         document.body.style.overflow = '';
         document.body.style.paddingRight = '';
 
-        // Reset form and variables
         editingExpenseId = null;
         clearFormErrors();
 
@@ -541,14 +516,12 @@ window.closeExpenseModal = function () {
         }
     } catch (error) {
         console.error('Error closing modal:', error);
-        // Force cleanup even if error occurs
         document.body.classList.remove('modal-open');
         document.body.style.overflow = '';
         document.body.style.paddingRight = '';
     }
 };
 
-// Clear filters
 window.clearFilters = function () {
     const searchInput = document.getElementById('searchInput');
     const startDate = document.getElementById('startDate');
@@ -565,7 +538,6 @@ window.clearFilters = function () {
     loadSummary();
 };
 
-// Show form errors
 function showFormErrors(errors) {
     Object.keys(errors).forEach(field => {
         const input = document.getElementById(field);
@@ -580,14 +552,12 @@ function showFormErrors(errors) {
     });
 }
 
-// Clear form errors
 function clearFormErrors() {
     document.querySelectorAll('.is-invalid').forEach(input => {
         input.classList.remove('is-invalid');
     });
 }
 
-// Utility functions
 function formatCurrency(value) {
     return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
@@ -599,18 +569,14 @@ function formatDate(dateString) {
     if (!dateString) return 'N/A';
 
     try {
-        // Handle different date formats from API
         let date;
 
         if (dateString.includes('T')) {
-            // ISO format: "2025-09-15T00:00:00.000000Z"
             date = new Date(dateString);
         } else {
-            // Simple date format: "2025-09-15"
             date = new Date(dateString + 'T00:00:00');
         }
 
-        // Check if date is valid
         if (isNaN(date.getTime())) {
             return 'Data inválida';
         }
@@ -621,10 +587,3 @@ function formatDate(dateString) {
         return 'Data inválida';
     }
 }
-
-// Show loading (if you have a global loading function)
-window.showLoading = function(show) {
-    // Implement your loading logic here
-    // This matches the pattern from your products.js
-    console.log(show ? 'Loading...' : 'Loaded');
-};

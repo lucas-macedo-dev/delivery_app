@@ -52,7 +52,7 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('delivery/expenses') ? 'active' : '' }}"
                         href="{{ route('delivery.expenses') }}" data-page="fee-expenses">
-                        <i class="bi bi-cash-coin"></i>
+                        <i class="bi bi-cash-coin me-2"></i>
                         Despesas
                     </a>
                 </li>

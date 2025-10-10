@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Delivery;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\Delivery\ProductResource;
+use App\Models\Category;
 use App\Models\Product;
 use App\Traits\HttpResponse;
 use Illuminate\Support\Facades\Storage;
@@ -35,16 +36,9 @@ class ProductController extends Controller
     public function store(ProductRequest $request): \Illuminate\Http\JsonResponse
     {
         try {
-            if ($request->hasFile('image') && $request->file('image')->isValid()) {
-                $extension = $request->image->extension();
-                $imageName = md5($request->image->getClientOriginalName() . strtotime("now")) . "." . $extension;
-                Storage::disk('delivery')->putFileAs('/', $request->image, $imageName);
-            }
-
             $created = Product::query()->create([
                 'name'           => $request->name,
                 'price'          => $request->price,
-                'image_name'     => $imageName ?? null,
                 'available'      => $request->available ? 1 : 0,
                 'unit_measure'   => $request->unit_measure,
                 'stock_quantity' => $request->stock,
@@ -81,7 +75,7 @@ class ProductController extends Controller
 
     public function showAll(): \Illuminate\Http\JsonResponse
     {
-        $products = Product::paginate(20)->withPath('/delivery/products/showAll');
+        $products = Product::with('categories')->paginate(20)->withPath('/delivery/products/showAll');
 
         $data = ProductResource::collection($products);
 
@@ -91,12 +85,6 @@ class ProductController extends Controller
 
         $products = [
             'products' => $data,
-            'links'    => [
-                'first' => $products->url(1),
-                'last'  => $products->url($products->lastPage()),
-                'prev'  => $products->previousPageUrl(),
-                'next'  => $products->nextPageUrl(),
-            ],
             'meta'     => [
                 'current_page' => $products->currentPage(),
                 'from'         => $products->firstItem(),
@@ -109,6 +97,11 @@ class ProductController extends Controller
         ];
 
         return $this->response('Produtos encontrados', 200, $products);
+    }
+
+    public function loadCategories()
+    {
+        return $this->response('Categorias encontradas', 200, Category::all()->toArray());
     }
 
     /**
@@ -131,18 +124,6 @@ class ProductController extends Controller
             'category'       => $request->category
         ];
 
-        if ($request->hasFile('image') && $request->file('image')->isValid()) {
-            $extension = $request->image->extension();
-            $imageName = md5($request->image->getClientOriginalName() . strtotime("now")) . "." . $extension;
-
-            Storage::disk('delivery')->putFileAs('/', $request->image, $imageName);
-
-            if ($product->image_name && Storage::disk('delivery')->exists($product->image_name)) {
-                Storage::disk('delivery')->delete($product->image_name);
-            }
-
-            $updateData['image_name'] = $imageName;
-        }
         $updated = $product->update($updateData);
 
         if ($updated) {

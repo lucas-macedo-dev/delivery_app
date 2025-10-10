@@ -146,7 +146,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="expenseModalLabel">Nova Despesa</h5>
-                    <button type="button" class="btn-close btn_close_modal" data-bs-dismiss="modal"
+                    <button type="button" class="btn-close " data-bs-dismiss="modal" onclick="closeExpenseModal()"
                             aria-label="Close"></button>
                 </div>
                 <form id="expenseForm">
@@ -155,7 +155,7 @@
                             <div class="col-12">
                                 <label for="description" class="form-label">Descrição *</label>
                                 <input type="text" class="form-control" id="description" name="description" required
-                                       maxlength="255">
+                                       maxlength="255" placeholder="Descrição da despesa">
                                 <div class="invalid-feedback"></div>
                             </div>
                             <div class="col-12 col-sm-6">
@@ -163,13 +163,14 @@
                                 <div class="input-group">
                                     <span class="input-group-text">R$</span>
                                     <input type="number" class="form-control" id="value" name="value" step="0.01"
-                                           min="0" required>
+                                           min="0" required placeholder="0.00">
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <label for="expense_date" class="form-label">Data da Despesa *</label>
-                                <input type="date" class="form-control" id="expense_date" name="expense_date" required>
+                                <input type="date" class="form-control" id="expense_date" name="expense_date"
+                                       placeholder="Selecione uma data" required>
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>

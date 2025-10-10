@@ -17,9 +17,11 @@ return new class extends Migration {
             $table->boolean('available');
             $table->string('image_name');
             $table->integer('stock_quantity')->default(0);
-            $table->enum('category', ['food', 'drink', 'snack', 'dessert', 'other'])->default('other');
+            $table->integer('category');
             $table->string('unit_measure', 3)->default('un')->comment('un: unit, kg: kilogram, g: gram, l: liter,  ml: milliliter, m: meter, cm: centimeter, mm: millimeter');
             $table->timestamps();
+
+            $table->foreign('category')->references('id')->on('categories')->onDelete('cascade');
         });
     }
 
