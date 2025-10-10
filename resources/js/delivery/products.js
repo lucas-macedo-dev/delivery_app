@@ -122,7 +122,7 @@ window.buildProductCard = function (productData) {
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <span class="text-muted me-2"><i class="fa-solid fa-boxes-stacked"></i>&nbsp;Estoque:</span>
-                                    ${ productData.need_stock === 1 ? '<span>${productData.stock} ${productData.unit_measure}</span>' : '-' }
+                                    <span>${ productData.need_stock === 1 ? productData.stock + ' ' + productData.unit_measure : '-' }</span>
                                 </div>
                             </div>
                         </div>
