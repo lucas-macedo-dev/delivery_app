@@ -29,16 +29,8 @@ class HomeController extends Controller
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate', now());
 
-        if ( $startDate) {
-            $data['customers']          = Customer::whereBetween('created_at', [$startDate, $endDate])->count();
-            $data['orders']             = Order::whereBetween('created_at', [$startDate, $endDate])->count();
-            $data['amount']             = Order::whereBetween('created_at', [$startDate, $endDate])->sum('total_amount_received');
-            $data['expenses']           = Expense::whereBetween('created_at', [$startDate, $endDate])->sum('value');
-            $data['last_orders']        = Order::whereBetween('created_at', [$startDate, $endDate])->orderBy('order_date', 'desc')->limit(3)->get();
-            $data['most_saled_product'] = (new ProductController)->mostSaledProduct();
-        }
         $data['customers']          = Customer::whereBetween('created_at', [$startDate, $endDate])->count();
-        $data['orders']             = Order::whereBetween('created_at', [$startDate, $endDate])->count();
+        $data['orders']             = Order::whereBetween('order_date', [$startDate, $endDate])->count();
         $data['amount']             = Order::whereBetween('created_at', [$startDate, $endDate])->sum('total_amount_received');
         $data['expenses']           = Expense::whereBetween('created_at', [$startDate, $endDate])->sum('value');
         $data['last_orders']        = Order::whereBetween('created_at', [$startDate, $endDate])->orderBy('order_date', 'desc')->limit(3)->get();

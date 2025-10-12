@@ -116,7 +116,7 @@
                             <div class="row g-2 align-items-end mb-3">
                                 <div class="col-md-5">
                                     <label class="form-label" for="itemId">Nome do Item</label>
-                                    <select class="form-select" id="itemId">
+                                    <select class="selectpicker w-100 border rounded" data-live-search="true" id="itemId">
                                         <option value="">Selecione o Item</option>
                                         @foreach ($products as $product)
                                             <option value="{{ $product->id }}">{{ $product->id }}

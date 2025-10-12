@@ -88,6 +88,7 @@ window.buildProductsGrid = function (products) {
     products.forEach(product => {
         html += buildProductCard(product);
     });
+    document.getElementById(`productList`).innerHTML = html;
 };
 
 window.buildProductCard = function (productData) {
@@ -95,8 +96,7 @@ window.buildProductCard = function (productData) {
     if (cards.length === 0) {
         document.getElementById(`productList`).innerHTML = ``;
     }
-
-    document.getElementById(`productList`).innerHTML += `
+    return  `
         <div class="col-12 mb-3" id="product_${productData.id}">
             <div class="card h-100 shadow-sm">
                 <div class="card-body p-3">
