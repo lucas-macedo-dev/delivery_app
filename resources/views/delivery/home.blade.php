@@ -67,8 +67,8 @@
                         <i class="bi bi-people text-primary fs-3"></i>
                     </div>
                     <h6 class="text-muted mb-1">Total de Clientes</h6>
-                    <h3 class="mb-2 fw-bold text-primary">{{number_format($data['customers'] ?? 0, 0, ',', '.')}}</h3>
-                    <small class="text-success">
+                    <h3 class="mb-2 fw-bold text-primary" id="total_customers">{{number_format( 0, 0, ',', '.')}}</h3>
+                    <small class="text-success d-none" id="total_customers_percentage">
                         <i class="bi bi-arrow-up"></i> -% este mês
                     </small>
                     <div class="position-absolute top-0 end-0 p-3 opacity-25">
@@ -86,9 +86,9 @@
                         <i class="bi bi-truck text-info fs-3"></i>
                     </div>
                     <h6 class="text-muted mb-1">Total de Pedidos</h6>
-                    <h3 class="mb-2 fw-bold text-info">{{number_format($data['orders'] ?? 0)}}</h3>
-                    <small class="text-warning">
-                        <i class="bi bi-clock"></i> {{ $data['pending_orders'] ?? 0 }} pendentes
+                    <h3 class="mb-2 fw-bold text-info" id="total_orders">0</h3>
+                    <small class="text-warning d-none">
+                        <i class="bi bi-clock"></i> {{ 0 }} pendentes
                     </small>
                     <div class="position-absolute top-0 end-0 p-3 opacity-25">
                         <i class="bi bi-truck fs-1"></i>
@@ -105,8 +105,8 @@
                         <i class="bi bi-currency-dollar text-success fs-3"></i>
                     </div>
                     <h6 class="text-muted mb-1">Faturamento</h6>
-                    <h3 class="mb-2 fw-bold text-success">R$ {{number_format($data['amount'] ?? 0, 2, ',', '.')}}</h3>
-                    <small class="text-success">
+                    <h3 class="mb-2 fw-bold text-success" id="total_amount">R$ {{number_format( 0, 2, ',', '.')}}</h3>
+                    <small class="text-success d-none">
                         <i class="bi bi-arrow-up"></i> -% este mês
                     </small>
                     <div class="position-absolute top-0 end-0 p-3 opacity-25">
@@ -124,8 +124,9 @@
                         <i class="bi bi-graph-down-arrow text-danger fs-3"></i>
                     </div>
                     <h6 class="text-muted mb-1">Gastos</h6>
-                    <h3 class="mb-2 fw-bold text-danger">R$ {{number_format($data['expenses'] ?? 0, 2, ',', '.')}}</h3>
-                    <small class="text-muted">
+                    <h3 class="mb-2 fw-bold text-danger" id="total_expenses">
+                        R$ {{number_format($data['expenses'] ?? 0, 2, ',', '.')}}</h3>
+                    <small class="text-muted d-none">
                         <i class="bi bi-calendar3"></i> -% Este mês
                     </small>
                     <div class="position-absolute top-0 end-0 p-3 opacity-25">
@@ -217,25 +218,8 @@
                 <div class="card-header bg-transparent border-0 pb-0">
                     <h5 class="mb-0">Produtos Mais Vendidos</h5>
                 </div>
-                <div class="card-body">
-                    @if (empty($data['most_saled_product']))
-                        <p class="text-muted mb-0">Nenhum produto vendido ainda.</p>
-                    @endif
-                    @foreach ($data['most_saled_product'] ?? [] as $product)
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="flex-shrink-0">
-                                <img src="/storage/delivery/{{$product['image_name']}}" alt="{{ $product['name'] }}"
-                                     class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
-                            </div>
-                            <div class="flex-grow-1 ms-3">
-                                <h6 class="mb-1">{{ $product['name'] }}</h6>
-                                <small class="text-muted">{{ $product['total_quantity'] }} vendas</small>
-                            </div>
-                            <div class="flex-shrink-0">
-                                <span class="badge bg-secondary">{{ $loop->iteration }}º</span>
-                            </div>
-                        </div>
-                    @endforeach
+                <div class="card-body" id="most_saled_product">
+                    <p class="text-muted mb-0">Nenhum produto vendido ainda.</p>
                 </div>
             </div>
         </div>

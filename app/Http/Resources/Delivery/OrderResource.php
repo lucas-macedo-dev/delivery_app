@@ -14,7 +14,7 @@ class OrderResource extends JsonResource
             'id' => $this->id,
             'ifood_id' => $this->ifood_id,
             'ifood_order_number' => $this->ifood_order_number,
-            'order_date' => Carbon::parse($this->order_date)->format('Y-m-d H:i:s'),
+            'order_date' => Carbon::parse($this->order_date)->format('Y-m-d'),
             'total_amount_order' => $this->total_amount_order,
             'total_amount_received' => $this->total_amount_received,
             'status' => $this->status,

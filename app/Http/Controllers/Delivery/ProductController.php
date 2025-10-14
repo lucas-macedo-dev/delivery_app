@@ -8,7 +8,9 @@ use App\Http\Resources\Delivery\ProductResource;
 use App\Models\Category;
 use App\Models\Product;
 use App\Traits\HttpResponse;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class ProductController extends Controller
 {
@@ -160,15 +162,15 @@ class ProductController extends Controller
         }
     }
 
-    public function mostSaledProduct(): \Illuminate\Database\Eloquent\Collection
+    public function mostSaledProduct(Carbon $startDate, Carbon $endDate): \Illuminate\Database\Eloquent\Collection
     {
-        // @todo usar relacionamento nessa query
-        return Product::query()
-                ->join('order_items', 'products.id', '=', 'order_items.product_id')
-                ->selectRaw('products.*, SUM(order_items.quantity) as total_quantity')
-                ->groupBy('products.id')
-                ->orderBy('total_quantity', 'desc')
-                ->limit(5)
-                ->get();
+        return Product::with('orderItems')
+            ->with('categories')
+            ->withSum(['orderItems as total_quantity' => function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            }], 'quantity')
+            ->orderByDesc('total_quantity')
+            ->limit(5)
+            ->get();
     }
 }

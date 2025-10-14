@@ -108,8 +108,10 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="orderDate" class="form-label"><i class="bi bi-calendar-date"></i>&nbsp;Data do Pedido</label>
-                            <input type="datetime-local" class="form-control" id="orderDate" required>
+                            <label for="orderDate" class="form-label">
+                                <i class="bi bi-calendar-date"></i>&nbsp;Data do Pedido
+                            </label>
+                            <input type="date" class="form-control" id="orderDate" required>
                         </div>
                         <div id="itemsSection" class=" p-3 mb-3 rounded border">
                             <h6><i class="bi bi-box-seam"></i>&nbsp;Itens do Pedido</h6>
