@@ -170,6 +170,7 @@ class ProductController extends Controller
                 $query->whereBetween('created_at', [$startDate, $endDate]);
             }], 'quantity')
             ->orderByDesc('total_quantity')
+            ->whereHas('orderItems')
             ->limit(5)
             ->get();
     }

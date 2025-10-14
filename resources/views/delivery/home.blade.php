@@ -31,11 +31,11 @@
             <div class="row justify-content-center g-2 g-md-3">
                 <div class="col-12 col-md-4 col-xl-4 mb-2 mb-xl-0">
                     <label for="startDate" class="form-label">Data Início</label>
-                    <input type="date" class="form-control" id="startDate" value="{{date('Y-m-d')}}">
+                    <input type="date" class="form-control" id="startDate" value="{{\Carbon\Carbon::now()->startOfMonth()->format('Y-m-d') }}">
                 </div>
                 <div class="col-12 col-md-4 col-xl-4 mb-2 mb-xl-0">
                     <label for="endDate" class="form-label">Data Fim</label>
-                    <input type="date" class="form-control" id="endDate">
+                    <input type="date" class="form-control" id="endDate" value="{{\Carbon\Carbon::now()->format('Y-m-d') }}">
                 </div>
                 <div class="col-12 d-flex col-md-2 col-xl-2  align-items-end">
                     <button type="button" class="btn btn-outline-secondary w-100"
