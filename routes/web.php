@@ -37,6 +37,7 @@ Route::middleware(['auth', 'check.approved'])->group(function () {
         Route::get('/home', [HomeController::class, 'index'])->name('delivery.home');
 
         Route::prefix('home')->group(function () {
+            // debug
             Route::get('/searchData', [HomeController::class, 'searchData'])->name('delivery.searchData');
         });
 
