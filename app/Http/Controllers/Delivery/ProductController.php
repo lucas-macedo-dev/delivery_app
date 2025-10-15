@@ -186,7 +186,7 @@ class ProductController extends Controller
             ], 'quantity')
             ->orderByDesc('total_quantity')
             ->whereHas('orderItems')
-            ->limit(7)
+            ->limit(6)
             ->get();
     }
     public function loadProductPrice(Product $product): \Illuminate\Http\JsonResponse
