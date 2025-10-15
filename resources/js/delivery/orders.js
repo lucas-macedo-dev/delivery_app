@@ -745,3 +745,12 @@ function showErrorMessage(message) {
         alert(message);
     }
 }
+
+window.loadProductPrice = async function(productId){
+    let response = await fetch(`products/load_price/${productId}`);
+    let data     = await response.json();
+
+    if (response.status === 200 && data.data.price) {
+        document.getElementById('itemPrice').value = data.data.price || 0;
+    }
+}

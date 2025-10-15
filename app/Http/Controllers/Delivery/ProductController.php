@@ -114,7 +114,7 @@ class ProductController extends Controller
         return $this->response('Produtos encontrados', 200, $products);
     }
 
-    public function loadCategories()
+    public function loadCategories(): \Illuminate\Http\JsonResponse
     {
         return $this->response('Categorias encontradas', 200, Category::all()->toArray());
     }
@@ -188,5 +188,9 @@ class ProductController extends Controller
             ->whereHas('orderItems')
             ->limit(7)
             ->get();
+    }
+    public function loadProductPrice(Product $product): \Illuminate\Http\JsonResponse
+    {
+        return $this->response('Preço do produto', 200, ['price' => $product->price]);
     }
 }

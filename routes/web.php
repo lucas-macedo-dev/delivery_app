@@ -45,6 +45,7 @@ Route::middleware(['auth', 'check.approved'])->group(function () {
             Route::post('/new_product', [ProductController::class, 'store'])->name('products.store');
             Route::post('/edit/{id}', [ProductController::class, 'update'])->name('products.update');
             Route::delete('/delete/{id}', [ProductController::class, 'destroy'])->name('products.delete');
+            Route::get('/load_price/{product}', [ProductController::class, 'loadProductPrice'])->name('products.load_price');
         })->name('delivery.orders');
 
         Route::prefix('customers')->group(function () {
