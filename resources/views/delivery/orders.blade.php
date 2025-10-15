@@ -121,8 +121,7 @@
                                     <select class="selectpicker w-100 border rounded" data-live-search="true" id="itemId">
                                         <option value="">Selecione o Item</option>
                                         @foreach ($products as $product)
-                                            <option value="{{ $product->id }}">{{ $product->id }}
-                                                - {{ $product->name }}</option>
+                                            <option value="{{ $product->id }}">{{ $product->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>

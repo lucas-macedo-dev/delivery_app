@@ -15,7 +15,39 @@
                 <button class="btn btn-primary mb-2" onclick="openProductModal()">
                     <i class="bi bi-folder-plus"></i>&nbsp;Adicionar Produto
                 </button>
-
+            </div>
+        </div>
+    </div>
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-2 g-md-3">
+                <div class="col">
+                    <label for="searchInput" class="form-label">Pesquisar</label>
+                    <input type="text" class="form-control" id="searchInput"
+                           placeholder="Buscar por nome...">
+                </div>
+                <div class="col">
+                    <label for="f_category" class="form-label">Categoria</label>
+                    <select class="form-select" id="f_category">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-2 d-flex align-items-end">
+                    <div class="d-grid gap-2 w-100">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                onclick="clearFilters()">
+                            <i class="bi bi-x me-1"></i>
+                            <span class="d-none d-sm-inline">Limpar</span>
+                            <span class="d-sm-none">Limpar Filtros</span>
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="getAllProducts()">
+                            <i class="bi bi-search me-1"></i>
+                            <span class="d-none d-sm-inline">Buscar</span>
+                            <span class="d-sm-none">Aplicar Filtros</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -53,15 +85,18 @@
                         <input type="hidden" id="productId">
                         <div class="mb-3">
                             <label for="productName" class="form-label">Nome do Produto</label>
-                            <input type="text" class="form-control" id="productName" placeholder="Nome do Produto" required>
+                            <input type="text" class="form-control" id="productName" placeholder="Nome do Produto"
+                                   required>
                         </div>
                         <div class="mb-3">
                             <label for="productValue" class="form-label">Valor</label>
-                            <input type="number" class="form-control" id="productValue" step="0.01" placeholder="0.00" required>
+                            <input type="number" class="form-control" id="productValue" step="0.01" placeholder="0.00"
+                                   required>
                         </div>
                         <div class="mb-3">
                             <label for="productStock" class="form-label">Estoque</label>
-                            <input type="number" class="form-control" id="productStock" placeholder="0" value="0" required>
+                            <input type="number" class="form-control" id="productStock" placeholder="0" value="0"
+                                   required>
                         </div>
                         <div class="mb-3">
                             <label for="category" class="form-label">Categoria</label>
@@ -97,7 +132,7 @@
                         <i class="bi bi-floppy"></i>&nbsp;Salvar
                     </button>
                     <button type="button" class="btn btn-warning d-none" id="updateProduct"
-                        onclick="saveProduct('update')">
+                            onclick="saveProduct('update')">
                         <i class="bi bi-floppy"></i>&nbsp;Atualizar
                     </button>
                 </div>

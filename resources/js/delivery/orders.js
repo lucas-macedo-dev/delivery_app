@@ -45,7 +45,6 @@ function debounce(func, wait) {
 }
 
 window.loadOrders = async function (page = 1, filterParameters = {}) {
-    console.log(page);
     try {
         currentPage  = page;
         filterParams = filterParameters || {};

@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Traits\HttpResponse;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
@@ -75,10 +76,22 @@ class ProductController extends Controller
         }
     }
 
-    public function showAll(): \Illuminate\Http\JsonResponse
+    public function showAll(Request $request): \Illuminate\Http\JsonResponse
     {
-        $products = Product::with('categories')->paginate(20)->withPath('/delivery/products/showAll');
-
+        $products = Product::with('categories')
+            ->when($request->has('category') && !empty($request->category), function ($query) use ($request) {
+                $query->whereHas('categories', function ($q) use ($request) {
+                    $q->where('category', $request->category);
+                });
+            })
+            ->when($request->has('available') && !empty($request->available), function ($query) use ($request) {
+                $query->where('available', $request->available);
+            })
+            ->when($request->has('name') && !empty($request->name), function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->name . '%');
+            })
+            ->orderBy('stock_quantity')
+            ->paginate(20)->withPath('/delivery/products/showAll');
         $data = ProductResource::collection($products);
 
         if ($data->isEmpty()) {
@@ -166,12 +179,14 @@ class ProductController extends Controller
     {
         return Product::with('orderItems')
             ->with('categories')
-            ->withSum(['orderItems as total_quantity' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('created_at', [$startDate, $endDate]);
-            }], 'quantity')
+            ->withSum([
+                'orderItems as total_quantity' => function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                }
+            ], 'quantity')
             ->orderByDesc('total_quantity')
             ->whereHas('orderItems')
-            ->limit(5)
+            ->limit(7)
             ->get();
     }
 }

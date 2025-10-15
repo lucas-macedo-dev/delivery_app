@@ -37,9 +37,11 @@ window.loadCategories = async function () {
     let response   = await categories.json();
 
     if (response?.status === 200 && response?.data) {
-        let categoriesOption = document.getElementById('category');
+        let categoriesOption       = document.getElementById('category');
+        let filterCategoriesOption = document.getElementById('f_category');
         response.data.forEach(category => {
             categoriesOption.innerHTML += `<option value="${category.id}" data-usa-estoque="${category.need_stock}">${category.description}</option>`;
+            filterCategoriesOption.innerHTML += `<option value="${category.id}" data-usa-estoque="${category.need_stock}">${category.description}</option>`;
         });
     } else {
         window.modalMessage({
@@ -51,7 +53,12 @@ window.loadCategories = async function () {
 };
 
 window.getAllProducts = async function (page = 1) {
-    let products = await fetch('./products/showAll?page=' + page);
+    let queryParams = new URLSearchParams();
+    queryParams.set('page', page);
+    queryParams.set('category', document.getElementById('f_category').value);
+    queryParams.set('name', document.getElementById('searchInput').value);
+
+    let products = await fetch('./products/showAll?' + queryParams.toString());
     let response = await products.json();
 
     if (response?.status === 200 && response?.data?.products) {
@@ -96,7 +103,7 @@ window.buildProductCard = function (productData) {
     if (cards.length === 0) {
         document.getElementById(`productList`).innerHTML = ``;
     }
-    return  `
+    return `
         <div class="col-12 mb-3" id="product_${productData.id}">
             <div class="card h-100 shadow-sm">
                 <div class="card-body p-3">
@@ -122,7 +129,7 @@ window.buildProductCard = function (productData) {
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <span class="text-muted me-2"><i class="fa-solid fa-boxes-stacked"></i>&nbsp;Estoque:</span>
-                                    <span>${ productData.need_stock === 1 ? productData.stock + ' ' + productData.unit_measure : '-' }</span>
+                                    <span>${productData.need_stock === 1 ? productData.stock + ' ' + productData.unit_measure : '-'}</span>
                                 </div>
                             </div>
                         </div>
@@ -319,4 +326,14 @@ window.deleteProduct = function (id) {
             });
         });
     }
+};
+
+window.clearFilters = function () {
+    const searchInput = document.getElementById('searchInput');
+    const f_category = document.getElementById('f_category');
+
+    if (searchInput) searchInput.value = '';
+    if (f_category) f_category.value = '';
+
+    getAllProducts();
 };

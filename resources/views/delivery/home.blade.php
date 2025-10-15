@@ -216,7 +216,7 @@
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-transparent border-0 pb-0">
-                    <h5 class="mb-0">Produtos Mais Vendidos</h5>
+                    <h5 class="mb-0"><i class="fa-solid fa-money-bill-trend-up"></i>&nbsp;Produtos Mais Vendidos</h5>
                 </div>
                 <div class="card-body" id="most_saled_product">
                     <p class="text-muted mb-0">Nenhum produto vendido ainda.</p>
@@ -228,7 +228,7 @@
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-transparent border-0 pb-0">
-                    <h5 class="mb-0">Pedidos Recentes</h5>
+                    <h5 class="mb-0"><i class="fa-solid fa-clock"></i>&nbsp;Pedidos Recentes</h5>
                 </div>
                 <div class="card-body">
                     <div class="list-group list-group-flush">
@@ -256,9 +256,9 @@
             </div>
         </div>
         <div class="col-lg-6">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 h-100 shadow-sm">
                 <div class="card-header bg-transparent border-0 pb-0">
-                    <h5 class="mb-0">Ações Rápidas</h5>
+                    <h5 class="mb-0"><i class="fa-solid fa-bolt"></i>&nbsp;Ações Rápidas</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
