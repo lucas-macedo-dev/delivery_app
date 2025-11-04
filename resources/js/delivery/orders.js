@@ -211,7 +211,7 @@ function renderTableRows(orders) {
                 <td>R$ ${Number(order.total_amount_order || 0).toFixed(2)}</td>
                 <td>R$ ${Number(order.total_amount_received || 0).toFixed(2)}</td>
                 <td><span class="${getStatusBadgeClass(order.status)}">${order.status || 'N/A'}</span></td>
-                <td>${order.order_date || 'N/A'}</td>
+                <td>${order.formated_order_date || 'N/A'}</td>
                 <td>
                     <div class="d-flex justify-content-between">
                         <div class="btn-group">
@@ -272,7 +272,7 @@ function renderMobileCards(orders) {
                     <div class="d-flex justify-content-between">
                         <div>
                             <h6 class="card-title mb-1">#${id} ${order.ifood_order_number ? `- ${order.ifood_order_number}` : ''}</h6>
-                            <div class="small text-muted">${order.order_date || 'N/A'}</div>
+                            <div class="small text-muted">${order.formated_order_date || 'N/A'}</div>
                             <div class="small my-2 rounded  text-white text-center
                                 ${order.ifood_order_number ? 'bg-danger' : 'bg-primary'}">${order.ifood_order_number ? 'ifood' : 'próprio'}
                             </div>
@@ -392,7 +392,6 @@ function setOrderModalTitle(isEdit) {
 }
 
 function fillOrderForm(order) {
-    console.log(order.order_date);
     const fields = {
         'orderId'         : order.id || '',
         'orderStatus'     : order.status || '',
