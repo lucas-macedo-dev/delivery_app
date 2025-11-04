@@ -186,7 +186,11 @@ class ProductController extends Controller
             ], 'quantity')
             ->orderByDesc('total_quantity')
             ->whereHas('orderItems')
+            ->whereHas('categories', function (Builder $query) {
+                $query->where('id', '!=', 6);
+            })
             ->limit(6)
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->get();
     }
     public function loadProductPrice(Product $product): \Illuminate\Http\JsonResponse

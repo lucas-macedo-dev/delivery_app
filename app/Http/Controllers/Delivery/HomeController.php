@@ -29,7 +29,7 @@ class HomeController extends Controller
         $data['customers']          = Customer::whereBetween('created_at', [$startDate, $endDate])->count();
         $data['orders']             = Order::whereBetween('order_date', [$startDate, $endDate])->count();
         $data['amount']             =
-            Order::whereBetween('created_at', [$startDate, $endDate])->sum('total_amount_received');
+            Order::whereBetween('order_date', [$startDate, $endDate])->sum('total_amount_received');
         $data['expenses']           = Expense::whereBetween('created_at', [$startDate, $endDate])->sum('value');
         $data['last_orders']        =
             Order::whereBetween('created_at', [$startDate, $endDate])->orderBy('order_date', 'desc')->limit(3)->get();
