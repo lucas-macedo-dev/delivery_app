@@ -23,18 +23,40 @@
 
     <div class="card">
         <div class="card-header">
-            <div class="row align-items-center">
-                <div class="col-md-6">
+            <div class="row align-items-center g-2">
+                <div class="col-12 col-md-2 mb-2">
                     <div class="input-group search-box">
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input type="text" class="form-control" placeholder="Buscar Pedidos..." id="orderSearch">
+                        <span class="input-group-text" id="orderSearchLabel"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" placeholder="Buscar Pedidos..." id="orderSearch" aria-labelledby="orderSearchLabel">
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="d-flex action-buttons justify-content-md-end">
-                        <select class="form-select disabled" id="statusFilter" style="max-width: 150px;">
-                            <option value="all">Todos Status</option>
+                <div class="col-12 col-md-3 mb-2">
+                    <div class="d-flex action-buttons align-items-center">
+                        <label class="form-label me-2 mb-0" for="initialDateFilter">Data Inicial</label>
+                        <input type="date" class="form-control w-100" id="initialDateFilter" aria-label="Data Inicial">
+                    </div>
+                </div>
+                <div class="col-12 col-md-3 mb-2">
+                    <div class="d-flex action-buttons align-items-center">
+                        <label class="form-label me-2 mb-0" for="endDateFilter">Data Final</label>
+                        <input type="date" class="form-control w-100" id="endDateFilter" aria-label="Data Final">
+                    </div>
+                </div>
+                <div class="col-6 col-md-2 mb-2">
+                    <div class="d-flex action-buttons align-items-center">
+                        <label class="form-label me-2 mb-0" for="originFilter">Origem</label>
+                        <select class="form-select w-100" id="originFilter" aria-label="Origem">
+                            <option value="all">Todos</option>
+                            <option value="ifood">Ifood</option>
+                            <option value="loja">Loja</option>
                         </select>
+                    </div>
+                </div>
+                <div class="col-6 col-md-2 mb-2">
+                    <div class="d-flex action-buttons">
+                        <button type="button" class="btn btn-secondary w-100" id="clearFilters" aria-label="Limpar Filtros">
+                            <i class="bi bi-x-circle"></i>&nbsp;Limpar
+                        </button>
                     </div>
                 </div>
             </div>
@@ -118,8 +140,9 @@
                             <div class="row g-2 align-items-end mb-3">
                                 <div class="col-md-5">
                                     <label class="form-label" for="itemId">Nome do Item</label>
-                                    <select class="selectpicker w-100 border rounded" data-live-search="true" id="itemId"
-                                    onchange="loadProductPrice(this.value)">
+                                    <select class="selectpicker w-100 border rounded" data-live-search="true"
+                                            id="itemId"
+                                            onchange="loadProductPrice(this.value)">
                                         <option value="">Selecione o Item</option>
                                         @foreach ($products as $product)
                                             <option value="{{ $product->id }}">{{ $product->name }}</option>
@@ -189,7 +212,8 @@
 
 
     <!-- Import Order Modal -->
-    <div class="modal fade" id="importOrderModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="importOrderModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">

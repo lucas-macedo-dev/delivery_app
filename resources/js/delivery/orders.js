@@ -1,6 +1,5 @@
 'use strict';
 
-// Global state variables
 let orderItems   = [];
 let currentPage  = 1;
 let filterParams = {};
@@ -15,33 +14,37 @@ window.onload = () => {
 }
 
 function bindEventListeners() {
-    const searchInput  = document.getElementById('orderSearch');
-    const statusFilter = document.getElementById('statusFilter');
+    const searchInput       = document.getElementById('orderSearch');
+    const originFilter      = document.getElementById('originFilter');
+    const initialDateFilter = document.getElementById('initialDateFilter');
+    const endDateFilter     = document.getElementById('endDateFilter');
+    const clear             = document.getElementById('clearFilters');
+
+    if (clear) {
+        clear.addEventListener('click', () => {
+            if (searchInput) searchInput.value = '';
+            if (originFilter) originFilter.value = 'all';
+            if (initialDateFilter) initialDateFilter.value = '';
+            if (endDateFilter) endDateFilter.value = '';
+            filterOrders();
+        });
+    }
+
+    if (initialDateFilter) {
+        initialDateFilter.addEventListener('change', () => filterOrders());
+    }
+
+    if (endDateFilter) {
+        endDateFilter.addEventListener('change', () => filterOrders());
+    }
 
     if (searchInput) {
-        searchInput.addEventListener('input', debounce(() => filterOrders(), 300));
+        searchInput.addEventListener('input', () => filterOrders());
     }
 
-    if (statusFilter) {
-        statusFilter.addEventListener('change', () => filterOrders());
+    if (originFilter) {
+        originFilter.addEventListener('change', () => filterOrders());
     }
-}
-
-function debounce(func, wait) {
-    if (typeof func !== 'function') {
-        return () => {
-        };
-    }
-
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
 }
 
 window.loadOrders = async function (page = 1, filterParameters = {}) {
@@ -54,7 +57,6 @@ window.loadOrders = async function (page = 1, filterParameters = {}) {
 
         if (response?.status === 200 && response?.data?.orders) {
             renderOrdersTable(response.data.orders);
-            renderStatusFilter(response.data.orders);
             window.pagination({
                 page    : page,
                 total   : response.data.meta?.total || 0,
@@ -75,7 +77,7 @@ window.loadOrders = async function (page = 1, filterParameters = {}) {
 }
 
 function buildQueryParams(filterParameters) {
-    const possibleParams = ['search', 'status'];
+    const possibleParams = ['search', 'origin', 'initial_date', 'final_date'];
     const queryParams    = new URLSearchParams();
 
     if (filterParameters && typeof filterParameters === 'object') {
@@ -117,25 +119,6 @@ function renderEmptyState() {
     }
 }
 
-function renderStatusFilter(orders) {
-    const statusFilter = document.getElementById('statusFilter');
-    if (!statusFilter) return;
-
-    if (!orders || !Array.isArray(orders)) {
-        return;
-    }
-
-    const statuses     = [...new Set(orders.map(order => order.status).filter(Boolean))];
-    const currentValue = statusFilter.value;
-
-    statusFilter.innerHTML = '<option value="all">Todos Status</option>' +
-        statuses.map(status =>
-            `<option value="${status}" ${status === currentValue ? 'selected' : ''}>${status}</option>`
-        ).join('');
-
-    statusFilter.classList.remove('disabled');
-}
-
 function renderOrdersTable(orders) {
     const table = document.getElementById('ordersTable');
     if (!table) return;
@@ -147,10 +130,8 @@ function renderOrdersTable(orders) {
 
     const cardsContainer = setupCardsContainer(table);
 
-    // Render table (desktop)
     tbody.innerHTML = renderTableRows(orders);
 
-    // Render cards (mobile)
     if (cardsContainer) {
         cardsContainer.innerHTML = renderMobileCards(orders);
     }
@@ -325,12 +306,16 @@ function renderMobileCards(orders) {
 }
 
 function filterOrders() {
-    const search = document.getElementById('orderSearch')?.value?.toLowerCase() || '';
-    const status = document.getElementById('statusFilter')?.value || '';
+    const search      = document.getElementById('orderSearch')?.value?.toLowerCase() || '';
+    const origin      = document.getElementById('originFilter')?.value || '';
+    const initialDate = document.getElementById('initialDateFilter')?.value || '';
+    const finalDate   = document.getElementById('endDateFilter')?.value || '';
 
     const filterParameters = {};
     if (search && search.trim()) filterParameters.search = search.trim();
-    if (status && status !== 'all') filterParameters.status = status;
+    if (origin && origin !== 'all') filterParameters.origin = origin;
+    if (initialDate) filterParameters.initial_date = initialDate;
+    if (finalDate) filterParameters.final_date = finalDate;
 
     loadOrders(1, filterParameters);
 }
@@ -746,7 +731,7 @@ function showErrorMessage(message) {
     }
 }
 
-window.loadProductPrice = async function(productId){
+window.loadProductPrice = async function (productId) {
     let response = await fetch(`products/load_price/${productId}`);
     let data     = await response.json();
 

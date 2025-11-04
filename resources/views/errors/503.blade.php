@@ -8,7 +8,7 @@
             body {
                 text-align: center;
                 padding: 50px;
-                background-color: #222; /* Fundo escuro para o tema rock */
+                background-color: #222;
             }
             .container {
                 max-width: 800px;
@@ -23,7 +23,6 @@
     </head>
     <body>
         <div class="container">
-            {{-- A função asset() gera o caminho correto para o arquivo na pasta public --}}
             <img src="{{ asset('images/em_manutencao.png') }}" alt="Em Manutenção - Rock and Burger">
 
             <h1 style="color: #FF0000;">Volta em breve!</h1>

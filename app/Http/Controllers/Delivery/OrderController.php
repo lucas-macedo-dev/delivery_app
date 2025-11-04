@@ -37,6 +37,18 @@ class OrderController extends Controller
                 ->when(request()->filled('status') && request('status') !== 'all', function ($query) {
                     $query->where('status', request('status'));
                 })
+                ->when(request()->filled('origin') && request('origin') === 'ifood', function ($query) {
+                    $query->where('ifood_id', '!=', null);
+                })
+                ->when(request()->filled('origin') && request('origin') === 'loja', function ($query) {
+                    $query->where('ifood_id', null);
+                })
+                ->when(request()->filled('initial_date'), function ($query) {
+                    $query->whereDate('order_date', '>=', request('initial_date'));
+                })
+                ->when(request()->filled('final_date'), function ($query) {
+                    $query->whereDate('order_date', '<=', request('final_date'));
+                })
                 ->orderBy('id', 'desc')
                 ->paginate(20)
                 ->withPath('/orders/showAll');
