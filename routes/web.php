@@ -35,6 +35,8 @@ Route::middleware(['auth', 'check.approved'])->group(function () {
 
         Route::prefix('home')->group(function () {
             Route::get('/searchData', [HomeController::class, 'searchData'])->name('delivery.searchData');
+            Route::get('/salesPerDayOfWeek', [HomeController::class, 'salesPerDayOfWeek'])
+                ->name('delivery.salesPerDayOfWeek');
         });
 
         Route::get('categories/showAll', [ProductController::class, 'loadCategories'])->name('categories.show');

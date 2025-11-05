@@ -196,20 +196,14 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-transparent border-0 pb-0">
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-center align-items-center">
                         <h5 class="mb-0">Vendas dos Últimos 7 Dias</h5>
-                        <div class="btn-group btn-group-sm" role="group">
-                            <input type="radio" class="btn-check" name="period" id="week" checked>
-                            <label class="btn btn-outline-primary" for="week">7 dias</label>
-                            <input type="radio" class="btn-check" name="period" id="month">
-                            <label class="btn btn-outline-primary" for="month">30 dias</label>
-                        </div>
                     </div>
                 </div>
                 <div class="card-body text-center">
-                    {{--                     <canvas id="salesChart" height="300"></canvas> --}}
-                    <img src="{{ asset('images/em_construcao.png') }}" style="max-width: 80%; height: auto;"
-                         class="img-fluid" alt="Página em construção">
+                     <canvas id="salesChart" height="300"></canvas>
+                    {{-- <img src="{{ asset('images/em_construcao.png') }}" style="max-width: 80%; height: auto;"
+                         class="img-fluid" alt="Página em construção"> --}}
                 </div>
             </div>
         </div>

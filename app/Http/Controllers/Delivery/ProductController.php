@@ -92,7 +92,7 @@ class ProductController extends Controller
             })
             ->orderBy('stock_quantity')
             ->paginate(20)->withPath('/delivery/products/showAll');
-        $data = ProductResource::collection($products);
+        $data     = ProductResource::collection($products);
 
         if ($data->isEmpty()) {
             return $this->error('Nenhum produto encontrado', 404);
@@ -186,13 +186,12 @@ class ProductController extends Controller
             ], 'quantity')
             ->orderByDesc('total_quantity')
             ->whereHas('orderItems')
-            ->whereHas('categories', function (Builder $query) {
-                $query->where('id', '!=', 6);
-            })
+            ->where('category', '!=', '6')
             ->limit(6)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get();
     }
+
     public function loadProductPrice(Product $product): \Illuminate\Http\JsonResponse
     {
         return $this->response('Preço do produto', 200, ['price' => $product->price]);

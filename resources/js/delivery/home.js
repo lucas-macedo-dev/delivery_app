@@ -1,5 +1,63 @@
-window.onload = () => {
-    searchData();
+window.onload = async function () {
+    await searchData();
+}
+
+
+window.loadChartData = async function (period = 'week') {
+    showLoading(true);
+    const ctx = document.getElementById('salesChart')
+    let startDate = document.getElementById('startDate').value;
+    let endDate   = document.getElementById('endDate').value;
+    let response  = await fetch(`./home/salesPerDayOfWeek?startDate=${startDate}&endDate=${endDate}&period=${period}`, {
+        headers: window.ajax_headers
+    });
+
+    let data = await response.json();
+
+    let deParaDiasDaSemana = {
+        1: 'Domingo',
+        2: 'Segunda',
+        3: 'Terça',
+        4: 'Quarta',
+        5: 'Quinta',
+        6: 'Sexta',
+        7: 'Sábado'
+    };
+
+    let salesData = [0, 0, 0, 0, 0, 0, 0];
+    if (data.status === 200 && data.data) {
+        Object.entries(data.data).forEach(([day_of_week, total_sales]) => {
+            console.log(day_of_week, total_sales);
+            let diaSemana    = deParaDiasDaSemana[day_of_week];
+            let index        = Object.values(deParaDiasDaSemana).indexOf(diaSemana);
+            salesData[index] = total_sales;
+        });
+    } else {
+        modalMessage({
+            title      : 'Erro ao buscar dados do gráfico',
+            description: data.message || 'Erro desconhecido',
+            type       : 'error',
+        });
+    }
+
+    if(Chart.getChart(ctx)) {
+        Chart.getChart(ctx)?.destroy()
+    }
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels  : ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+            datasets: [
+                {
+                    label      : 'Vendas da Semana',
+                    data       : salesData,
+                    borderWidth: 1
+                }
+            ]
+        },
+    });
+    showLoading(false);
 }
 
 window.searchData = async function () {
@@ -27,6 +85,7 @@ window.searchData = async function () {
         ).format(data.data.expenses || 0);
 
         buildMostSaledList(data.data.most_saled_product);
+        await loadChartData();
     } else {
         modalMessage({
             title      : 'Erro ao buscar dados',
