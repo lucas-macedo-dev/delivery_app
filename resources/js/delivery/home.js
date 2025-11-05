@@ -50,13 +50,15 @@ window.loadChartData = async function (period = 'week') {
             labels  : ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
             datasets: [
                 {
-                    label      : 'Vendas da Semana',
+                    label      : 'Valor vendido no dia',
                     data       : salesData,
                     borderWidth: 1
                 }
-            ]
-        },
+            ],
+
+        }
     });
+
     showLoading(false);
 }
 
