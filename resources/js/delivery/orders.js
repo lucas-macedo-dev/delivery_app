@@ -4,9 +4,8 @@ let orderItems   = [];
 let currentPage  = 1;
 let filterParams = {};
 
-window.onload = () => {
-    loadOrders().then(r => {
-    });
+window.onload = async function () {
+    await loadOrders();
     bindEventListeners();
     document.getElementById('closeImportOrderModal').addEventListener('click', () => {
         document.getElementById('ordersFile').value = '';
@@ -47,12 +46,12 @@ function bindEventListeners() {
     }
 }
 
-window.loadOrders = async function (page = 1, filterParameters = {}) {
+window.loadOrders = async function (page = 1) {
     try {
         currentPage  = page;
-        filterParams = filterParameters || {};
+        filterParams = filterOrders(true);
 
-        const queryParams = buildQueryParams(filterParameters);
+        const queryParams = buildQueryParams(filterParams);
         const response    = await fetchOrders(page, queryParams);
 
         if (response?.status === 200 && response?.data?.orders) {
@@ -117,6 +116,8 @@ function renderEmptyState() {
     if (cardsContainer) {
         cardsContainer.innerHTML = `<div class="p-3 text-center text-muted">Nenhum pedido encontrado.</div>`;
     }
+
+    // @todo ocultar a paginacao;
 }
 
 function renderOrdersTable(orders) {
@@ -305,7 +306,7 @@ function renderMobileCards(orders) {
     }).join('');
 }
 
-function filterOrders() {
+function filterOrders(send_return = false) {
     const search      = document.getElementById('orderSearch')?.value?.toLowerCase() || '';
     const origin      = document.getElementById('originFilter')?.value || '';
     const initialDate = document.getElementById('initialDateFilter')?.value || '';
@@ -317,7 +318,12 @@ function filterOrders() {
     if (initialDate) filterParameters.initial_date = initialDate;
     if (finalDate) filterParameters.final_date = finalDate;
 
-    loadOrders(1, filterParameters);
+    if (!send_return) {
+        loadOrders();
+        return false;
+    } else {
+        return filterParameters;
+    }
 }
 
 window.editOrder = async function (id) {

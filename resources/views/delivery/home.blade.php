@@ -197,7 +197,7 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-transparent border-0 pb-0">
                     <div class="d-flex justify-content-center align-items-center">
-                        <h5 class="mb-0">Vendas dos Últimos 7 Dias</h5>
+                        <h5 class="mb-0">Vendas Por Dia Da Semana</h5>
                     </div>
                 </div>
                 <div class="card-body text-center">
