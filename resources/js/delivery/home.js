@@ -2,7 +2,6 @@ window.onload = async function () {
     await searchData();
 }
 
-
 window.loadChartData = async function (period = 'week') {
     showLoading(true);
     const ctx = document.getElementById('salesChart')
@@ -27,7 +26,6 @@ window.loadChartData = async function (period = 'week') {
     let salesData = [0, 0, 0, 0, 0, 0, 0];
     if (data.status === 200 && data.data) {
         Object.entries(data.data).forEach(([day_of_week, total_sales]) => {
-            console.log(day_of_week, total_sales);
             let diaSemana    = deParaDiasDaSemana[day_of_week];
             let index        = Object.values(deParaDiasDaSemana).indexOf(diaSemana);
             salesData[index] = total_sales;
@@ -99,7 +97,6 @@ window.searchData = async function () {
 }
 
 window.buildMostSaledList = function (products) {
-    console.log(products)
     let html = '';
 
     if (products.length > 0) {

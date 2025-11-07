@@ -1,8 +1,8 @@
 'use strict';
 
-let currentPage = 1;
+let currentPage      = 1;
 let editingExpenseId = null;
-let deleteExpenseId = null;
+let deleteExpenseId  = null;
 
 window.onload = () => {
     getAllExpenses();
@@ -16,11 +16,10 @@ window.onload = () => {
 };
 
 function setupEventListeners() {
-    // Search input with debounce
     let searchTimeout;
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
-        searchInput.addEventListener('input', function() {
+        searchInput.addEventListener('input', function () {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 currentPage = 1;
@@ -29,12 +28,11 @@ function setupEventListeners() {
         });
     }
 
-    // Date filters
     const startDate = document.getElementById('startDate');
-    const endDate = document.getElementById('endDate');
+    const endDate   = document.getElementById('endDate');
 
     if (startDate) {
-        startDate.addEventListener('change', function() {
+        startDate.addEventListener('change', function () {
             currentPage = 1;
             getAllExpenses();
             loadSummary();
@@ -42,29 +40,26 @@ function setupEventListeners() {
     }
 
     if (endDate) {
-        endDate.addEventListener('change', function() {
+        endDate.addEventListener('change', function () {
             currentPage = 1;
             getAllExpenses();
             loadSummary();
         });
     }
 
-    // Per page selector
     const perPage = document.getElementById('perPage');
     if (perPage) {
-        perPage.addEventListener('change', function() {
+        perPage.addEventListener('change', function () {
             currentPage = 1;
             getAllExpenses();
         });
     }
 
-    // Form submission
     const expenseForm = document.getElementById('expenseForm');
     if (expenseForm) {
         expenseForm.addEventListener('submit', handleFormSubmit);
     }
 
-    // Delete confirmation
     const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
     if (confirmDeleteBtn) {
         confirmDeleteBtn.addEventListener('click', deleteExpense);
@@ -78,56 +73,51 @@ window.getAllExpenses = async function (page = 1) {
         showTableLoading();
 
         const searchInput = document.getElementById('searchInput');
-        const startDate = document.getElementById('startDate');
-        const endDate = document.getElementById('endDate');
-        const perPage = document.getElementById('perPage');
+        const startDate   = document.getElementById('startDate');
+        const endDate     = document.getElementById('endDate');
+        const perPage     = document.getElementById('perPage');
 
         const params = new URLSearchParams({
-            page: currentPage,
-            per_page: perPage ? perPage.value : 10,
-            search: searchInput ? searchInput.value : '',
+            page      : currentPage,
+            per_page  : perPage ? perPage.value : 10,
+            search    : searchInput ? searchInput.value : '',
             start_date: startDate ? startDate.value : '',
-            end_date: endDate ? endDate.value : ''
+            end_date  : endDate ? endDate.value : ''
         });
 
         const response = await fetch(`./expenses/showAll?${params}`, {
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+            headers: window.ajax_headers
         });
 
         const data = await response.json();
 
         if (data.status === 200 && data.data) {
             buildExpensesTable(data.data?.expenses);
-            console.log(data.data.meta);
             window.pagination(
                 {
-                    page: data.data.meta.current_page,
-                    max: data.data.meta.per_page,
-                    total: data.data.meta.total,
-                    qtt: 5,
-                    id: 'pagination',
+                    page    : data.data.meta.current_page,
+                    max     : data.data.meta.per_page,
+                    total   : data.data.meta.total,
+                    qtt     : 5,
+                    id      : 'pagination',
                     callback: 'getAllExpenses'
                 })
-                ;
+            ;
         } else {
             buildExpensesTable([]);
             window.modalMessage({
-                title: 'Erro ao carregar despesas',
+                title      : 'Erro ao carregar despesas',
                 description: data.message || 'Erro desconhecido',
-                type: 'error',
+                type       : 'error',
             });
         }
     } catch (error) {
         console.error('Error loading expenses:', error);
         buildExpensesTable([]);
         window.modalMessage({
-            title: 'Erro ao carregar despesas',
+            title      : 'Erro ao carregar despesas',
             description: 'Erro de conexão. Tente novamente.',
-            type: 'error',
+            type       : 'error',
         });
     }
 };
@@ -135,20 +125,16 @@ window.getAllExpenses = async function (page = 1) {
 window.getExpense = async function (id) {
     if (!id) {
         window.modalMessage({
-            title: 'Erro ao buscar despesa',
+            title      : 'Erro ao buscar despesa',
             description: 'ID da despesa não informado',
-            type: 'error',
+            type       : 'error',
         });
         return false;
     }
 
     try {
         const response = await fetch(`./expenses/show/${id}`, {
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+            headers: window.ajax_headers
         });
 
         const data = await response.json();
@@ -157,17 +143,17 @@ window.getExpense = async function (id) {
             return data.data;
         } else {
             window.modalMessage({
-                title: 'Erro ao buscar despesa',
+                title      : 'Erro ao buscar despesa',
                 description: data.message || 'Despesa não encontrada',
-                type: 'error',
+                type       : 'error',
             });
         }
     } catch (error) {
         console.error('Error getting expense:', error);
         window.modalMessage({
-            title: 'Erro ao buscar despesa',
+            title      : 'Erro ao buscar despesa',
             description: 'Erro de conexão. Tente novamente.',
-            type: 'error',
+            type       : 'error',
         });
     }
 
@@ -177,26 +163,22 @@ window.getExpense = async function (id) {
 window.loadSummary = async function () {
     try {
         const startDate = document.getElementById('startDate');
-        const endDate = document.getElementById('endDate');
+        const endDate   = document.getElementById('endDate');
 
         const params = new URLSearchParams({
             start_date: startDate ? startDate.value : '',
-            end_date: endDate ? endDate.value : ''
+            end_date  : endDate ? endDate.value : ''
         });
 
         const response = await fetch(`./expenses/summary?${params}`, {
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+            headers: window.ajax_headers
         });
 
         const data = await response.json();
 
         if (data.status === 200 && data.data) {
-            const totalExpenses = document.getElementById('totalExpenses');
-            const expenseCount = document.getElementById('expenseCount');
+            const totalExpenses  = document.getElementById('totalExpenses');
+            const expenseCount   = document.getElementById('expenseCount');
             const averageExpense = document.getElementById('averageExpense');
 
             if (totalExpenses) totalExpenses.textContent = formatCurrency(data.data.total_expenses);
@@ -288,10 +270,10 @@ function showTableLoading() {
 }
 
 window.openCreateModal = function () {
-    editingExpenseId = null;
-    const modal = new bootstrap.Modal(document.getElementById('expenseModal'));
-    const modalLabel = document.getElementById('expenseModalLabel');
-    const form = document.getElementById('expenseForm');
+    editingExpenseId  = null;
+    const modal       = new bootstrap.Modal(document.getElementById('expenseModal'));
+    const modalLabel  = document.getElementById('expenseModalLabel');
+    const form        = document.getElementById('expenseForm');
     const expenseDate = document.getElementById('expense_date');
 
     if (modalLabel) modalLabel.textContent = 'Nova Despesa';
@@ -310,13 +292,13 @@ window.editExpense = async function (id) {
     }
 
     editingExpenseId = id;
-    const modal = new bootstrap.Modal(document.getElementById('expenseModal'));
+    const modal      = new bootstrap.Modal(document.getElementById('expenseModal'));
     const modalLabel = document.getElementById('expenseModalLabel');
 
     if (modalLabel) modalLabel.textContent = 'Editar Despesa';
 
     const description = document.getElementById('description');
-    const value = document.getElementById('value');
+    const value       = document.getElementById('value');
     const expenseDate = document.getElementById('expense_date');
 
     if (description) description.value = expense.description;
@@ -328,7 +310,7 @@ window.editExpense = async function (id) {
 };
 
 window.openDeleteModal = function (id, description, value) {
-    deleteExpenseId = id;
+    deleteExpenseId         = id;
     const deleteExpenseInfo = document.getElementById('deleteExpenseInfo');
 
     if (deleteExpenseInfo) {
@@ -343,7 +325,7 @@ async function handleFormSubmit(e) {
     e.preventDefault();
 
     const submitBtn = document.getElementById('submitBtn');
-    const spinner = submitBtn ? submitBtn.querySelector('.spinner-border') : null;
+    const spinner   = submitBtn ? submitBtn.querySelector('.spinner-border') : null;
 
     try {
         if (submitBtn) submitBtn.disabled = true;
@@ -352,9 +334,9 @@ async function handleFormSubmit(e) {
         clearFormErrors();
 
         const formData = new FormData(e.target);
-        const data = {
-            description: formData.get('description'),
-            value: formData.get('value'),
+        const data     = {
+            description : formData.get('description'),
+            value       : formData.get('value'),
             expense_date: formData.get('expense_date')
         };
 
@@ -363,14 +345,9 @@ async function handleFormSubmit(e) {
             : `./expenses/new_expense`;
 
         const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify(data)
+            method : 'POST',
+            headers: window.ajax_headers,
+            body   : JSON.stringify(data)
         });
 
         const result = await response.json();
@@ -380,9 +357,9 @@ async function handleFormSubmit(e) {
 
             if (typeof window.modalMessage === 'function') {
                 window.modalMessage({
-                    title: 'Sucesso',
+                    title      : 'Sucesso',
                     description: result.message,
-                    type: 'success',
+                    type       : 'success',
                 });
             }
 
@@ -392,12 +369,11 @@ async function handleFormSubmit(e) {
             if (response.status === 422 && result.errors) {
                 showFormErrors(result.errors);
             } else {
-                // Don't close modal on error, show error message
                 if (typeof window.modalMessage === 'function') {
                     window.modalMessage({
-                        title: 'Erro ao salvar despesa',
+                        title      : 'Erro ao salvar despesa',
                         description: result.message || 'Erro desconhecido',
-                        type: 'error',
+                        type       : 'error',
                     });
                 }
             }
@@ -406,9 +382,9 @@ async function handleFormSubmit(e) {
         console.error('Error submitting form:', error);
         if (typeof window.modalMessage === 'function') {
             window.modalMessage({
-                title: 'Erro ao salvar despesa',
+                title      : 'Erro ao salvar despesa',
                 description: 'Erro de conexão. Tente novamente.',
-                type: 'error',
+                type       : 'error',
             });
         }
     } finally {
@@ -419,7 +395,7 @@ async function handleFormSubmit(e) {
 
 async function deleteExpense() {
     const confirmBtn = document.getElementById('confirmDeleteBtn');
-    const spinner = confirmBtn ? confirmBtn.querySelector('.spinner-border') : null;
+    const spinner    = confirmBtn ? confirmBtn.querySelector('.spinner-border') : null;
 
     if (!deleteExpenseId) return;
 
@@ -428,12 +404,8 @@ async function deleteExpense() {
         if (spinner) spinner.classList.remove('d-none');
 
         const response = await fetch(`./expenses/delete/${deleteExpenseId}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+            method : 'DELETE',
+            headers: window.ajax_headers
         });
 
         const data = await response.json();
@@ -444,9 +416,9 @@ async function deleteExpense() {
 
             if (typeof window.modalMessage === 'function') {
                 window.modalMessage({
-                    title: 'Sucesso',
+                    title      : 'Sucesso',
                     description: data.message,
-                    type: 'success',
+                    type       : 'success',
                 });
             }
 
@@ -458,9 +430,9 @@ async function deleteExpense() {
         } else {
             if (typeof window.modalMessage === 'function') {
                 window.modalMessage({
-                    title: 'Erro ao excluir despesa',
+                    title      : 'Erro ao excluir despesa',
                     description: data.message || 'Erro desconhecido',
-                    type: 'error',
+                    type       : 'error',
                 });
             }
         }
@@ -468,9 +440,9 @@ async function deleteExpense() {
         console.error('Error deleting expense:', error);
         if (typeof window.modalMessage === 'function') {
             window.modalMessage({
-                title: 'Erro ao excluir despesa',
+                title      : 'Erro ao excluir despesa',
                 description: 'Erro de conexão. Tente novamente.',
-                type: 'error',
+                type       : 'error',
             });
         }
     } finally {
@@ -504,7 +476,7 @@ window.closeExpenseModal = function () {
         }
 
         document.body.classList.remove('modal-open');
-        document.body.style.overflow = '';
+        document.body.style.overflow     = '';
         document.body.style.paddingRight = '';
 
         editingExpenseId = null;
@@ -517,16 +489,16 @@ window.closeExpenseModal = function () {
     } catch (error) {
         console.error('Error closing modal:', error);
         document.body.classList.remove('modal-open');
-        document.body.style.overflow = '';
+        document.body.style.overflow     = '';
         document.body.style.paddingRight = '';
     }
 };
 
 window.clearFilters = function () {
     const searchInput = document.getElementById('searchInput');
-    const startDate = document.getElementById('startDate');
-    const endDate = document.getElementById('endDate');
-    const perPage = document.getElementById('perPage');
+    const startDate   = document.getElementById('startDate');
+    const endDate     = document.getElementById('endDate');
+    const perPage     = document.getElementById('perPage');
 
     if (searchInput) searchInput.value = '';
     if (startDate) startDate.value = '';
@@ -560,7 +532,7 @@ function clearFormErrors() {
 
 function formatCurrency(value) {
     return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
+        style   : 'currency',
         currency: 'BRL'
     }).format(value || 0);
 }
