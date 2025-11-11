@@ -31,6 +31,7 @@
             <div class="row justify-content-center g-2 g-md-3">
                 <div class="col-12 col-md-4 col-xl-4 mb-2 mb-xl-0">
                     <label for="startDate" class="form-label">Data Início</label>
+
                     <input type="date" class="form-control" id="startDate" value="{{\Carbon\Carbon::now()->startOfMonth()->format('Y-m-d') }}">
                 </div>
                 <div class="col-12 col-md-4 col-xl-4 mb-2 mb-xl-0">
@@ -194,7 +195,7 @@
     </div>
     <div class="row g-4 mb-4">
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 shadow-sm  h-100">
                 <div class="card-header bg-transparent border-0 pb-0">
                     <div class="d-flex justify-content-center align-items-center">
                         <h5 class="mb-0">Vendas Por Dia Da Semana</h5>

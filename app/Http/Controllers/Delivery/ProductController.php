@@ -180,15 +180,16 @@ class ProductController extends Controller
         return Product::with('orderItems')
             ->with('categories')
             ->withSum([
-                'orderItems as total_quantity' => function ($query) use ($startDate, $endDate) {
-                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                'orderItems as total_quantity' => function (Builder $query) use ($startDate, $endDate) {
+                    $query->whereHas('order', function (Builder $q) use ($startDate, $endDate) {
+                        $q->whereBetween('order_date', [$startDate, $endDate]);
+                    });
                 }
             ], 'quantity')
             ->orderByDesc('total_quantity')
             ->whereHas('orderItems')
-            ->where('category', '!=', '6')
+            ->whereNotIn('category', [6, 2])
             ->limit(6)
-            ->whereBetween('created_at', [$startDate, $endDate])
             ->get();
     }
 
