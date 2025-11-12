@@ -27,12 +27,12 @@ class ExpenseController extends Controller
     public function showAll(Request $request): JsonResponse
     {
         try {
-            $perPage = $request->get('per_page', 10);
-            $search = $request->get('search');
+            $perPage   = $request->get('per_page', 10);
+            $search    = $request->get('search');
             $startDate = $request->get('start_date');
-            $endDate = $request->get('end_date');
+            $endDate   = $request->get('end_date');
 
-            $query = Expense::with(['userInserter', 'userUpdater'])
+            $query = Expense::with(['userInserter', 'userUpdater', 'category'])
                 ->orderBy('expense_date', 'desc')
                 ->orderBy('created_at', 'desc');
 
@@ -51,21 +51,21 @@ class ExpenseController extends Controller
             $expenses = $query->paginate($perPage);
 
             return response()->json([
-                'status' => 200,
+                'status'  => 200,
                 'message' => 'Expenses retrieved successfully',
-                'data' => [
+                'data'    => [
                     'expenses' => $expenses->items(),
-                    'meta' => [
-                        'total' => $expenses->total(),
-                        'per_page' => $expenses->perPage(),
+                    'meta'     => [
+                        'total'        => $expenses->total(),
+                        'per_page'     => $expenses->perPage(),
                         'current_page' => $expenses->currentPage(),
-                        'last_page' => $expenses->lastPage(),
+                        'last_page'    => $expenses->lastPage(),
                     ]
                 ]
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'status' => 500,
+                'status'  => 500,
                 'message' => 'Error retrieving expenses: ' . $e->getMessage()
             ], 500);
         }
@@ -77,16 +77,16 @@ class ExpenseController extends Controller
     public function show($id): JsonResponse
     {
         try {
-            $expense = Expense::with(['userInserter', 'userUpdater'])->findOrFail($id);
+            $expense = Expense::with(['userInserter', 'userUpdater', 'category'])->findOrFail($id);
 
             return response()->json([
-                'status' => 200,
+                'status'  => 200,
                 'message' => 'Expense retrieved successfully',
-                'data' => $expense
+                'data'    => $expense
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'status' => 404,
+                'status'  => 404,
                 'message' => 'Expense not found: ' . $e->getMessage()
             ], 404);
         }
@@ -98,33 +98,35 @@ class ExpenseController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'description' => 'required|string|max:255',
-            'value' => 'required|numeric|min:0',
+            'description'  => 'required|string|max:255',
+            'value'        => 'required|numeric|min:0',
             'expense_date' => 'required|date',
+            'category_id'  => 'required|integer|exists:expenses_categories,id',
         ]);
 
         try {
             DB::beginTransaction();
 
             $expense = Expense::create([
-                'description' => $request->description,
-                'value' => $request->value,
-                'expense_date' => $request->expense_date,
+                'description'      => $request->description,
+                'value'            => $request->value,
+                'expense_date'     => $request->expense_date,
+                'category_id'      => $request->category_id,
                 'user_inserter_id' => Auth::id(),
-                'user_updater_id' => Auth::id(),
+                'user_updater_id'  => Auth::id(),
             ]);
 
             DB::commit();
 
             return response()->json([
-                'status' => 201,
+                'status'  => 201,
                 'message' => 'Despesa criada com sucesso!',
-                'data' => $expense->load(['userInserter', 'userUpdater'])
+                'data'    => $expense->load(['userInserter', 'userUpdater'])
             ], 201);
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
-                'status' => 500,
+                'status'  => 500,
                 'message' => 'Erro ao criar despesa: ' . $e->getMessage()
             ], 500);
         }
@@ -136,9 +138,10 @@ class ExpenseController extends Controller
     public function update(Request $request, $id): JsonResponse
     {
         $request->validate([
-            'description' => 'required|string|max:255',
-            'value' => 'required|numeric|min:0',
+            'description'  => 'required|string|max:255',
+            'value'        => 'required|numeric|min:0',
             'expense_date' => 'required|date',
+            'category_id'  => 'required|integer|exists:expenses_categories,id',
         ]);
 
         try {
@@ -147,23 +150,24 @@ class ExpenseController extends Controller
             $expense = Expense::findOrFail($id);
 
             $expense->update([
-                'description' => $request->description,
-                'value' => $request->value,
-                'expense_date' => $request->expense_date,
+                'description'     => $request->description,
+                'value'           => $request->value,
+                'expense_date'    => $request->expense_date,
+                'category_id'     => $request->category_id,
                 'user_updater_id' => Auth::id(),
             ]);
 
             DB::commit();
 
             return response()->json([
-                'status' => 200,
+                'status'  => 200,
                 'message' => 'Despesa atualizada com sucesso!',
-                'data' => $expense->load(['userInserter', 'userUpdater'])
+                'data'    => $expense->load(['userInserter', 'userUpdater'])
             ]);
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
-                'status' => 500,
+                'status'  => 500,
                 'message' => 'Erro ao atualizar despesa: ' . $e->getMessage()
             ], 500);
         }
@@ -183,13 +187,13 @@ class ExpenseController extends Controller
             DB::commit();
 
             return response()->json([
-                'status' => 200,
+                'status'  => 200,
                 'message' => 'Despesa excluída com sucesso!'
             ]);
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
-                'status' => 500,
+                'status'  => 500,
                 'message' => 'Erro ao excluir despesa: ' . $e->getMessage()
             ], 500);
         }
@@ -202,7 +206,7 @@ class ExpenseController extends Controller
     {
         try {
             $startDate = $request->get('start_date');
-            $endDate = $request->get('end_date');
+            $endDate   = $request->get('end_date');
 
             $query = Expense::query();
 
@@ -210,22 +214,38 @@ class ExpenseController extends Controller
                 $query->dateRange($startDate, $endDate);
             }
 
-            $totalExpenses = $query->sum('value');
-            $expenseCount = $query->count();
+            $totalExpenses  = $query->sum('value');
+            $expenseCount   = $query->count();
             $averageExpense = $expenseCount > 0 ? $totalExpenses / $expenseCount : 0;
 
             return response()->json([
                 'status' => 200,
-                'data' => [
-                    'total_expenses' => $totalExpenses,
-                    'expense_count' => $expenseCount,
+                'data'   => [
+                    'total_expenses'  => $totalExpenses,
+                    'expense_count'   => $expenseCount,
                     'average_expense' => $averageExpense,
                 ]
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'status' => 500,
+                'status'  => 500,
                 'message' => 'Error retrieving expenses summary: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function loadCategories()
+    {
+        try {
+            $categories = DB::table('expenses_categories')->orderBy('description')->get();
+            return response()->json([
+                'status' => 200,
+                'data'   => $categories
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status'  => 500,
+                'message' => 'Erro ao buscar as categorias: ' . $e->getMessage()
             ], 500);
         }
     }

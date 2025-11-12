@@ -81,6 +81,8 @@ Route::middleware(['auth', 'check.approved'])->group(function () {
             Route::post('/edit/{id}', [ExpenseController::class, 'update'])->name('expenses.update');
             Route::delete('/delete/{id}', [ExpenseController::class, 'destroy'])->name('expenses.delete');
 
+            Route::get('/categories/showAll', [ExpenseController::class, 'loadCategories'])->name('expenses.categories.show');
+
             Route::get('/summary', [ExpenseController::class, 'summary']);
         });
     });

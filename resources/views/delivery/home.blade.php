@@ -12,7 +12,7 @@
                         <div class="col-md-8">
                             <h2 class="mb-2">Bem-vindo ao Dashboard</h2>
                             <p class="mb-0 opacity-75">Gerencie seu negócio de delivery com facilidade</p>
-                            <small class="opacity-50">Última atualização: {{ date('d/m/Y H:i') }}</small>
+                            <small class="opacity-50">Última atualização: {{ date('d/m/Y H:i')}}</small>
                         </div>
                         <div class="col-md-4 text-end d-none d-md-block">
                             <i class="bi bi-speedometer2" style="font-size: 4rem; opacity: 0.3;"></i>
@@ -31,13 +31,15 @@
             <div class="row justify-content-center g-2 g-md-3">
                 <div class="col-12 col-md-4 col-xl-4 mb-2 mb-xl-0">
                     <label for="startDate" class="form-label">Data Início</label>
-
-                    <input type="date" class="form-control" id="startDate" value="{{\Carbon\Carbon::now()->startOfMonth()->format('Y-m-d') }}">
+                    <input type="date" class="form-control" id="startDate"
+                           value="{{ session('search_inital_date',  \Carbon\Carbon::now()->startOfMonth()->format('Y-m-d')) }}">
                 </div>
                 <div class="col-12 col-md-4 col-xl-4 mb-2 mb-xl-0">
                     <label for="endDate" class="form-label">Data Fim</label>
-                    <input type="date" class="form-control" id="endDate" value="{{\Carbon\Carbon::now()->format('Y-m-d') }}">
+                    <input type="date" class="form-control" id="endDate"
+                           value="{{ session('search_final_date', \Carbon\Carbon::now()->format('Y-m-d')) }}">
                 </div>
+
                 <div class="col-12 d-flex col-md-2 col-xl-2  align-items-end">
                     <button type="button" class="btn btn-outline-secondary w-100"
                             onclick="clearFilters()">

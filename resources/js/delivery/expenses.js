@@ -7,6 +7,7 @@ let deleteExpenseId  = null;
 window.onload = () => {
     getAllExpenses();
     loadSummary();
+    searchCategories();
     setupEventListeners();
 
     const expenseDateInput = document.getElementById('expense_date');
@@ -14,6 +15,24 @@ window.onload = () => {
         expenseDateInput.valueAsDate = new Date();
     }
 };
+
+window.searchCategories = async function () {
+    let categories = await fetch('./expenses/categories/showAll');
+    let response   = await categories.json();
+
+    if (response?.status === 200 && response?.data) {
+        let categoriesOption       = document.getElementById('category_id');
+        response.data.forEach(category => {
+            categoriesOption.innerHTML += `<option value="${category.id}">${category.description}</option>`;
+        });
+    } else {
+        window.modalMessage({
+            title      : 'Erro ao buscar categorias disponíveis',
+            description: response?.message ?? 'Categorias não encontradas',
+            type       : 'error',
+        });
+    }
+}
 
 function setupEventListeners() {
     let searchTimeout;
@@ -275,10 +294,12 @@ window.openCreateModal = function () {
     const modalLabel  = document.getElementById('expenseModalLabel');
     const form        = document.getElementById('expenseForm');
     const expenseDate = document.getElementById('expense_date');
+    const categorySelect = document.getElementById('category_id');
 
     if (modalLabel) modalLabel.textContent = 'Nova Despesa';
     if (form) form.reset();
     if (expenseDate) expenseDate.valueAsDate = new Date();
+    if (categorySelect) categorySelect.value = '';
 
     clearFormErrors();
     modal.show();
@@ -300,10 +321,12 @@ window.editExpense = async function (id) {
     const description = document.getElementById('description');
     const value       = document.getElementById('value');
     const expenseDate = document.getElementById('expense_date');
+    const categorySelect = document.getElementById('category_id');
 
     if (description) description.value = expense.description;
     if (value) value.value = expense.value;
     if (expenseDate) expenseDate.value = expense.expense_date;
+    if (categorySelect) categorySelect.value = expense.category_id || '';
 
     clearFormErrors();
     modal.show();
@@ -337,7 +360,8 @@ async function handleFormSubmit(e) {
         const data     = {
             description : formData.get('description'),
             value       : formData.get('value'),
-            expense_date: formData.get('expense_date')
+            expense_date: formData.get('expense_date'),
+            category_id  : formData.get('category_id')
         };
 
         const url = editingExpenseId

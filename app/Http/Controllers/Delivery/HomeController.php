@@ -26,6 +26,11 @@ class HomeController extends Controller
         $startDate = Carbon::parse($startDate)->startOfDay();
         $endDate   = Carbon::parse($endDate)->endOfDay();
 
+        session([
+            'search_inital_date' => $startDate->format('Y-m-d'),
+            'search_final_date' => $endDate->format('Y-m-d'),
+        ]);
+
         $data['customers']          = Customer::whereBetween('created_at', [$startDate, $endDate])->count();
         $data['orders']             = Order::whereBetween('order_date', [$startDate, $endDate])->count();
         $data['amount']             =

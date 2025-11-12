@@ -14,13 +14,13 @@ class Expense extends Model
         'description',
         'value',
         'expense_date',
+        'category_id',
         'user_inserter_id',
         'user_updater_id',
     ];
 
     protected $casts = [
         'value' => 'decimal:2',
-        'expense_date' => 'date',
     ];
 
     /**
@@ -37,6 +37,11 @@ class Expense extends Model
     public function userUpdater(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_updater_id');
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(ExpenseCategory::class, 'category_id');
     }
 
     /**
