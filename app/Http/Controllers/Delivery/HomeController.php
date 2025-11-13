@@ -15,7 +15,7 @@ class HomeController extends Controller
     public function index(
     ): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory
     {
-        $data['last_orders'] = Order::orderBy('order_date', 'desc')->limit(10)->get();
+        $data['last_orders'] = Order::orderBy('order_date', 'desc')->limit(6)->get();
         return view('delivery.home', ['data' => $data]);
     }
 

@@ -223,7 +223,7 @@
     </div>
     <div class="row g-4">
         <div class="col-lg-6">
-            <div class="card border-0 h-100 shadow-sm">
+            <div class="card border-0 shadow-sm">
                 <div class="card-header bg-transparent border-0 p-3">
                     <div class="d-flex justify-content-center align-items-center">
                         <h5 class="mb-0"><i class="fa-solid fa-scale-balanced"></i>&nbsp;Distribuição das despesas</h5>
@@ -231,13 +231,13 @@
                 </div>
                 <div class="card-body">
                     <div class="row g-3 p-4">
-                        <canvas id="expensesChart" height="300"></canvas>
+                        <canvas id="expensesChart" style="width: 300px; height: 300px;"></canvas>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-lg-6">
-            <div class="card border-0 h-100 shadow-sm">
+            <div class="card border-0 shadow-sm">
                 <div class="card-header bg-transparent border-0 p-3">
                     <div class="d-flex justify-content-center align-items-center">
                         <h5 class="mb-0"><i class="fa-solid fa-clock"></i>&nbsp;Pedidos Recentes</h5>

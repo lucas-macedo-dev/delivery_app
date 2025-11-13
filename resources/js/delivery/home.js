@@ -92,8 +92,6 @@ window.loadExpensesChart = async function (period = 'week') {
         values = [1];
     }
 
-    console.log(data);
-
     const dataChart = {
         labels  : labels,
         datasets: [
@@ -113,6 +111,9 @@ window.loadExpensesChart = async function (period = 'week') {
     const config = {
         type: 'pie',
         data: dataChart,
+        options: {
+            maintainAspectRatio: false
+        }
     };
 
     new Chart(ctx, config);
