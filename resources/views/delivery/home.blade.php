@@ -198,9 +198,9 @@
     <div class="row g-4 mb-4">
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm  h-100">
-                <div class="card-header bg-transparent border-0 pb-0">
+                <div class="card-header bg-transparent border-0 p-3">
                     <div class="d-flex justify-content-center align-items-center">
-                        <h5 class="mb-0">Vendas Por Dia Da Semana</h5>
+                        <h5 class="mb-0"><i class="fa-solid fa-money-bills"></i>&nbsp;Vendas Por Dia Da Semana</h5>
                     </div>
                 </div>
                 <div class="card-body text-center">
@@ -210,8 +210,10 @@
         </div>
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-transparent border-0 pb-0">
-                    <h5 class="mb-0"><i class="fa-solid fa-money-bill-trend-up"></i>&nbsp;Produtos Mais Vendidos</h5>
+                <div class="card-header bg-transparent border-0 p-3">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <h5 class="mb-0"><i class="fa-solid fa-money-bill-trend-up"></i>&nbsp;Produtos Mais Vendidos</h5>
+                    </div>
                 </div>
                 <div class="card-body" id="most_saled_product">
                     <p class="text-muted mb-0">Nenhum produto vendido ainda.</p>
@@ -221,11 +223,27 @@
     </div>
     <div class="row g-4">
         <div class="col-lg-6">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-transparent border-0 pb-0">
-                    <h5 class="mb-0"><i class="fa-solid fa-clock"></i>&nbsp;Pedidos Recentes</h5>
+            <div class="card border-0 h-100 shadow-sm">
+                <div class="card-header bg-transparent border-0 p-3">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <h5 class="mb-0"><i class="fa-solid fa-scale-balanced"></i>&nbsp;Distribuição das despesas</h5>
+                    </div>
                 </div>
                 <div class="card-body">
+                    <div class="row g-3 p-4">
+                        <canvas id="expensesChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card border-0 h-100 shadow-sm">
+                <div class="card-header bg-transparent border-0 p-3">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <h5 class="mb-0"><i class="fa-solid fa-clock"></i>&nbsp;Pedidos Recentes</h5>
+                    </div>
+                </div>
+                <div class="align-content-center card-body">
                     <div class="list-group list-group-flush">
                         @if (!empty($data['last_orders']))
                             @foreach ($data['last_orders'] as $order)
@@ -246,41 +264,6 @@
                                 </div>
                             </div>
                         @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6">
-            <div class="card border-0 h-100 shadow-sm">
-                <div class="card-header bg-transparent border-0 pb-0">
-                    <h5 class="mb-0"><i class="fa-solid fa-bolt"></i>&nbsp;Ações Rápidas</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <a href="./orders" class="btn btn-outline-primary w-100">
-                                <i class="bi bi-plus-circle mb-2 d-block fs-4"></i>
-                                Novo Pedido
-                            </a>
-                        </div>
-                        <div class="col-6">
-                            <a href="./products" class="btn btn-outline-success w-100">
-                                <i class="bi bi-box mb-2 d-block fs-4"></i>
-                                Produtos
-                            </a>
-                        </div>
-                        <div class="col-6">
-                            <a href="./customers" class="btn btn-outline-info w-100">
-                                <i class="bi bi-people mb-2 d-block fs-4"></i>
-                                Clientes
-                            </a>
-                        </div>
-                        <div class="col-6">
-                            <a href="./expenses" class="btn btn-outline-danger w-100">
-                                <i class="bi bi-graph-down mb-2 d-block fs-4"></i>
-                                Despesas
-                            </a>
-                        </div>
                     </div>
                 </div>
             </div>

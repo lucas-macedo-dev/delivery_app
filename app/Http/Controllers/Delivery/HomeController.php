@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Delivery;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Expense;
+use App\Models\ExpenseCategory;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -14,7 +15,7 @@ class HomeController extends Controller
     public function index(
     ): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory
     {
-        $data['last_orders'] = Order::orderBy('order_date', 'desc')->limit(3)->get();
+        $data['last_orders'] = Order::orderBy('order_date', 'desc')->limit(10)->get();
         return view('delivery.home', ['data' => $data]);
     }
 
@@ -28,7 +29,7 @@ class HomeController extends Controller
 
         session([
             'search_inital_date' => $startDate->format('Y-m-d'),
-            'search_final_date' => $endDate->format('Y-m-d'),
+            'search_final_date'  => $endDate->format('Y-m-d'),
         ]);
 
         $data['customers']          = Customer::whereBetween('created_at', [$startDate, $endDate])->count();
@@ -68,6 +69,28 @@ class HomeController extends Controller
         return response()->json([
             'status' => 200,
             'data'   => $salesPerDay
+        ]);
+    }
+
+    public function expensesPerCategory(Request $request)
+    {
+        $startDate = $request->input('startDate');
+        $endDate   = $request->input('endDate', $startDate);
+
+        $startDate = Carbon::parse($startDate)->startOfDay();
+        $endDate   = Carbon::parse($endDate)->endOfDay();
+
+        $expensesData = ExpenseCategory::withSum(['expenses' => function($q) use ($startDate, $endDate) {
+            $q->whereBetween('expense_date', [$startDate, $endDate]);
+        }], 'value')
+            ->whereHas('expenses', function($q) use ($startDate, $endDate) {
+                $q->whereBetween('expense_date', [$startDate, $endDate]);
+            })->get();
+
+
+        return response()->json([
+            'status' => 200,
+            'data'   => $expensesData
         ]);
     }
 }

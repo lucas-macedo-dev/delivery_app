@@ -56,9 +56,69 @@ window.loadChartData = async function (period = 'week') {
 
         }
     });
-
     showLoading(false);
 }
+
+window.loadExpensesChart = async function (period = 'week') {
+    showLoading(true);
+    const ctx     = document.getElementById('expensesChart')
+    let startDate = document.getElementById('startDate').value;
+    let endDate   = document.getElementById('endDate').value;
+    let response  = await fetch(`./home/expensesPerCategory?startDate=${startDate}&endDate=${endDate}`, {
+        headers: window.ajax_headers
+    });
+
+    if(Chart.getChart(ctx)) {
+        Chart.getChart(ctx)?.destroy()
+    }
+
+    let data = await response.json();
+    let labels = [];
+    let values = [];
+    if (data.status === 200 && data.data) {
+        labels = data.data.filter(item => item.description).map(item => item.description);
+        values = data.data.filter(item => item.expenses_sum_value).map(item => item.expenses_sum_value);
+        console.log(labels, values);
+    } else {
+        modalMessage({
+            title      : 'Erro ao buscar dados do gráfico',
+            description: data.message || 'Erro desconhecido',
+            type       : 'error',
+        });
+    }
+
+    if (data.data.length === 0) {
+        labels = ['Sem despesas, continue assim!'];
+        values = [1];
+    }
+
+    console.log(data);
+
+    const dataChart = {
+        labels  : labels,
+        datasets: [
+            {
+                label          : 'Valor das Despesas',
+                data           : values,
+                backgroundColor: [
+                    'rgb(255, 99, 132)',
+                    'rgb(54, 162, 235)',
+                    'rgb(255, 205, 86)'
+                ],
+                hoverOffset    : 2
+            }
+        ]
+    };
+
+    const config = {
+        type: 'pie',
+        data: dataChart,
+    };
+
+    new Chart(ctx, config);
+    showLoading(false);
+}
+
 
 window.searchData = async function () {
     showLoading(true);
@@ -86,6 +146,7 @@ window.searchData = async function () {
 
         buildMostSaledList(data.data.most_saled_product);
         await loadChartData();
+        await loadExpensesChart();
     } else {
         modalMessage({
             title      : 'Erro ao buscar dados',
@@ -119,7 +180,5 @@ window.buildMostSaledList = function (products) {
     } else {
         html = `<p class="text-muted mb-0">Nenhum produto vendido nesse período.</p>`;
     }
-
     document.getElementById('most_saled_product').innerHTML = html;
-
 }
