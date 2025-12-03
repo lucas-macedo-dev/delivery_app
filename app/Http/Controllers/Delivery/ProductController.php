@@ -188,6 +188,7 @@ class ProductController extends Controller
             ], 'quantity')
             ->orderByDesc('total_quantity')
             ->whereHas('orderItems')
+            ->havingNotNull('total_quantity')
             ->whereNotIn('category', [6, 2])
             ->limit(6)
             ->get();

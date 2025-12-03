@@ -4,7 +4,7 @@ window.onload = async function () {
 
 window.loadChartData = async function (period = 'week') {
     showLoading(true);
-    const ctx = document.getElementById('salesChart')
+    const ctx     = document.getElementById('salesChart')
     let startDate = document.getElementById('startDate').value;
     let endDate   = document.getElementById('endDate').value;
     let response  = await fetch(`./home/salesPerDayOfWeek?startDate=${startDate}&endDate=${endDate}&period=${period}`, {
@@ -38,7 +38,7 @@ window.loadChartData = async function (period = 'week') {
         });
     }
 
-    if(Chart.getChart(ctx)) {
+    if (Chart.getChart(ctx)) {
         Chart.getChart(ctx)?.destroy()
     }
 
@@ -68,17 +68,16 @@ window.loadExpensesChart = async function (period = 'week') {
         headers: window.ajax_headers
     });
 
-    if(Chart.getChart(ctx)) {
+    if (Chart.getChart(ctx)) {
         Chart.getChart(ctx)?.destroy()
     }
 
-    let data = await response.json();
+    let data   = await response.json();
     let labels = [];
     let values = [];
     if (data.status === 200 && data.data) {
         labels = data.data.filter(item => item.description).map(item => item.description);
         values = data.data.filter(item => item.expenses_sum_value).map(item => item.expenses_sum_value);
-        console.log(labels, values);
     } else {
         modalMessage({
             title      : 'Erro ao buscar dados do gráfico',
@@ -99,9 +98,19 @@ window.loadExpensesChart = async function (period = 'week') {
                 label          : 'Valor das Despesas',
                 data           : values,
                 backgroundColor: [
-                    'rgb(255, 99, 132)',
-                    'rgb(54, 162, 235)',
-                    'rgb(255, 205, 86)'
+                    '#fcaa4b',
+                    '#96cffa',
+                    '#e7ff00',
+                    '#4BC0C0',
+                    '#9966FF',
+                    '#FF9F40',
+                    '#8AFF33',
+                    '#000',
+                    '#f30b2d',
+                    '#0033ff',
+                    '#FFD133',
+                    '#7D3C98',
+                    '#2ECC71'
                 ],
                 hoverOffset    : 2
             }
@@ -109,8 +118,8 @@ window.loadExpensesChart = async function (period = 'week') {
     };
 
     const config = {
-        type: 'pie',
-        data: dataChart,
+        type   : 'pie',
+        data   : dataChart,
         options: {
             maintainAspectRatio: false
         }
@@ -159,7 +168,8 @@ window.searchData = async function () {
 }
 
 window.buildMostSaledList = function (products) {
-    let html = '';
+    let html     = '';
+    let cardBody = document.getElementById('most_saled_product');
 
     if (products.length > 0) {
         for (let i = 0; i < products.length; i++) {
@@ -178,8 +188,10 @@ window.buildMostSaledList = function (products) {
             </div>
         `;
         }
+        cardBody.classList.remove(`text-center`);
     } else {
+        cardBody.classList.add(`text-center`);
         html = `<p class="text-muted mb-0">Nenhum produto vendido nesse período.</p>`;
     }
-    document.getElementById('most_saled_product').innerHTML = html;
+    cardBody.innerHTML = html;
 }

@@ -215,7 +215,7 @@
                         <h5 class="mb-0"><i class="fa-solid fa-money-bill-trend-up"></i>&nbsp;Produtos Mais Vendidos</h5>
                     </div>
                 </div>
-                <div class="card-body" id="most_saled_product">
+                <div class="card-body text-center" id="most_saled_product">
                     <p class="text-muted mb-0">Nenhum produto vendido ainda.</p>
                 </div>
             </div>
