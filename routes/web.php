@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Delivery\ExpenseController;
 use App\Http\Controllers\Delivery\HomeController;
+use App\Http\Controllers\Delivery\InertiaController;
+use App\Http\Controllers\Delivery\ShoppingListController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Delivery\OrderController;
@@ -85,6 +87,25 @@ Route::middleware(['auth', 'check.approved'])->group(function () {
             Route::get('/categories/showAll', [ExpenseController::class, 'loadCategories'])->name('expenses.categories.show');
 
             Route::get('/summary', [ExpenseController::class, 'summary']);
+        });
+
+        // ========== LISTAS DE COMPRAS ==========
+        Route::prefix('shopping-lists')->name('shopping-lists.')->group(function () {
+            Route::get('/', [ShoppingListController::class, 'index'])->name('index');
+            Route::get('/filterStatus/{status}', [ShoppingListController::class, 'index'])->name('filterStatus');
+            Route::get('/create', [ShoppingListController::class, 'create'])->name('create');
+            Route::post('/', [ShoppingListController::class, 'store'])->name('store');
+            Route::get('/{shoppingList}', [ShoppingListController::class, 'show'])->name('show');
+            Route::get('/{shoppingList}/edit', [ShoppingListController::class, 'edit'])->name('edit');
+            Route::put('/{shoppingList}', [ShoppingListController::class, 'update'])->name('update');
+            Route::delete('/{shoppingList}', [ShoppingListController::class, 'destroy'])->name('destroy');
+
+            Route::patch('/{shoppingList}/status', [ShoppingListController::class, 'updateStatus'])->name('status');
+
+            Route::post('/{shoppingList}/items', [ShoppingListController::class, 'storeItem'])->name('items.store');
+            Route::patch('/{shoppingList}/items/{item}', [ShoppingListController::class, 'updateItem'])->name('items.update');
+            Route::patch('/{shoppingList}/items/{item}/toggle', [ShoppingListController::class, 'toggleItemPurchased'])->name('items.toggle');
+            Route::delete('/{shoppingList}/items/{item}', [ShoppingListController::class, 'destroyItem'])->name('items.destroy');
         });
     });
 

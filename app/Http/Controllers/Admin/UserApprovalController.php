@@ -78,7 +78,7 @@ class UserApprovalController extends Controller
         $pendingUsers  = User::where('is_approved', false)->get();
         $approvedUsers = User::where('is_approved', true)->get();
 
-        return view('admin.users.index', compact('pendingUsers', 'approvedUsers'));
+        return inertia('Admin/Users/Index', compact('pendingUsers', 'approvedUsers'));
     }
 
     // Aprovar via painel admin (POST)
